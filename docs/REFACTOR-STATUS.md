@@ -232,8 +232,8 @@ validar cada mudança.
   precisa dos screenshots reais para ser feito sem regressão visual.
 
 ### Google Play readiness — ✅ feito (invariantes de publicação testados)
-- **Auditoria:** config em boa forma — versões alinhadas (APP_VERSION 1.4.6 =
-  gradle 1.4.6, versionCode 11), **targetSdk 35** (cumpre exigência do Play ≥34),
+- **Auditoria:** config em boa forma — versões alinhadas (APP_VERSION 1.4.9 =
+  gradle 1.4.9, versionCode 14), **targetSdk 35** (cumpre exigência do Play ≥34),
   manifest PWA completo com ícone maskable, permissões justificadas (sem excesso).
 - **Entregue — teste de bloqueadores de publicação** (`play-readiness.test.js`,
   6/6): valida sincronia APP_VERSION↔versionName, versionCode inteiro>0, targetSdk

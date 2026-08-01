@@ -1,0 +1,159 @@
+<title>Tile Blast — Auditoria Completa (2026-08-01)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#f6f7fb;--panel:#fff;--ink:#141821;--dim:#5b6472;--line:#e6e9f0;
+    --accent:#4f6bff;--good:#1f9d55;--warn:#c98a00;--bad:#d64545;
+    --shadow:0 1px 3px rgba(20,30,60,.08),0 8px 24px rgba(20,30,60,.06);--radius:14px;}
+  @media (prefers-color-scheme:dark){:root{--bg:#0e1117;--panel:#161b24;--ink:#eaeef6;--dim:#9aa5b6;--line:#232b38;
+    --accent:#7d93ff;--good:#3fce7f;--warn:#e6b23c;--bad:#ff6b6b;--shadow:0 1px 3px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);}}
+  :root[data-theme="dark"]{--bg:#0e1117;--panel:#161b24;--ink:#eaeef6;--dim:#9aa5b6;--line:#232b38;--accent:#7d93ff;--good:#3fce7f;--warn:#e6b23c;--bad:#ff6b6b;--shadow:0 1px 3px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);}
+  :root[data-theme="light"]{--bg:#f6f7fb;--panel:#fff;--ink:#141821;--dim:#5b6472;--line:#e6e9f0;--accent:#4f6bff;--good:#1f9d55;--warn:#c98a00;--bad:#d64545;--shadow:0 1px 3px rgba(20,30,60,.08),0 8px 24px rgba(20,30,60,.06);}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;padding:0 0 80px}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+  header{padding:48px 0 12px}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+  h1{font-size:33px;line-height:1.15;margin:8px 0 6px;letter-spacing:-.02em}
+  .sub{color:var(--dim);max-width:62ch}
+  .hero{display:flex;gap:26px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;margin:22px 0}
+  .gauge{--v:86;flex:0 0 auto;width:164px;height:164px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--v)*1%),var(--line) 0);display:grid;place-items:center;position:relative}
+  .gauge::before{content:"";position:absolute;inset:13px;border-radius:50%;background:var(--panel)}
+  .gauge b{position:relative;font-size:44px;font-weight:800;letter-spacing:-.03em}
+  .gauge span{position:relative;color:var(--dim);font-size:12px}
+  .gsum{flex:1;min-width:250px}
+  .gsum h2{margin:0 0 8px;font-size:20px}.gsum p{margin:0 0 12px;color:var(--dim)}
+  .pills{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid var(--line)}
+  .pill.g{color:var(--good);border-color:color-mix(in srgb,var(--good) 40%,transparent)}
+  .pill.w{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+  h2.sec{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin:40px 0 16px;font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .card .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .card h3{margin:0;font-size:15px}
+  .score{font-size:24px;font-weight:800;letter-spacing:-.02em}
+  .delta{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:999px;background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);margin-left:6px;vertical-align:middle}
+  .bar{height:7px;border-radius:6px;background:var(--line);margin:12px 0;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:6px}
+  .card p{margin:0;color:var(--dim);font-size:13.5px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:8px 0}
+  .metric{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .metric b{display:block;font-size:19px;font-weight:800}.metric span{color:var(--dim);font-size:12.5px}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);font-size:13.5px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--dim)}
+  tr:last-child td{border-bottom:0}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap}
+  .t-p1{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+  .t-p2{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+  .t-p3{background:color-mix(in srgb,var(--dim) 16%,transparent);color:var(--dim)}
+  .road{position:relative;margin:8px 0 0;padding-left:26px}
+  .road::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .step{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 14px;box-shadow:var(--shadow)}
+  .step::before{content:"";position:absolute;left:-22px;top:20px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:3px solid var(--panel);box-shadow:0 0 0 1px var(--line)}
+  .step.p1::before{background:var(--warn)}.step.p2::before{background:var(--accent)}.step.p3::before{background:var(--dim)}
+  .step .h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .step .h b{font-size:15px}.step .eff{margin-left:auto;font-size:12px;color:var(--dim)}
+  .step ul{margin:8px 0 0;padding-left:18px;color:var(--dim);font-size:13.5px}.step ul li{margin:3px 0}
+  code{background:color-mix(in srgb,var(--accent) 12%,transparent);padding:1px 6px;border-radius:5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+  footer{color:var(--dim);font-size:12.5px;margin-top:44px;border-top:1px solid var(--line);padding-top:18px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0 0;font-size:12.5px;color:var(--dim)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="kicker">Auditoria de Engenharia · Produto · 2ª rodada</div>
+  <h1>Tile Blast — Auditoria Completa</h1>
+  <p class="sub">Reavaliação após a rodada de correções (P0–P3, cobertura, alinhamento de pacote). Notas 0–100 por dimensão, com o que mudou e o que ainda rende.</p>
+</header>
+
+<section class="hero">
+  <div class="gauge"><b>86</b><span>de 100</span></div>
+  <div class="gsum">
+    <h2>De saudável para robusto</h2>
+    <p>O CI está <strong>verde ponta a ponta</strong>, a cobertura saltou de 66% para <strong>83,5%</strong> e o bloqueador de pacote foi resolvido. O que resta é refino: branches/funções em módulos específicos, cobertura das Cloud Functions e limpeza de docs.</p>
+    <div class="pills">
+      <span class="pill g">CI 100% verde</span>
+      <span class="pill g">535 testes</span>
+      <span class="pill g">Cobertura 83,5%</span>
+      <span class="pill g">Pacote alinhado</span>
+      <span class="pill w">Branches 71%</span>
+      <span class="pill w">Docs com drift</span>
+    </div>
+  </div>
+</section>
+
+<h2 class="sec">Sinais objetivos (medidos agora)</h2>
+<div class="metrics">
+  <div class="metric"><b>535 ✓</b><span>testes (0 falha)</span></div>
+  <div class="metric"><b>83,5%</b><span>linhas cobertas</span></div>
+  <div class="metric"><b>71,5% / 69%</b><span>branches / funções</span></div>
+  <div class="metric"><b>0</b><span>erros typecheck</span></div>
+  <div class="metric"><b>0</b><span>lint / format</span></div>
+  <div class="metric"><b>OK</b><span>perf budgets</span></div>
+  <div class="metric"><b>1.4.9 · vc14</b><span>versão alinhada</span></div>
+  <div class="metric"><b>com.tileblast.game</b><span>pacote unificado</span></div>
+</div>
+
+<h2 class="sec">Notas por dimensão (Δ vs 1ª auditoria)</h2>
+<div class="grid" id="cards"></div>
+
+<h2 class="sec">Roadmap — próximas melhorias</h2>
+<div class="legend">
+  <span><i class="dot" style="background:var(--warn)"></i> Alto impacto</span>
+  <span><i class="dot" style="background:var(--accent)"></i> Melhoria sólida</span>
+  <span><i class="dot" style="background:var(--dim)"></i> Dívida de longo prazo</span>
+</div>
+<div class="road" id="road" style="margin-top:16px"></div>
+
+<footer>
+  Gerada em 2026-08-01 · métricas de <code>vitest --coverage</code>, <code>tsc</code>, <code>lint-globals</code>, <code>check-perf-budgets</code> e <code>lcov.info</code> reais. Sucede a auditoria de 2026-07-31; deltas relativos a ela.
+</footer>
+</div>
+
+<script>
+const dims=[
+ {n:"Qualidade de código & gates",s:92,d0:68,c:"good",d:"typecheck 0, lint/format limpos, CI verde ponta a ponta. Os 23 erros de tipo, 2 de lint e 16 de format da 1ª rodada foram zerados."},
+ {n:"Segurança",s:90,d0:90,c:"good",d:"Regras Firestore default-deny, economia autoritativa no servidor, IAP validado, segredos de assinatura gitignorados. Estável."},
+ {n:"UX Android nativo",s:90,d0:90,c:"good",d:"Edge-to-edge com insets, Play Billing v5, consentimento UMP, predictive back. Qualidade nativa madura."},
+ {n:"Arquitetura & organização",s:88,d0:88,c:"good",d:"Modular, invariantes validados por teste, manifesto único de ordem. Dívida: acoplamento por globais e arquivos grandes (tb-main, tb-i18n)."},
+ {n:"CI/CD & automação",s:88,d0:85,c:"good",d:"Pipeline forte agora sem passos vermelhos. release-gate, perf budgets, validação de conteúdo e de versões/pacote."},
+ {n:"Testes & cobertura",s:85,d0:74,c:"good",d:"535 testes; linhas 66%→83,5% (teste de boot cobre tb-main/board/gameplay). Falta: branches 71% e funções 69%; cobertura das Cloud Functions não é medida."},
+ {n:"Monetização & economia",s:84,d0:85,c:"good",d:"Economia server-side, IAP validado, ofertas/BP/baús. Ponto cego: functions/ tem testes pontuais mas fica fora do relatório de cobertura."},
+ {n:"Prontidão Play Store",s:84,d0:72,c:"good",d:"Bloqueador de pacote resolvido (com.tileblast.game) com guarda de teste. Pendências: IDs de produção do AdMob e mais screenshots (só 4 de phone)."},
+ {n:"Performance",s:82,d0:80,c:"good",d:"Perf budgets passam no CI; canvas+rAF, SW precache. Oportunidade aberta: lazy-load do catálogo i18n (77 KB) e bundle (~400 KB)."},
+ {n:"Documentação",s:76,d0:82,c:"warn",d:"Auditorias antigas arquivadas, mas vários docs 'de estado atual' citam versões obsoletas (1.4.4/1.4.6/vc11). Precisa reconciliar com 1.4.9/vc14."},
+];
+const colv=c=>c==="good"?"var(--good)":c==="warn"?"var(--warn)":"var(--bad)";
+document.getElementById("cards").innerHTML=dims.map(x=>{
+ const dd=x.s-x.d0;const delta=dd>0?`<span class="delta">▲ ${dd}</span>`:"";
+ return `<div class="card"><div class="top"><h3>${x.n}</h3><div class="score" style="color:${colv(x.c)}">${x.s}${delta}</div></div>
+  <div class="bar"><i style="width:${x.s}%;background:${colv(x.c)}"></i></div><p>${x.d}</p></div>`;}).join("");
+
+const road=[
+ {p:0,t:"Reconciliar versões nos docs",eff:"~30 min",why:"Vários docs 'atuais' citam 1.4.4/1.4.6/vc11 — confundem quem chega.",items:[
+   "Atualizar CURSOR-PROMPT.md, REFACTOR-STATUS.md e MELHORIAS-UX-ONBOARDING.md para 1.4.9/vc14.",
+   "Idealmente derivar a versão citada de uma fonte única para não drift-ar de novo."]},
+ {p:0,t:"Subir branches/funções nos módulos fracos",eff:"~1 dia",why:"Linhas em 83% mas branches 71% — ramos de erro/edge sem rede.",items:[
+   "Focar tb-firebase (52%), tb-offers (59%), tb-shop (62%), tb-music (63%), tb-social (63%).",
+   "Testar os ramos de falha (offline, sem billing, config inválida) e subir os thresholds junto."]},
+ {p:1,t:"Medir cobertura das Cloud Functions",eff:"~half-day",why:"A economia autoritativa (functions/) roda sem visibilidade de cobertura.",items:[
+   "Incluir functions/ no relatório de cobertura (projeto/console separado ou include dedicado).",
+   "Cobrir confirm-iap, submit-score e challenge com casos de fraude/replay."]},
+ {p:1,t:"IDs de produção do AdMob + ativos da ficha",eff:"~2 h",why:"Últimas pendências reais de publicação.",items:[
+   "Preencher IDS-PRODUCAO.env e rodar play:admob; confirmar release-gate --release verde.",
+   "Adicionar screenshots extras de phone + tablet 7\"/10\"."]},
+ {p:2,t:"Lazy-load do catálogo i18n",eff:"~2 dias",why:"77 KB de i18n carregam no boot mesmo usando um só idioma.",items:[
+   "Separar catálogo (dados) da lógica; carregar en/es sob demanda em setLanguage.",
+   "Medir com perf-lab e apertar os budgets após o ganho. (plano em ROADMAP-P2)"]},
+ {p:3,t:"Quebrar tb-main e tb-i18n; migração ESM",eff:"épico",why:"Arquivos grandes e acoplamento por window.TB* limitam refactors.",items:[
+   "Extrair sub-responsabilidades do tb-main (accessors) e separar catálogo/lógica de i18n.",
+   "Introduzir shim ESM e migrar módulo a módulo."]},
+];
+const pl=["p1","p1","p2","p2","p2","p3"],tg=["ALTO","ALTO","SÓLIDO","SÓLIDO","SÓLIDO","LONGO PRAZO"];
+const cls=["t-p1","t-p1","t-p2","t-p2","t-p2","t-p3"],dotc=["p1","p1","p2","p2","p2","p3"];
+document.getElementById("road").innerHTML=road.map((r,i)=>`
+  <div class="step ${dotc[i]}"><div class="h"><span class="tag ${cls[i]}">${tg[i]}</span><b>${r.t}</b><span class="eff">${r.eff}</span></div>
+  <div style="color:var(--dim);font-size:13px">${r.why}</div><ul>${r.items.map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+</script>

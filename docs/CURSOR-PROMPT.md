@@ -13,7 +13,7 @@ Você está trabalhando no **Tile Blast**, um jogo puzzle de blocos desenvolvido
 - Android nativo: `android/app/build.gradle`, `android/variables.gradle`
 - Configuração Capacitor: `capacitor.config.json`
 - Play Store assets: `play-store/` (listings PT-BR, EN-US)
-- Package: `com.tileblast.game` | Versão atual: `1.4.6` (versionCode 11)
+- Package: `com.tileblast.game` | Versão atual: `1.4.9` (versionCode 14)
 
 ---
 
