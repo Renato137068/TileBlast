@@ -88,7 +88,10 @@ export async function runI18nMatrix(baseUrl = BASE) {
         };
       });
 
-      assert(labels.lang === lang || labels.lang.startsWith(lang), `Idioma ${labels.lang} !== ${lang}`);
+      assert(
+        labels.lang === lang || labels.lang.startsWith(lang),
+        `Idioma ${labels.lang} !== ${lang}`
+      );
       assert(EXPECTED[lang].play.test(labels.play), `Play btn [${lang}]: "${labels.play}"`);
       assert(EXPECTED[lang].shop.test(labels.shop), `Shop btn [${lang}]: "${labels.shop}"`);
 
@@ -98,7 +101,11 @@ export async function runI18nMatrix(baseUrl = BASE) {
       await page.screenshot({ path: join(dir, '01-map.png'), fullPage: false });
 
       await openShop(page);
-      await assertNoHorizontalOverflow(page, ['#screen-shop', '#shop-title', '.shop-section-title']);
+      await assertNoHorizontalOverflow(page, [
+        '#screen-shop',
+        '#shop-title',
+        '.shop-section-title',
+      ]);
       await page.screenshot({ path: join(dir, '02-shop.png'), fullPage: false });
 
       await goMap(page);

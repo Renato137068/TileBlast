@@ -201,7 +201,8 @@
   function loadScript(src) {
     if (deferredLoaded.has(src)) return Promise.resolve(src);
     return new Promise((resolve, reject) => {
-      const existing = global.document && global.document.querySelector('script[src="' + src + '"]');
+      const existing =
+        global.document && global.document.querySelector('script[src="' + src + '"]');
       if (existing) {
         deferredLoaded.add(src);
         resolve(src);
@@ -222,7 +223,9 @@
   /** @returns {Promise<string[]>} */
   async function loadDeferredModules() {
     /** @type {string[]} */
-    const list = Array.isArray(global.__TB_DEFERRED_MODULES__) ? global.__TB_DEFERRED_MODULES__ : [];
+    const list = Array.isArray(global.__TB_DEFERRED_MODULES__)
+      ? global.__TB_DEFERRED_MODULES__
+      : [];
     const loaded = [];
     for (let i = 0; i < list.length; i++) {
       const src = list[i];

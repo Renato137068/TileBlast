@@ -70,9 +70,8 @@
     let insetBottom = 0;
     try {
       insetBottom =
-        parseFloat(
-          getComputedStyle(document.documentElement).getPropertyValue('--inset-bottom')
-        ) || 0;
+        parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--inset-bottom')) ||
+        0;
     } catch (e) {
       insetBottom = 0;
     }

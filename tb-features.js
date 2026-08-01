@@ -291,7 +291,8 @@
       setTimeout(() => {
         if (C.getUnlocked() >= levelIdx) {
           const mastery = seed === 'master';
-          if (typeof C.startGame === 'function') C.startGame(levelIdx, mastery ? { mastery: true } : undefined);
+          if (typeof C.startGame === 'function')
+            C.startGame(levelIdx, mastery ? { mastery: true } : undefined);
         } else {
           C.showToast(
             '🔒',
@@ -302,7 +303,13 @@
       }, 1600);
     };
 
-    if (cid && nonce && global.TBFirebase && global.TBFirebase.configValid && global.TBFirebase.configValid()) {
+    if (
+      cid &&
+      nonce &&
+      global.TBFirebase &&
+      global.TBFirebase.configValid &&
+      global.TBFirebase.configValid()
+    ) {
       Promise.resolve(global.TBFirebase.boot())
         .then(() => global.TBFirebase.claimChallenge(cid, nonce))
         .then((r) => {

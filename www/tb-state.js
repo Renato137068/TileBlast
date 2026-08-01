@@ -26,13 +26,7 @@
   };
 
   /** @type {ReadonlyArray<keyof TBSessionState>} */
-  const COMPAT_KEYS = [
-    'lvIdx',
-    'LEVELS',
-    'isInfiniteMode',
-    'isDailyPuzzleMode',
-    'isMasteryMode',
-  ];
+  const COMPAT_KEYS = ['lvIdx', 'LEVELS', 'isInfiniteMode', 'isDailyPuzzleMode', 'isMasteryMode'];
 
   function installCompatAccessors() {
     for (let i = 0; i < COMPAT_KEYS.length; i++) {

@@ -30,12 +30,12 @@ describe('P3.2 challenge logic', () => {
     expect(ok.levelIdx).toBe(3);
 
     expect(chLogic.evaluateChallengeClaim(built.challenge, 'wrong', 2000).ok).toBe(false);
-    expect(chLogic.evaluateChallengeClaim({ ...built.challenge, used: true }, 'nonce1', 2000).code).toBe(
-      'already-exists'
-    );
     expect(
-      chLogic.evaluateChallengeClaim(built.challenge, 'nonce1', 1000 + 6000).code
-    ).toBe('deadline-exceeded');
+      chLogic.evaluateChallengeClaim({ ...built.challenge, used: true }, 'nonce1', 2000).code
+    ).toBe('already-exists');
+    expect(chLogic.evaluateChallengeClaim(built.challenge, 'nonce1', 1000 + 6000).code).toBe(
+      'deadline-exceeded'
+    );
   });
 
   it('buildShareSafeText não inclui PII', () => {

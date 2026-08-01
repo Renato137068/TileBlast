@@ -49,8 +49,7 @@
         'Apagar nome e rankings públicos desta conta? O progresso do jogo permanece.',
       delete_social_done: 'Dados sociais apagados',
       delete_social_cloud: 'Nome e ranking na nuvem removidos.',
-      delete_social_local:
-        'Nome local limpo. Entre na nuvem para limpar o ranking remoto.',
+      delete_social_local: 'Nome local limpo. Entre na nuvem para limpar o ranking remoto.',
       share: 'Compartilhar',
       sync_cloud: 'Sincronizar nuvem',
       whats_new: 'Novidades',
@@ -202,8 +201,7 @@
       combo_ultra: 'ULTRA',
       combo_label: 'Combo ×{m}! +{n}',
       skip_to_main: 'Ir para o conteúdo principal',
-      map_sub:
-        'Quanto maior o grupo, maior o especial — toque em <strong>2+ blocos</strong>',
+      map_sub: 'Quanto maior o grupo, maior o especial — toque em <strong>2+ blocos</strong>',
       map_hint:
         'Toque em <strong>2 ou mais blocos</strong> da mesma cor. Grupos grandes viram 💣🚀🌈.',
       worlds_title: '🌍 Escolha um Mundo',
@@ -560,8 +558,7 @@
       flash_offer: 'Flash deal',
       player_name: 'Leaderboard name',
       delete_social: 'Delete social data',
-      delete_social_confirm:
-        'Delete this account name and public rankings? Game progress is kept.',
+      delete_social_confirm: 'Delete this account name and public rankings? Game progress is kept.',
       delete_social_done: 'Social data deleted',
       delete_social_cloud: 'Cloud name and rankings removed.',
       delete_social_local: 'Local name cleared. Sign in to clear remote rankings.',
@@ -1225,8 +1222,7 @@
       combo_ultra: 'ULTRA',
       combo_label: 'Combo ×{m}! +{n}',
       skip_to_main: 'Ir al contenido principal',
-      map_sub:
-        'Cuanto mayor el grupo, mayor el especial — toca <strong>2+ bloques</strong>',
+      map_sub: 'Cuanto mayor el grupo, mayor el especial — toca <strong>2+ bloques</strong>',
       map_hint:
         'Toca <strong>2 o más bloques</strong> del mismo color. Los grupos grandes se vuelven 💣🚀🌈.',
       worlds_title: '🌍 Elige un Mundo',

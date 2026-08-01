@@ -39,9 +39,7 @@ function checkStatic(budgets) {
     const bundleBytes = statSync(bundlePath).size;
     metrics.bundle_js_bytes = bundleBytes;
     if (bundleBytes > budgets.static.bundle_js_bytes.max) {
-      failures.push(
-        `bundle_js_bytes ${bundleBytes} > max ${budgets.static.bundle_js_bytes.max}`
-      );
+      failures.push(`bundle_js_bytes ${bundleBytes} > max ${budgets.static.bundle_js_bytes.max}`);
     }
   }
 

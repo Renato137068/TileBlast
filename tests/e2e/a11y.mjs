@@ -16,7 +16,13 @@ const BASE = process.argv[2] || process.env.TB_TEST_URL || 'http://localhost:808
 const BLOCK_IMPACTS = new Set(['critical', 'serious']);
 
 /** Exclusões: canvas/decorativos (contraste de bitmap não é WCAG útil). */
-const AXE_EXCLUDE = [['#board'], ['#confetti-layer'], ['#splash'], ['.mascot-img'], ['#ad-overlay']];
+const AXE_EXCLUDE = [
+  ['#board'],
+  ['#confetti-layer'],
+  ['#splash'],
+  ['.mascot-img'],
+  ['#ad-overlay'],
+];
 
 async function loadPuppeteer() {
   try {
@@ -33,7 +39,7 @@ function assert(cond, msg) {
 
 function summarizeViolations(results) {
   const blockers = (results.violations || []).filter((v) =>
-    (v.impact ? BLOCK_IMPACTS.has(v.impact) : true)
+    v.impact ? BLOCK_IMPACTS.has(v.impact) : true
   );
   return blockers.map((v) => ({
     id: v.id,
@@ -55,7 +61,11 @@ async function runAxe(page, label) {
       .join('\n  ');
     throw new Error(`Axe P0/P1 em ${label}:\n  ${detail}`);
   }
-  return { label, passes: results.passes?.length || 0, incomplete: results.incomplete?.length || 0 };
+  return {
+    label,
+    passes: results.passes?.length || 0,
+    incomplete: results.incomplete?.length || 0,
+  };
 }
 
 /** Contraste relativo WCAG entre duas cores CSS computadas. */
@@ -144,7 +154,9 @@ export async function runA11y(baseUrl = BASE) {
     await page.evaluate(() => {
       document.getElementById('map-settings-toggle')?.click();
     });
-    await page.waitForSelector('#map-settings-panel:not([hidden])', { timeout: 5000 }).catch(() => {});
+    await page
+      .waitForSelector('#map-settings-panel:not([hidden])', { timeout: 5000 })
+      .catch(() => {});
 
     await page.evaluate(() => {
       if (window.TBFeatures?.toggleColorBlind) TBFeatures.toggleColorBlind();

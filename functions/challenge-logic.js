@@ -26,9 +26,7 @@ function buildChallenge(opts) {
   const nowMs = opts.nowMs || Date.now();
   const ttl = opts.ttlMs || CHALLENGE_TTL_MS;
   const id =
-    typeof opts.randomId === 'function'
-      ? opts.randomId()
-      : crypto.randomBytes(8).toString('hex');
+    typeof opts.randomId === 'function' ? opts.randomId() : crypto.randomBytes(8).toString('hex');
   const nonce =
     typeof opts.randomNonce === 'function'
       ? opts.randomNonce()

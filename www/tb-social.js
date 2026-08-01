@@ -116,7 +116,10 @@
           t('delete_social_done', 'Dados sociais apagados'),
           cloudOk
             ? t('delete_social_cloud', 'Nome e ranking na nuvem removidos.')
-            : t('delete_social_local', 'Nome local limpo. Entre na nuvem para limpar o ranking remoto.')
+            : t(
+                'delete_social_local',
+                'Nome local limpo. Entre na nuvem para limpar o ranking remoto.'
+              )
         );
         if (g.TBAnalytics) g.TBAnalytics.log('social_data_deleted', { cloud: cloudOk });
       }

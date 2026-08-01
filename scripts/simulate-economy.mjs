@@ -31,7 +31,9 @@ const focus = days >= 90 ? r90 : r30;
 
 console.log('=== Tile Blast — simulate-economy ===\n');
 console.log(`Ad daily limit: ${Eco.AD_REWARDS.dailyLimit} · reward ${Eco.AD_REWARDS.coins}🪙`);
-console.log(`Continue cost: ${Eco.LOSS_CONTINUE.coinCost} · stars earn: ${Eco.COINS_STAR.join('/')}`);
+console.log(
+  `Continue cost: ${Eco.LOSS_CONTINUE.coinCost} · stars earn: ${Eco.COINS_STAR.join('/')}`
+);
 console.log('\n30d:', summarize(r30));
 console.log('90d:', summarize(r90));
 console.log(`\nFoco ${focus.days}d → healthy=${focus.healthy} final=${focus.finalCoins}`);

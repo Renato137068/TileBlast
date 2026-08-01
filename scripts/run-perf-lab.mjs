@@ -182,7 +182,10 @@ async function main() {
     network: '4G-emulated',
     cpu_throttle: 4,
     lab: {
-      boot_ready_ms: summarize('boot_ready_ms', samples.map((s) => s.boot_ready_ms)),
+      boot_ready_ms: summarize(
+        'boot_ready_ms',
+        samples.map((s) => s.boot_ready_ms)
+      ),
       dom_content_loaded_ms: summarize(
         'dom_content_loaded_ms',
         samples.map((s) => s.dom_content_loaded_ms)

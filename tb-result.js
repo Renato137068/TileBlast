@@ -200,10 +200,7 @@
       const firstWin = !!C._pendingFirstWin;
       C._pendingFirstWin = false;
       if (firstWin) {
-        document.getElementById('res-ti').textContent = t(
-          'first_win_title',
-          'Primeira explosão!'
-        );
+        document.getElementById('res-ti').textContent = t('first_win_title', 'Primeira explosão!');
         document.getElementById('res-su').textContent = t(
           'brand_signature',
           'Quanto maior o grupo, maior o especial.'

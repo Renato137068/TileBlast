@@ -5,13 +5,7 @@
 import { createRequire } from 'module';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import {
-  SAVE_SEED,
-  dismissOverlays,
-  readSave,
-  startLevel,
-  waitForBoot,
-} from './helpers.mjs';
+import { SAVE_SEED, dismissOverlays, readSave, startLevel, waitForBoot } from './helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '../..');
@@ -97,7 +91,11 @@ export async function runLifecycle(baseUrl = BASE) {
       if (!window.TBFeatures?.guardOnline) return { ok: true, skipped: true };
       const before = document.body.innerText;
       const allowed = TBFeatures.guardOnline('test offline');
-      return { ok: allowed === false, skipped: false, toastHint: before !== document.body.innerText };
+      return {
+        ok: allowed === false,
+        skipped: false,
+        toastHint: before !== document.body.innerText,
+      };
     });
     assert(offlineGuard.ok, 'guardOnline deveria bloquear offline');
     await page.setOfflineMode(false);
@@ -105,7 +103,8 @@ export async function runLifecycle(baseUrl = BASE) {
     // Jogo continua jogável offline (sem rede)
     await page.setOfflineMode(true);
     const playOffline = await page.evaluate(() => {
-      if (typeof handleClick !== 'function' || typeof getGroup !== 'function') return { moved: false };
+      if (typeof handleClick !== 'function' || typeof getGroup !== 'function')
+        return { moved: false };
       for (let x = 0; x < GW; x++) {
         for (let y = 0; y < GH; y++) {
           const g = getGroup(x, y);

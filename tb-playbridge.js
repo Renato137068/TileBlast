@@ -248,10 +248,7 @@
       C.showToast(
         '⏳',
         C._t('purchase_pending', 'Pagamento pendente'),
-        C._t(
-          'purchase_pending_sub',
-          'A compra será liberada quando o pagamento for confirmado.'
-        )
+        C._t('purchase_pending_sub', 'A compra será liberada quando o pagamento for confirmado.')
       );
       if (g.TBAnalytics) g.TBAnalytics.log('iap_pending', { item: itemId || null });
     };
