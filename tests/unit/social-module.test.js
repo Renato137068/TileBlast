@@ -60,4 +60,33 @@ describe('tb-social', () => {
     expect(lb.infinite.some((r) => r.score === 999)).toBe(true);
     expect(lb.ghosts.length).toBeGreaterThan(0);
   });
+
+  it('shareScore usa a área de transferência quando não há navigator.share', () => {
+    const orig = { share: navigator.share, clipboard: navigator.clipboard };
+    const writeText = vi.fn();
+    Object.defineProperty(navigator, 'share', { value: undefined, configurable: true });
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    try {
+      S.shareScore(1234, 'Recorde');
+      expect(writeText).toHaveBeenCalled();
+      // não vaza uid/email/token na mensagem
+      expect(writeText.mock.calls[0][0]).not.toMatch(/uid=|token=|email=/i);
+      expect(cfg.showToast).toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(navigator, 'share', { value: orig.share, configurable: true });
+      Object.defineProperty(navigator, 'clipboard', { value: orig.clipboard, configurable: true });
+    }
+  });
+
+  it('shareScore usa navigator.share quando disponível', () => {
+    const orig = navigator.share;
+    const share = vi.fn(() => Promise.resolve());
+    Object.defineProperty(navigator, 'share', { value: share, configurable: true });
+    try {
+      S.shareScore(500, 'Score');
+      expect(share).toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(navigator, 'share', { value: orig, configurable: true });
+    }
+  });
 });
