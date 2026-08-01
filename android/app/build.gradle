@@ -4,7 +4,7 @@ android {
     namespace "com.tileblast.game"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.tileblast.puzzle"
+        applicationId "com.tileblast.game"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 14

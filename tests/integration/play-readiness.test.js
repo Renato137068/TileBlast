@@ -27,6 +27,25 @@ describe('Play readiness: bloqueadores de publicacao', () => {
     expect(target, 'targetSdk abaixo de 34 bloqueia upload').toBeGreaterThanOrEqual(34);
   });
 
+  it('nome do pacote consistente: gradle applicationId === namespace === Capacitor appId', () => {
+    const applicationId = gradle.match(/applicationId\s+"([^"]+)"/)?.[1];
+    const namespace = gradle.match(/namespace\s+"([^"]+)"/)?.[1];
+    const capAppId = JSON.parse(read('capacitor.config.json')).appId;
+    expect(applicationId, 'applicationId ausente no build.gradle').toBeTruthy();
+    // applicationId é o packageName publicado — a validação de IAP e o Firebase
+    // casam por ele; divergir do appId do Capacitor quebra a publicação.
+    expect(capAppId, 'Capacitor appId != applicationId').toBe(applicationId);
+    expect(namespace, 'namespace != applicationId').toBe(applicationId);
+    // A cópia sincronizada em android/app/src/main/assets deve refletir o mesmo.
+    const assetsCfg = 'android/app/src/main/assets/capacitor.config.json';
+    if (existsSync(join(projectRoot, assetsCfg))) {
+      expect(
+        JSON.parse(read(assetsCfg)).appId,
+        'assets/capacitor.config.json dessincronizado'
+      ).toBe(applicationId);
+    }
+  });
+
   it('manifest.json tem campos obrigatorios de PWA/TWA + icones', () => {
     const m = JSON.parse(read('manifest.json'));
     for (const k of ['name', 'short_name', 'start_url', 'display', 'icons']) {
