@@ -13,14 +13,16 @@ const root = join(__dirname, '..');
 const shotsRoot = join(root, 'play-store', 'assets', 'screenshots');
 const BASE = process.env.TB_SCREENSHOT_URL || 'http://localhost:8080/index.html';
 
-// Perfil retrato da Play Store. IMPORTANTE: usa viewport CSS de celular real
-// (css 360×640) × deviceScaleFactor 3 → saída 1080×1920. Capturar direto em
-// 1080 de largura com dsf 1 faz o app (largura máx.) flutuar num viewport
-// gigante — daí as versões antigas apareciam pequenas com muito vazio.
-// Tablet NÃO é gerado: o jogo é phone-first (largura de app travada) e não
-// preenche telas de tablet — screenshots ficariam com a UI pequena centralizada.
-// Habilitar tablet exige antes um layout responsivo de tablet no jogo.
-const DEVICES = [{ name: 'phone', dir: 'phone', cssW: 360, cssH: 640, dsf: 3 }];
+// Perfis retrato da Play Store. IMPORTANTE: usa viewport CSS realista ×
+// deviceScaleFactor (não a resolução de saída direta com dsf 1 — isso fazia o
+// app flutuar num viewport gigante e sair pequeno com muito vazio).
+// Tablet é gerado: o jogo agora é responsivo (#app alarga e o tabuleiro escala
+// em telas >= 600px CSS — ver css/responsive.css e tb-fx.js layoutBoard).
+const DEVICES = [
+  { name: 'phone', dir: 'phone', cssW: 360, cssH: 640, dsf: 3 }, // 1080×1920
+  { name: 'tablet 7"', dir: 'tablet-7', cssW: 600, cssH: 960, dsf: 2 }, // 1200×1920
+  { name: 'tablet 10"', dir: 'tablet-10', cssW: 800, cssH: 1280, dsf: 2 }, // 1600×2560
+];
 
 async function loadPuppeteer() {
   try {
@@ -140,7 +142,7 @@ async function main() {
   const browser = await puppeteer.launch({ headless: 'new', defaultViewport: null });
   for (const device of devices) await captureDevice(browser, device);
   await browser.close();
-  console.log('\nScreenshots salvos em play-store/assets/screenshots/phone/');
+  console.log('\nScreenshots salvos em play-store/assets/screenshots/{phone,tablet-7,tablet-10}/');
 }
 
 main().catch((e) => {

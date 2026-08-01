@@ -261,3 +261,22 @@
     margin: 0 auto;
   }
 }
+/* Tablet: alarga o #app para preencher a tela (antes travado em 460px, o app
+   ficava numa faixa estreita centralizada com muito vazio). O tabuleiro escala
+   junto — ver o cap responsivo em tb-fx.js layoutBoard. O bloco 768px acima
+   mantém o hub do mapa centralizado e legível. */
+@media (min-width: 600px) {
+  #app {
+    max-width: 680px;
+  }
+  .screen {
+    padding: 24px 24px 28px;
+  }
+  /* HUD e barra de power-ups acompanham o tabuleiro sem esticar demais. */
+  #hud,
+  .pu-bar {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
