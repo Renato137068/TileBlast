@@ -1,0 +1,45 @@
+# Normaliza finais de linha: LF no repositório, sem ruído de CRLF no Windows.
+* text=auto eol=lf
+
+# Fontes do jogo e scripts Node — sempre LF
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.cjs  text eol=lf
+*.json text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+*.md   text eol=lf
+*.svg  text eol=lf
+*.kt   text eol=lf
+*.java text eol=lf
+*.gradle text eol=lf
+*.sh   text eol=lf
+
+# Scripts específicos de Windows — mantêm CRLF
+*.bat  text eol=crlf
+*.ps1  text eol=crlf
+
+# Binários — nunca aplicar conversão nem diff textual
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+*.mp3  binary
+*.wav  binary
+*.ogg  binary
+*.ttf  binary
+*.woff  binary
+*.woff2 binary
+*.jar  binary
+*.aab  binary
+*.apk  binary
+*.keystore binary
+*.jks  binary
+
+# Gerados / vendorizados — colapsa em diffs e exclui das estatísticas de linguagem
+www/**            linguist-generated=true
+package-lock.json linguist-generated=true -diff
+coverage/**       linguist-generated=true
+.git-broken-backup-*/** linguist-generated=true
