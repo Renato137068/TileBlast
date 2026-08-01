@@ -8,6 +8,7 @@
  *   SCHEMA: number,
  *   sessionId: string,
  *   sessionStartedAt: number,
+ *   bootReadyAt: number,
  *   firstMoveLogged: boolean,
  *   markOpen: () => void,
  *   markBootReady: (params?: Record<string, any>) => void,

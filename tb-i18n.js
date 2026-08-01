@@ -1566,11 +1566,16 @@
     return t(COLOR_KEYS[((i % COLOR_KEYS.length) + COLOR_KEYS.length) % COLOR_KEYS.length]);
   }
 
-  function t(key) {
-    if (!ready()) return I18N.pt[key] || key;
+  /**
+   * @param {string} key
+   * @param {string} [fallback] usado apenas se a chave não existir em nenhum catálogo
+   * @returns {string}
+   */
+  function t(key, fallback) {
+    if (!ready()) return I18N.pt[key] || fallback || key;
     const lang = (C.ld().lang || 'pt').slice(0, 2);
     const dict = I18N[lang] || I18N.pt;
-    return dict[key] || I18N.pt[key] || key;
+    return dict[key] || I18N.pt[key] || fallback || key;
   }
 
   function detectLanguage(navLang) {

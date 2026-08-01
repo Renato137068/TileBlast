@@ -14,6 +14,8 @@
   const TBState = global.TBState;
   /** @type {any} */
   const AppTimers = global.AppTimers;
+  /** @type {any} */
+  const TBAnalytics = global.TBAnalytics;
 
   let _bound = false;
   /** @type {any} */

@@ -33,8 +33,10 @@
   'use strict';
 
   /** P4.1 — módulos adiados (manifesto: scripts/modules.mjs DEFERRED_MODULES). */
-  if (typeof window !== 'undefined' && !window.__TB_DEFERRED_MODULES__) {
-    window.__TB_DEFERRED_MODULES__ = ['tb-push.js'];
+  /** @type {any} */
+  const w = typeof window !== 'undefined' ? window : null;
+  if (w && !w.__TB_DEFERRED_MODULES__) {
+    w.__TB_DEFERRED_MODULES__ = ['tb-push.js'];
   }
 
   /** @type {TBConfigShape} */

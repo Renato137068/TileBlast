@@ -19,6 +19,7 @@
  *   stopRegenInterval: () => void,
  *   isFeatureUnlocked: (key: string) => boolean,
  *   applyProgressiveUI: () => void,
+ *   syncMoreNotif: () => void,
  *   announceNewUnlocks: () => void,
  *   FEATURE_UNLOCKS: Array<Record<string, any>>
  * }} TBMapApi

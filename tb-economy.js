@@ -491,7 +491,8 @@
    *   shopSpendPerDay?: number,
    *   startCoins?: number,
    *   adDailyLimit?: number,
-   *   continueCost?: number
+   *   continueCost?: number,
+   *   rng?: () => number
    * }} [opts]
    * @returns {Record<string, number|boolean>}
    */

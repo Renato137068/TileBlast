@@ -18,6 +18,8 @@
   const TBFeatures = global.TBFeatures;
   /** @type {any} */
   const TBRoadmap = global.TBRoadmap;
+  /** @type {any} */
+  const TBAnalytics = global.TBAnalytics;
 
   /** @type {any} */
   let C = null;
