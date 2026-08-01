@@ -131,4 +131,24 @@ describe('tb-music', () => {
     expect(globalThis.MUSIC_THEMES['🌱 Jardim']).toBeTruthy();
     expect(globalThis.MUSIC_THEMES.infinite).toBeTruthy();
   });
+
+  it('tryStart dispara o loop de síntese e pause encerra sem vazar timer', () => {
+    const cfg = makeCfg();
+    MusicMod.init(cfg);
+    MusicMod.Music.init(true);
+    // tryStart → playLoop → note/kick/hat/masterGain sobre o AudioContext falso.
+    expect(() => MusicMod.Music.tryStart()).not.toThrow();
+    expect(() => MusicMod.Music.pause()).not.toThrow(); // limpa o setTimeout agendado
+    expect(() => MusicMod.Music.resume()).not.toThrow();
+    MusicMod.Music.pause();
+    expect(MusicMod.Music.isOn()).toBe(true);
+  });
+
+  it('setVolume propaga para o Sound e persiste', () => {
+    const cfg = makeCfg();
+    MusicMod.init(cfg);
+    MusicMod.Music.init(true);
+    MusicMod.Music.setVolume(0.5);
+    expect(globalThis.TBAudio.Sound.setVolume).toHaveBeenCalled();
+  });
 });

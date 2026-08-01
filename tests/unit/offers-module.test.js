@@ -28,6 +28,9 @@ describe('tb-offers', () => {
       },
       addCoins: vi.fn(),
       addPU: vi.fn(),
+      getCoins: () => 1000,
+      getLives: () => 3,
+      shopBuyIAP: vi.fn(),
       showToast: vi.fn(),
       showGlobalModal: vi.fn(),
       closeGlobalModal: vi.fn(),
@@ -77,5 +80,73 @@ describe('tb-offers', () => {
     expect(cfg.PlayBridge.showInterstitial).toHaveBeenCalledTimes(2);
     expect(save.interstitialToday.count).toBe(2);
     expect(cb).toHaveBeenCalledTimes(1);
+  });
+
+  it('openBattlePassModal renderiza a trilha e o botão premium', () => {
+    O.getBattlePass();
+    O.openBattlePassModal();
+    expect(cfg.showGlobalModal).toHaveBeenCalled();
+    const html = cfg.showGlobalModal.mock.calls[0][0];
+    expect(html).toMatch(/battlepass|Nível|buyBpPremium/i);
+  });
+
+  it('buyBpPremium encaminha para a compra IAP', () => {
+    O.buyBpPremium();
+    expect(cfg.closeGlobalModal).toHaveBeenCalled();
+    expect(cfg.shopBuyIAP).toHaveBeenCalledWith('bppremium');
+  });
+
+  it('activateBpPremium marca posse e premium na temporada', () => {
+    O.activateBpPremium();
+    expect(save.bpPremiumOwned).toBe(true);
+    expect(O.getBattlePass().premium).toBe(true);
+    expect(cfg.showToast).toHaveBeenCalled();
+  });
+
+  it('breakPiggy: bloqueia sem moedas e credita quando há saldo', () => {
+    save.piggy = 200;
+    // Sem moedas suficientes → não quebra.
+    cfg.getCoins = () => 0;
+    O.breakPiggy();
+    expect(save.piggy).toBe(200);
+    // Com saldo → debita o custo, credita o cofre e zera.
+    cfg.getCoins = () => 1000;
+    O.breakPiggy();
+    expect(save.piggy).toBe(0);
+    expect(cfg.addCoins).toHaveBeenCalledWith(200); // crédito do cofre
+    expect(cfg.closeGlobalModal).toHaveBeenCalled();
+  });
+
+  it('fluxo flash: checkFlashOffer arma, claimFlash credita e limpa', () => {
+    O.checkFlashOffer();
+    expect(save.flashUntil).toBeGreaterThan(Date.now());
+    O.openFlashModal();
+    expect(cfg.showGlobalModal).toHaveBeenCalled();
+    O.claimFlash();
+    expect(cfg.addCoins).toHaveBeenCalledWith(800);
+    expect(save.flashUntil).toBe(0);
+  });
+
+  it('oferta dinâmica: piggy quase cheio dispara e claim executa a ação', () => {
+    save.piggy = 480; // >= 85% de 500
+    save.remoteCfg = { piggyCap: 500, dynamicOffersEnabled: true };
+    O.evaluateDynamicOffers('map');
+    expect(cfg.showGlobalModal).toHaveBeenCalled();
+    // claimDynamicOffer executa a ação registrada (abre o cofrinho).
+    const calls = cfg.showGlobalModal.mock.calls.length;
+    O.claimDynamicOffer();
+    expect(cfg.showGlobalModal.mock.calls.length).toBeGreaterThan(calls);
+  });
+
+  it('purchaseSubscription usa a ponte nativa quando disponível', () => {
+    cfg.PlayBridge = { purchaseSubscription: vi.fn(() => true) };
+    O.purchaseSubscription('no_ads_monthly');
+    expect(cfg.PlayBridge.purchaseSubscription).toHaveBeenCalledWith('no_ads_monthly');
+    expect(cfg.showToast).not.toHaveBeenCalled();
+  });
+
+  it('purchaseSubscription cai no aviso quando não há ponte', () => {
+    O.purchaseSubscription('no_ads_yearly');
+    expect(cfg.showToast).toHaveBeenCalled();
   });
 });

@@ -20,12 +20,13 @@ export default defineConfig({
       // níveis de data/ e JOGA fases: blasts reais, especiais (bomb/rocket/
       // rainbow), boosters e fases com obstáculos (gelo/coleta/caixa) — cobrindo
       // tb-main, tb-start, tb-gameplay (~87%), tb-board (~83%) e tb-grid.
-      // Atual: ~84% lines / 69% funcs / 71% branches.
+      // + testes de unidade de offers/shop/music (economia/áudio).
+      // Atual: ~84,6% lines / 70,5% funcs / 71% branches.
       thresholds: {
-        lines: 80,
-        statements: 80,
-        functions: 65,
-        branches: 68,
+        lines: 82,
+        statements: 82,
+        functions: 68,
+        branches: 69,
       },
     },
   },

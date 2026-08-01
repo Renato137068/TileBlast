@@ -119,4 +119,29 @@ describe('tb-shop', () => {
     expect(cfg.showToast).toHaveBeenCalled();
     expect(cfg.showToast.mock.calls[0][1]).toMatch(/cheias/i);
   });
+
+  it('shopBuyDailyDeal debita o custo e concede o pacote (com saldo)', () => {
+    const deal = globalThis.TBEconomy.getDailyShopDeal();
+    const addCoins = vi.fn();
+    const cfg = makeCfg({ getCoins: () => 99999, addCoins });
+    Shop.init(cfg);
+    Shop.shopBuyDailyDeal();
+    if (deal) {
+      // confirm auto-aceita → debita o custo do deal.
+      expect(addCoins).toHaveBeenCalledWith(-deal.cost);
+      expect(cfg.checkAchievements).toHaveBeenCalled();
+    }
+  });
+
+  it('shopBuyDailyDeal bloqueia sem moedas suficientes', () => {
+    const deal = globalThis.TBEconomy.getDailyShopDeal();
+    const addCoins = vi.fn();
+    const cfg = makeCfg({ getCoins: () => 0, addCoins });
+    Shop.init(cfg);
+    Shop.shopBuyDailyDeal();
+    if (deal) {
+      expect(addCoins).not.toHaveBeenCalled();
+      expect(cfg.showToast).toHaveBeenCalled();
+    }
+  });
 });
