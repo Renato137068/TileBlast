@@ -10,8 +10,17 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
-const outDir = join(root, 'play-store', 'assets', 'screenshots', 'phone');
+const shotsRoot = join(root, 'play-store', 'assets', 'screenshots');
 const BASE = process.env.TB_SCREENSHOT_URL || 'http://localhost:8080/index.html';
+
+// Perfil retrato da Play Store. IMPORTANTE: usa viewport CSS de celular real
+// (css 360×640) × deviceScaleFactor 3 → saída 1080×1920. Capturar direto em
+// 1080 de largura com dsf 1 faz o app (largura máx.) flutuar num viewport
+// gigante — daí as versões antigas apareciam pequenas com muito vazio.
+// Tablet NÃO é gerado: o jogo é phone-first (largura de app travada) e não
+// preenche telas de tablet — screenshots ficariam com a UI pequena centralizada.
+// Habilitar tablet exige antes um layout responsivo de tablet no jogo.
+const DEVICES = [{ name: 'phone', dir: 'phone', cssW: 360, cssH: 640, dsf: 3 }];
 
 async function loadPuppeteer() {
   try {
@@ -39,8 +48,82 @@ async function dismissModals(page) {
   await new Promise((r) => setTimeout(r, 1600));
 }
 
-async function main() {
+/** Sequência de 4 telas (mapa, jogo, loja, diário) para um dado prefixo. */
+function buildShots(page, prefix) {
+  return [
+    { file: `${prefix}-01.png`, action: async () => {} },
+    {
+      file: `${prefix}-02.png`,
+      action: async () => {
+        // Clique via DOM (evaluate) é robusto a visibilidade/animação.
+        await page.evaluate(() => document.getElementById('map-play-btn')?.click());
+        await page.waitForSelector('#screen-game.active', { timeout: 10000 });
+        // Dispensa o tutorial de onboarding e o countdown para um tabuleiro limpo.
+        await page.evaluate(() => {
+          if (typeof skipOnboarding === 'function') skipOnboarding();
+          const cd = document.getElementById('cd');
+          if (cd) cd.classList.remove('show');
+          const gm = document.getElementById('global-modal');
+          if (gm) gm.classList.remove('show');
+        });
+        await new Promise((r) => setTimeout(r, 600));
+      },
+    },
+    {
+      file: `${prefix}-03.png`,
+      action: async () => {
+        await page.evaluate(() => {
+          if (typeof goToMap === 'function') goToMap();
+          else if (typeof showScreen === 'function') showScreen('map');
+        });
+        await page.waitForSelector('#screen-map.active', { timeout: 8000 });
+        // A loja vive no hub secundário (#map-more-panel) — abre e clica.
+        await page.evaluate(() => document.getElementById('map-more-toggle')?.click());
+        await new Promise((r) => setTimeout(r, 400));
+        await page.evaluate(() => document.getElementById('map-shop-btn')?.click());
+        await page.waitForSelector('#screen-shop.active', { timeout: 6000 }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 400));
+      },
+    },
+    {
+      file: `${prefix}-04.png`,
+      action: async () => {
+        await page.evaluate(() => {
+          if (typeof showScreen === 'function') showScreen('map');
+        });
+        await page.waitForSelector('#screen-map.active', { timeout: 8000 });
+        await page.evaluate(() => document.getElementById('map-daily-puzzle-btn')?.click());
+        await page.waitForSelector('#global-modal.show', { timeout: 8000 }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 300));
+      },
+    },
+  ];
+}
+
+async function captureDevice(browser, device) {
+  const outDir = join(shotsRoot, device.dir);
   mkdirSync(outDir, { recursive: true });
+  const page = await browser.newPage();
+  await page.setViewport({
+    width: device.cssW,
+    height: device.cssH,
+    deviceScaleFactor: device.dsf,
+  });
+  const outW = device.cssW * device.dsf;
+  const outH = device.cssH * device.dsf;
+  console.log(`\n[${device.name} → ${outW}x${outH}] abrindo`, BASE);
+  await page.goto(BASE, { waitUntil: 'networkidle2', timeout: 60000 });
+  await dismissModals(page);
+  for (const s of buildShots(page, device.dir)) {
+    await s.action();
+    const path = join(outDir, s.file);
+    await page.screenshot({ path, type: 'png' });
+    console.log('OK', path);
+  }
+  await page.close();
+}
+
+async function main() {
   let puppeteer;
   try {
     puppeteer = await loadPuppeteer();
@@ -49,61 +132,13 @@ async function main() {
     process.exit(1);
   }
 
+  // Filtro opcional: TB_SCREENSHOT_DEVICES="phone,tablet-7" (default: todos).
+  const only = (process.env.TB_SCREENSHOT_DEVICES || '').trim();
+  const wanted = only ? new Set(only.split(/[,\s]+/)) : null;
+  const devices = wanted ? DEVICES.filter((d) => wanted.has(d.dir)) : DEVICES;
+
   const browser = await puppeteer.launch({ headless: 'new', defaultViewport: null });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });
-
-  console.log('Abrindo', BASE);
-  await page.goto(BASE, { waitUntil: 'networkidle2', timeout: 60000 });
-  await dismissModals(page);
-
-  const shots = [
-    { file: 'phone-01.png', action: async () => {} },
-    {
-      file: 'phone-02.png',
-      action: async () => {
-        await page.click('#map-play-btn');
-        await page.waitForSelector('#screen-game.active', { timeout: 10000 });
-        await page.evaluate(() => {
-          const cd = document.getElementById('cd');
-          if (cd) cd.classList.remove('show');
-        });
-        await new Promise((r) => setTimeout(r, 500));
-      },
-    },
-    {
-      file: 'phone-03.png',
-      action: async () => {
-        await page.evaluate(() => {
-          if (typeof goToMap === 'function') goToMap();
-          else if (typeof showScreen === 'function') showScreen('map');
-        });
-        await page.waitForSelector('#screen-map.active', { timeout: 8000 });
-        await page.click('#map-shop-btn, #map-coll-btn').catch(() => page.click('#map-shop-btn'));
-        await page.waitForSelector('#screen-shop.active', { timeout: 8000 }).catch(() => {});
-        await new Promise((r) => setTimeout(r, 400));
-      },
-    },
-    {
-      file: 'phone-04.png',
-      action: async () => {
-        await page.evaluate(() => {
-          if (typeof showScreen === 'function') showScreen('map');
-        });
-        await page.waitForSelector('#screen-map.active', { timeout: 8000 });
-        await page.click('#map-daily-puzzle-btn');
-        await page.waitForSelector('#global-modal.show', { timeout: 8000 });
-      },
-    },
-  ];
-
-  for (const s of shots) {
-    await s.action();
-    const path = join(outDir, s.file);
-    await page.screenshot({ path, type: 'png' });
-    console.log('OK', path);
-  }
-
+  for (const device of devices) await captureDevice(browser, device);
   await browser.close();
   console.log('\nScreenshots salvos em play-store/assets/screenshots/phone/');
 }
