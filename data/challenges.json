@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "challenges": [
+    { "id": "bp1", "icon": "💥", "name": "Destruidor de Blocos", "desc": "Exploda 120 blocos hoje", "type": "blocks_popped", "target": 120, "reward": { "coins": 150, "xp": 100 } },
+    { "id": "cm1", "icon": "🔥", "name": "Mestre dos Combos", "desc": "Faça 8 combos hoje", "type": "combos_made", "target": 8, "reward": { "coins": 200, "xp": 120 } },
+    { "id": "sm1", "icon": "⭐", "name": "Criador de Especiais", "desc": "Crie 4 tiles especiais", "type": "specials_made", "target": 4, "reward": { "coins": 175, "xp": 110 } },
+    { "id": "lw1", "icon": "🏆", "name": "Vencedor Implacável", "desc": "Vença 5 fases hoje", "type": "levels_won", "target": 5, "reward": { "coins": 200, "xp": 130 } },
+    { "id": "ss1", "icon": "🎯", "name": "Atirador de Elite", "desc": "Alcance 4.000 pts em uma partida", "type": "score_single", "target": 4000, "reward": { "coins": 225, "xp": 140 } },
+    { "id": "cp1", "icon": "🔴", "name": "Fúria Vermelha", "desc": "Exploda 50 blocos vermelhos", "type": "color_popped", "target": 50, "colorIdx": 0, "reward": { "coins": 180, "xp": 115 } },
+    { "id": "bp2", "icon": "💥", "name": "Implacável", "desc": "Exploda 200 blocos hoje", "type": "blocks_popped", "target": 200, "reward": { "coins": 250, "xp": 160 } },
+    { "id": "cm2", "icon": "🌈", "name": "Combo Frenético", "desc": "Faça 15 combos hoje", "type": "combos_made", "target": 15, "reward": { "coins": 275, "xp": 175 } },
+    { "id": "sm2", "icon": "✨", "name": "Arquiteto Especial", "desc": "Crie 8 tiles especiais", "type": "specials_made", "target": 8, "reward": { "coins": 250, "xp": 160 } },
+    { "id": "lw2", "icon": "👑", "name": "Conquistador", "desc": "Vença 8 fases hoje", "type": "levels_won", "target": 8, "reward": { "coins": 300, "xp": 190 } },
+    { "id": "ss2", "icon": "🎯", "name": "Lendário", "desc": "Alcance 6.000 pts em uma partida", "type": "score_single", "target": 6000, "reward": { "coins": 350, "xp": 220 } },
+    { "id": "cp2", "icon": "🔵", "name": "Fúria Azul", "desc": "Exploda 60 blocos azuis", "type": "color_popped", "target": 60, "colorIdx": 2, "reward": { "coins": 250, "xp": 165 } }
+  ]
+}

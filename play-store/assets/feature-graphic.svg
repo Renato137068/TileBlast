@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1030"/>
+      <stop offset="50%" style="stop-color:#0d0f18"/>
+      <stop offset="100%" style="stop-color:#1a0a2e"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" style="stop-color:#f6b23e;stop-opacity:0.35"/>
+      <stop offset="100%" style="stop-color:#f6b23e;stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="500" fill="url(#bg)"/>
+  <rect width="1024" height="500" fill="url(#glow)"/>
+  <g opacity="0.9">
+    <rect x="120" y="180" width="56" height="56" rx="12" fill="#e74c3c"/>
+    <rect x="190" y="140" width="56" height="56" rx="12" fill="#3498db"/>
+    <rect x="260" y="200" width="56" height="56" rx="12" fill="#2ecc71"/>
+    <rect x="700" y="160" width="56" height="56" rx="12" fill="#9b59b6"/>
+    <rect x="770" y="220" width="56" height="56" rx="12" fill="#f39c12"/>
+    <rect x="840" y="170" width="56" height="56" rx="12" fill="#e67e22"/>
+  </g>
+  <text x="512" y="220" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="72" font-weight="900" fill="#f6b23e">TILE BLAST</text>
+  <text x="512" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#ffffff" opacity="0.85">Exploda. Combine. Conquiste.</text>
+  <text x="512" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#a0a8c0">Puzzle viciante - 60+ fases - Modo infinito</text>
+  <circle cx="512" cy="400" r="36" fill="#f6b23e" opacity="0.2"/>
+  <text x="512" y="408" text-anchor="middle" font-size="40">&#x1F3AE;</text>
+</svg>

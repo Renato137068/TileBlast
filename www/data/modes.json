@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "modes": [
+    {
+      "id": "classic_blast",
+      "icon": "💥",
+      "label": "Classic Blast",
+      "desc": "Elimine peças e complete os objetivos da fase.",
+      "objective": "destroy_tiles",
+      "unlockAtLevel": 0,
+      "usesCampaignLevels": true,
+      "timerSec": null,
+      "scoreMultiplier": 1
+    },
+    {
+      "id": "time_challenge",
+      "icon": "⏱",
+      "label": "Time Challenge",
+      "desc": "Faça o máximo de pontos antes do tempo acabar.",
+      "objective": "score_rush",
+      "unlockAtLevel": 5,
+      "usesCampaignLevels": false,
+      "timerSec": 60,
+      "scoreMultiplier": 1.5,
+      "procedural": {
+        "moves": 999,
+        "objectives": [{ "type": "score", "target": 3000 }],
+        "worldLabel": "⏱ Desafio Relâmpago"
+      }
+    },
+    {
+      "id": "daily_challenge",
+      "icon": "🏆",
+      "label": "Daily Challenge",
+      "desc": "Desafio diário com objetivo único e recompensa especial.",
+      "objective": "daily_goal",
+      "unlockAtLevel": 3,
+      "usesCampaignLevels": false,
+      "timerSec": null,
+      "streakRewards": [50, 75, 100, 150, 200, 300, 500]
+    },
+    {
+      "id": "infinite",
+      "icon": "♾️",
+      "label": "Modo Infinito",
+      "desc": "Sobreviva o máximo de rodadas possível.",
+      "objective": "survive_rounds",
+      "unlockAtLevel": 8,
+      "usesCampaignLevels": false,
+      "timerSec": null
+    }
+  ]
+}

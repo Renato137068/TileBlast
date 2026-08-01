@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "regression_pct": 10,
+  "static": {
+    "bundle_js_bytes": { "baseline": 413423, "max": 424743 },
+    "www_js_bytes": { "baseline": 730868, "max": 800539 },
+    "boot_script_count": { "baseline": 47, "max": 47 },
+    "deferred_script_count": { "baseline": 1, "max": 3 }
+  },
+  "lab": {
+    "boot_ready_ms": { "p50_max": 4500, "p95_max": 8000 },
+    "dom_content_loaded_ms": { "p50_max": 12000, "p95_max": 20000 },
+    "fps_min": { "p50_min": 48, "p95_min": 42 }
+  }
+}

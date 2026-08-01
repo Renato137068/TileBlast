@@ -1,0 +1,232 @@
+/* Reset, body, #app, telas e botões base — extraído de tile_blast.html (fatia contígua, ordem preservada) */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+html,
+body {
+  height: 100%;
+  height: 100dvh;
+  overscroll-behavior: none;
+}
+body {
+  background: #0a0c14;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 80, 200, 0.18), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(246, 178, 62, 0.08), transparent);
+  display: flex;
+  justify-content: center;
+  padding: max(10px, var(--inset-top)) max(10px, var(--inset-right)) max(20px, var(--inset-bottom))
+    max(10px, var(--inset-left));
+  font-family: 'Baloo 2', 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  color: var(--text);
+  touch-action: pan-y;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+#app {
+  width: 100%;
+  max-width: 460px;
+  height: 100%;
+  max-height: 100dvh;
+  position: relative;
+}
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 16px 24px;
+  border-radius: 20px;
+  background: radial-gradient(120% 140% at 50% -10%, #232740, var(--bg));
+  box-shadow:
+    0 0 0 1px var(--glass-border),
+    var(--shadow);
+}
+.screen.active {
+  display: flex;
+  animation: screenIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+#screen-game.active {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse 95% 45% at 50% -8%,
+      rgba(var(--play-world-rgb, 246, 178, 62), 0.22),
+      transparent 70%
+    ),
+    radial-gradient(120% 140% at 50% -10%, #232740, var(--bg));
+}
+.screen.screen-out {
+  animation: screenOut 0.2s ease forwards;
+  will-change: transform, opacity;
+}
+/* Transições contextuais: cada troca de tela conta o que aconteceu.
+   dive = entrar na fase · back = recuar · rise = resultado · side = navegar */
+.screen.active.enter-dive {
+  animation: screenDive var(--dur-slow) var(--ease-out);
+}
+.screen.active.enter-back {
+  animation: screenBack var(--dur-mid) var(--ease-out);
+}
+.screen.active.enter-rise {
+  animation: screenRise 0.42s var(--ease-out);
+}
+.screen.active.enter-side {
+  animation: screenSide var(--dur-mid) var(--ease-out);
+}
+@keyframes screenDive {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes screenBack {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes screenRise {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes screenSide {
+  from {
+    opacity: 0;
+    transform: translateX(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes screenIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes screenOut {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+}
+#screen-map.active {
+  padding: 12px 14px max(10px, var(--inset-bottom));
+  height: 100%;
+  max-height: 100dvh;
+  overflow: hidden;
+  align-items: stretch;
+}
+#screen-game.active {
+  padding: 10px 12px max(8px, var(--inset-bottom));
+  overflow: hidden;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.btn {
+  font-family: inherit;
+  font-weight: 700;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    transform 0.12s,
+    filter 0.12s,
+    box-shadow 0.12s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.btn:active {
+  transform: scale(0.94);
+}
+.btn-p {
+  background: linear-gradient(180deg, #ffc857 0%, #f6b23e 45%, #e89a1a 100%);
+  color: #1a1200;
+  font-size: 15px;
+  padding: 11px 28px;
+  box-shadow:
+    0 4px 14px rgba(246, 178, 62, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.btn-p:hover {
+  filter: brightness(1.06);
+}
+.btn-g {
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  padding: 10px 20px;
+  min-height: 44px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+.btn-g:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.btn-full {
+  width: 100%;
+}
+.btn-map {
+  padding: 12px 10px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    transform 0.12s,
+    filter 0.12s,
+    opacity 0.12s;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.btn-map:active {
+  transform: scale(0.97);
+}
+.btn-map-challenge {
+  background: linear-gradient(135deg, #f6c945, #e8960a);
+  color: #1a0800;
+}
+.btn-map-inf {
+  background: linear-gradient(135deg, #a78bfa, #6d28d9);
+  color: #fff;
+}

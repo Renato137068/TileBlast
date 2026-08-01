@@ -1,0 +1,209 @@
+/* Mascote Blasty e level-up — extraído de tile_blast.html (fatia contígua, ordem preservada) */
+/* ── MASCOT (Blasty) ── */
+.mascot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+}
+.mascot-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.mascot-wrap--sm {
+  width: 44px;
+  height: 44px;
+}
+.mascot-wrap--md {
+  width: 72px;
+  height: 72px;
+}
+.mascot-wrap--lg {
+  width: 96px;
+  height: 96px;
+}
+.mascot-wrap--xl {
+  width: 120px;
+  height: 120px;
+}
+.mascot-idle {
+  animation: mascotIdle 2.8s ease-in-out infinite;
+}
+.mascot-happy {
+  animation: mascotHop 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mascot-sad {
+  animation: mascotSad 0.6s ease;
+}
+.mascot-excited {
+  animation: mascotExcited 0.5s ease infinite alternate;
+}
+.mascot-think {
+  animation: mascotThink 1.2s ease-in-out infinite;
+}
+@keyframes mascotIdle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes mascotHop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.12) translateY(-8px);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes mascotSad {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px) rotate(-3deg);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes mascotExcited {
+  from {
+    transform: rotate(-4deg) scale(1);
+  }
+  to {
+    transform: rotate(4deg) scale(1.06);
+  }
+}
+@keyframes mascotThink {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+.mascot-bubble {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  margin-top: 6px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.mascot-bubble::before {
+  display: none;
+}
+.map-meta-left {
+  flex: 1;
+  min-width: 0;
+}
+.mascot-bubble.hide {
+  display: none;
+}
+.mascot-bubble {
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 8px 11px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  animation: bubbleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.map-mascot-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.map-avatar-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -4px;
+  font-size: 14px;
+  line-height: 1;
+  background: var(--panel);
+  border-radius: 999px;
+  padding: 1px 3px;
+  border: 1px solid var(--glass-border);
+}
+.splash-mascot {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 8px;
+}
+.coach-mascot {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 6px;
+}
+.result-mascot {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto;
+}
+/* LEVEL UP */
+#levelup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10002;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(6px);
+  padding: 20px;
+}
+#levelup-overlay.show {
+  display: flex;
+  animation: fadeIn 0.25s ease;
+}
+.levelup-card {
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+  padding: 28px 22px;
+  border-radius: 22px;
+  background: linear-gradient(165deg, rgba(124, 58, 237, 0.25), rgba(27, 30, 44, 0.98));
+  border: 2px solid rgba(167, 139, 250, 0.5);
+  box-shadow: 0 0 40px rgba(124, 58, 237, 0.35);
+  animation: resultIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.levelup-icon {
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.levelup-num {
+  font-size: 42px;
+  font-weight: 800;
+  color: #c4b5fd;
+  text-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
+}
+.levelup-label {
+  font-size: 14px;
+  color: var(--dim);
+  margin: 6px 0 18px;
+}

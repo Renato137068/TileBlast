@@ -1,0 +1,222 @@
+# CI — qualidade, e2e, validações e smoke Android (P0.2)
+# Aceite: PR falha se lint/typecheck/format/testes/e2e/validações falharem.
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      build_release:
+        description: 'Build AAB assinado (requer secrets ANDROID_*)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality (lint · format · typecheck · tests · gate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Format check
+        run: npm run format:check
+      - name: Lint (no-undef)
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit/integration + coverage
+        run: npm run test:coverage
+      - name: Bundle + www sync
+        run: npm run build:bundle
+      - name: Perf budgets (P4.1)
+        run: npm run perf:budgets
+      - name: Content validate
+        run: npm run content:validate
+      - name: Play Store validate (DEV)
+        run: npm run play:validate
+      - name: Release gate (DEV)
+        run: node scripts/release-gate.mjs --report
+      - name: Self-audit report
+        run: node scripts/self-audit.mjs --skip-tests --report
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          if-no-files-found: warn
+      - name: Upload audit / gate reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-reports
+          path: |
+            play-store/reports/
+          if-no-files-found: warn
+
+  e2e:
+    name: E2E (smoke · gameplay · a11y · i18n · lifecycle)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npx puppeteer browsers install chrome
+      - name: E2E suite
+        run: npm run test:e2e
+        env:
+          TB_TEST_PORT: '8088'
+      - name: Upload e2e log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-failure
+          path: |
+            e2e-run.log
+            idle-hint-check.png
+          if-no-files-found: ignore
+      - name: Upload i18n screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: i18n-screenshots
+          path: screenshots/i18n/
+          if-no-files-found: warn
+
+  android-smoke:
+    name: Android smoke (assembleDebug · sem secrets)
+    runs-on: ubuntu-latest
+    needs: [quality]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - run: npm ci
+      - name: Sync www + Capacitor
+        run: |
+          npm run build:bundle
+          npx cap sync android
+      - name: Assemble debug APK (smoke)
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: warn
+
+  android-release:
+    name: Android release AAB (secrets obrigatórios)
+    runs-on: ubuntu-latest
+    needs: [quality, e2e]
+    if: >
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.build_release == 'true'
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - name: Require signing secrets
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          missing=0
+          for v in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [ -z "${!v}" ]; then echo "✗ Secret ausente: $v"; missing=1; fi
+          done
+          if [ "$missing" = "1" ]; then
+            echo "Release falhou fechado — configure secrets no environment 'release'."
+            exit 1
+          fi
+      - run: npm ci
+      - name: Inject production config from secrets (opcional)
+        env:
+          FIREBASE_CONFIG_JS: ${{ secrets.FIREBASE_CONFIG_JS }}
+          IDS_PRODUCAO_ENV: ${{ secrets.IDS_PRODUCAO_ENV }}
+        run: |
+          if [ -n "$FIREBASE_CONFIG_JS" ]; then
+            printf '%s\n' "$FIREBASE_CONFIG_JS" > firebase-config.js
+            echo "✓ firebase-config.js injetado"
+          else
+            echo "⚠ FIREBASE_CONFIG_JS ausente — gate RELEASE deve falhar"
+          fi
+          if [ -n "$IDS_PRODUCAO_ENV" ]; then
+            printf '%s\n' "$IDS_PRODUCAO_ENV" > play-store/console/IDS-PRODUCAO.env
+            echo "✓ IDS-PRODUCAO.env injetado"
+            npm run play:admob
+          else
+            echo "⚠ IDS_PRODUCAO_ENV ausente — gate RELEASE deve falhar"
+          fi
+      - name: Sync + release gate (PROD)
+        env:
+          TB_RELEASE: '1'
+        run: |
+          npm run build:bundle
+          node scripts/release-gate.mjs --release --report
+          npx cap sync android
+      - name: Decode keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/release.keystore
+          cat > android/keystore.properties <<EOF
+          storeFile=release.keystore
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          keyPassword=$ANDROID_KEY_PASSWORD
+          EOF
+      - name: Bundle release AAB
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew bundleRelease --no-daemon
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+      - name: Upload release gate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-prod
+          path: play-store/reports/
+          if-no-files-found: ignore

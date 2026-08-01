@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "packs": [
+    {
+      "worldId": "garden",
+      "file": "garden.json",
+      "count": 15
+    },
+    {
+      "worldId": "forest",
+      "file": "forest.json",
+      "count": 10
+    },
+    {
+      "worldId": "mountain",
+      "file": "mountain.json",
+      "count": 10
+    },
+    {
+      "worldId": "ocean",
+      "file": "ocean.json",
+      "count": 10
+    },
+    {
+      "worldId": "inferno",
+      "file": "inferno.json",
+      "count": 10
+    },
+    {
+      "worldId": "crystal",
+      "file": "crystal.json",
+      "count": 20
+    },
+    {
+      "worldId": "legendary",
+      "file": "legendary.json",
+      "count": 10
+    }
+  ]
+}

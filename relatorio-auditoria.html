@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tile Blast — Relatório de Auditoria de Qualidade</title>
+<style>
+  :root{
+    --bg:#0d0f18; --panel:#171a28; --panel2:#1e2234; --text:#f1f2f6; --dim:#9aa1b8;
+    --accent:#f6b23e; --green:#4ecb71; --red:#ef4b5f; --blue:#3aa6e0; --purple:#b46fe0;
+    --cyan:#7fe3ff; --orange:#f5933e; --gold:#ffdd44;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.55;padding:32px 16px}
+  .wrap{max-width:980px;margin:0 auto}
+  header{text-align:center;margin-bottom:36px}
+  header h1{font-size:28px;color:var(--accent)}
+  header .meta{color:var(--dim);font-size:13px;margin-top:6px}
+  h2{font-size:20px;color:var(--accent);margin:40px 0 14px;padding-bottom:6px;border-bottom:1px solid rgba(246,178,62,.25)}
+  h3{font-size:15px;color:var(--cyan);margin:20px 0 8px}
+  p{margin:8px 0;color:#d6dae8;font-size:14px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:18px 0}
+  .card{background:var(--panel);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;text-align:center}
+  .card .score{font-size:30px;font-weight:800}
+  .card .label{font-size:12px;color:var(--dim);margin-top:4px}
+  .s-9,.s-8{color:var(--green)} .s-7,.s-6{color:var(--accent)} .s-5,.s-4{color:var(--orange)} .s-3{color:var(--red)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+  th{background:var(--panel2);color:var(--accent);text-align:left;padding:8px 10px;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.05);color:#d6dae8}
+  tr:hover td{background:rgba(255,255,255,.02)}
+  .ok{color:var(--green)} .warn{color:var(--orange)} .bad{color:var(--red)} .info{color:var(--blue)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
+  .pill.alta{background:rgba(239,75,95,.18);color:var(--red)}
+  .pill.media{background:rgba(245,147,62,.18);color:var(--orange)}
+  .pill.baixa{background:rgba(58,166,224,.18);color:var(--blue)}
+  ul{margin:8px 0 8px 22px;font-size:14px;color:#d6dae8}
+  li{margin:4px 0}
+  .box{background:var(--panel);border:1px solid rgba(255,255,255,.07);border-left:4px solid var(--accent);border-radius:10px;padding:14px 16px;margin:14px 0}
+  .box.good{border-left-color:var(--green)}
+  .box.bad{border-left-color:var(--red)}
+  code{background:rgba(255,255,255,.08);padding:1px 6px;border-radius:5px;font-size:12.5px;color:var(--cyan)}
+  #chart{display:flex;align-items:flex-end;gap:2px;height:180px;background:var(--panel);border-radius:10px;padding:14px 14px 4px;margin:14px 0;overflow-x:auto}
+  #chart .bar{flex:1;min-width:6px;border-radius:2px 2px 0 0;position:relative;cursor:default}
+  #chart .bar:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#000;color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;white-space:nowrap;z-index:5}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--dim);margin:6px 0 20px}
+  .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;background:var(--c)}
+  .dist{display:flex;height:18px;border-radius:6px;overflow:hidden;margin:3px 0 10px}
+  .dist div{height:100%}
+  .dist .e{background:var(--green)} .dist .m{background:var(--accent)} .dist .h{background:var(--red)}
+  footer{margin-top:48px;text-align:center;color:var(--dim);font-size:12px;border-top:1px solid rgba(255,255,255,.07);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🎮 Tile Blast — Relatório de Auditoria de Qualidade</h1>
+  <div class="meta">Versão 1.4.6 · 85 fases · 7 mundos · Gerado em 25/07/2026</div>
+</header>
+
+<!-- ═══════════ RESUMO EXECUTIVO ═══════════ -->
+<h2>Resumo Executivo</h2>
+<div class="cards">
+  <div class="card"><div class="score s-8">8,5</div><div class="label">UI/UX</div></div>
+  <div class="card"><div class="score s-8">8,0</div><div class="label">Polimento Gráfico</div></div>
+  <div class="card"><div class="score s-6">6,5</div><div class="label">Sonoridade</div></div>
+  <div class="card"><div class="score s-8">8,0</div><div class="label">Efeitos (Juice)</div></div>
+  <div class="card"><div class="score s-7">7,0</div><div class="label">Balanceamento</div></div>
+</div>
+<p>O jogo está em estado <strong class="ok">forte para publicação</strong>: UI coesa com identidade glassmórfica, tabuleiro tematizado por mundo, camada de "juice" completa e curva de dificuldade estruturada em 7 mundos. Os pontos que mais seguram a nota são a <strong class="warn">sonoridade ainda procedural (protótipo)</strong> e <strong class="warn">5 picos de dificuldade</strong> detectados na análise das 85 fases — com um padrão claro: a fase 2 de vários mundos exige salto de pontuação/movimento de +45% sobre as anteriores.</p>
+
+<!-- ═══════════ 1. UI/UX ═══════════ -->
+<h2>1. UI/UX — 8,5/10</h2>
+<div class="box good"><strong>Pontos fortes</strong>
+<ul>
+  <li>Identidade visual consistente: glassmorphism escuro + dourado (<code>css/variables.css</code>), fonte Baloo 2, botões-pílula com estados de hover/press.</li>
+  <li>Onboarding forte: tutorial na fase 1, introduções de mecânica por tipo de objetivo, dicas de obstáculo no countdown (<code>.cd-hint</code>), dica de corrente ensinada na 1ª fase com chain.</li>
+  <li>Feedback constante: score com "bump" e "surge", contador de movimentos com estados de perigo/crítico (🔥/⚠️), barra de progresso com shimmer e estado "quase completo".</li>
+  <li>Near-miss respeitoso: mensagem "quase lá" não é sobrescrita por "Meta não atingida" (<code>tb-result.js</code>).</li>
+  <li>Mapa informativo: ícones de objetivo por tipo em cada fase, bordas coloridas por mundo, cabeçalho especial do mundo Lendário.</li>
+  <li>Acessibilidade real: modo daltônico com ícones geométricos nos tiles, foco de teclado no canvas, <code>aria-*</code>, <code>prefers-reduced-motion</code> respeitado nos efeitos.</li>
+  <li>HUD tingida pela cor do mundo atual (borda, glow, barra de progresso) — reforça senso de lugar.</li>
+</ul></div>
+<div class="box bad"><strong>Pontos a melhorar</strong>
+<ul>
+  <li><span class="pill media">média</span> O botão de mute na HUD silencia <strong>apenas SFX</strong> — a música continua. Usuário médio espera silêncio total; unificar ou indicar visualmente (🔇 vs 🎵).</li>
+  <li><span class="pill media">média</span> Não existe toggle de <strong>vibração</strong> nas configurações — haptics são frequentes e alguns jogadores desligam o jogo por isso.</li>
+  <li><span class="pill baixa">baixa</span> Tokens premium de espaçamento/elevação definidos em <code>variables.css</code> mas pouco consumidos — padronizar gradualmente.</li>
+  <li><span class="pill baixa">baixa</span> Transição de tela é única (fade+slide) para todos os contextos; entrada em fase poderia ter transição própria.</li>
+</ul></div>
+
+<!-- ═══════════ 2. POLIMENTO GRÁFICO ═══════════ -->
+<h2>2. Polimento Gráfico — 8,0/10</h2>
+<div class="box good"><strong>Pontos fortes (inclui melhorias recentes)</strong>
+<ul>
+  <li><strong>Tabuleiro tematizado por mundo</strong>: gradiente, brilho ambiente, grade tingida e motivo sutil por tema (ondas no Oceano, cristais na Caverna, chamas no Inferno) — cache offscreen, sem custo por frame.</li>
+  <li><strong>Tiles com volume</strong>: gradiente em 4 paradas, borda clara, lábio inferior (espessura), anel interno, specular e sombra interna.</li>
+  <li><strong>Especiais desenhados</strong> (bomba com pavio aceso, foguete com aletas e chama, arco-íris em arcos) substituindo emoji — consistência entre plataformas.</li>
+  <li><strong>Obstáculos ilustrados</strong>: gelo com facetas, caixa com highlight de madeira, corrente com elos desenhados, cereja com gradiente e brilho.</li>
+  <li><strong>Animação viva</strong>: squash & stretch no pop, achatamento elástico na aterrissagem, nascimento com overshoot, hover com glow.</li>
+  <li>Fundos da coleção (Cosmo, Lava…) agora visíveis de fato no canvas durante a partida.</li>
+  <li>Finale de vitória tingido pela cor do mundo (flash, shockwave, confete).</li>
+</ul></div>
+<div class="box bad"><strong>Pontos a melhorar</strong>
+<ul>
+  <li><span class="pill media">média</span> <strong>Dois sistemas de partículas coexistem</strong> (legado em <code>tb-fx.js</code> + moderno em <code>tb-juice.js</code>) — consolidar no TBJuice reduz código e melhora consistência.</li>
+  <li><span class="pill media">média</span> Confete duplicado: camada DOM (<code>#confetti-layer</code>) e canvas (<code>confettiBurst</code>) disparam nos mesmos momentos.</li>
+  <li><span class="pill baixa">baixa</span> Sem sprites/texturas: o teto de qualidade do desenho vetorial em canvas foi quase atingido; próximo salto exige atlas de sprites pré-renderizados.</li>
+  <li><span class="pill baixa">baixa</span> Emojis ainda usados em partes da UI DOM (ícones de mapa, chips) — aceitável, mas destoa dos especiais agora desenhados.</li>
+</ul></div>
+
+<!-- ═══════════ 3. SONORIDADE ═══════════ -->
+<h2>3. Sonoridade — 6,5/10</h2>
+<p>Cobertura de eventos é <strong class="ok">excelente</strong> (21 efeitos distintos + música por mundo), mas tudo é <strong class="warn">100% sintetizado via WebAudio</strong> — funciona, porém soa como protótipo perto de concorrentes com samples produzidos.</p>
+<h3>Inventário (resumo)</h3>
+<table>
+  <tr><th>Categoria</th><th>Cobertura</th><th>Situação</th></tr>
+  <tr><td>Gameplay (blast, combo em escada, especial, tensão)</td><td>Completa</td><td class="ok">✔ escala com o tamanho do grupo; ducking da música</td></tr>
+  <tr><td>Obstáculos (gelo, caixa, corrente, coleta)</td><td>Completa</td><td class="warn">⚠ só toca ao quebrar HP final; sem som de dano parcial</td></tr>
+  <tr><td>Recompensas (win/fanfarra por estrelas, moeda, baú, level-up, unlock)</td><td>Completa</td><td class="ok">✔ com haptics acoplados</td></tr>
+  <tr><td>Música por mundo</td><td>6 de 7 mundos</td><td class="bad">✖ Lendário e Desafio Relâmpago caem no tema do hub</td></tr>
+  <tr><td>Mixagem</td><td>Compressor + volumes separados SFX/música persistidos</td><td class="ok">✔</td></tr>
+</table>
+<div class="box bad"><strong>Lacunas objetivas</strong>
+<ul>
+  <li><span class="pill alta">alta</span> Mundo <strong>Lendário sem tema musical</strong> — o clímax do jogo toca a música do menu (<code>MUSIC_THEMES</code> em <code>tb-music.js</code>).</li>
+  <li><span class="pill alta">alta</span> <strong>Cascata automática sem identidade sonora</strong> — usa o mesmo <code>blast</code> da jogada manual; um cue de "reação em cadeia" com pitch crescente por profundidade venderia a mecânica.</li>
+  <li><span class="pill media">média</span> Sem som de <strong>queda/aterrissagem</strong> dos blocos (o squash visual existe, o som não).</li>
+  <li><span class="pill media">média</span> Cobertura (cover) limpa em silêncio; <code>musicKey</code> do <code>worlds.json</code> é ignorado pelo player (usa labels legados).</li>
+  <li><span class="pill media">média</span> Transição de música entre telas é corte seco — sem crossfade.</li>
+  <li><span class="pill baixa">baixa</span> API de samples (<code>loadSample/playSample</code>) pronta mas nunca alimentada — caminho natural para elevar a qualidade sem refatorar.</li>
+</ul></div>
+
+<!-- ═══════════ 4. EFEITOS ═══════════ -->
+<h2>4. Efeitos (Juice) — 8,0/10</h2>
+<div class="box good"><strong>Pontos fortes</strong>
+<ul>
+  <li>Escalonamento por impacto bem calibrado: grupo 2 → brilho · 4+ → shockwave · 6+ → hit-stop · 8+ → flash de tela. A cascata usa juice atenuado (55%) sem hit-stop — coerente com o rebalanceamento.</li>
+  <li>Camada completa: burst (faíscas+estrelas+glow+fumaça), shockwave, flash, hit-stop, shake com rotação, confete, voo de moedas até o contador (WAAPI).</li>
+  <li>Auto-degradação de qualidade em aparelhos fracos (FPS &lt; 45 por 3s → intensidade 0,55) e respeito a <code>prefers-reduced-motion</code>.</li>
+  <li>Celebrações DOM bem amarradas: shine na barra de XP, pop de baú com glow, check animado de objetivo concluído.</li>
+</ul></div>
+<div class="box bad"><strong>Pontos a melhorar</strong>
+<ul>
+  <li><span class="pill media">média</span> Aterrissagem tem squash visual mas <strong>zero feedback sonoro/tátil</strong> — o trio visual+som+vibração é o que dá "peso".</li>
+  <li><span class="pill media">média</span> Sistemas duplicados (partículas legadas + TBJuice; confete DOM + canvas) — consolidar.</li>
+  <li><span class="pill baixa">baixa</span> Sem efeito dedicado ao degelo/quebra de cobertura — os obstáculos quebram com o burst genérico.</li>
+</ul></div>
+
+<!-- ═══════════ 5. BALANCEAMENTO ═══════════ -->
+<h2>5. Balanceamento de Dificuldade — 7,0/10</h2>
+<p>Análise automatizada das <strong>85 fases</strong> usando a métrica <em>pontos exigidos por movimento</em> (fases de score) e <em>alvos por movimento</em> (cor/obstáculo). Barras mais altas = fase mais exigente:</p>
+<div id="chart"></div>
+<div class="legend">
+  <span style="--c:#4ecb71">Jardim</span><span style="--c:#3aa6e0">Floresta</span>
+  <span style="--c:#b46fe0">Montanha</span><span style="--c:#44c8ff">Oceano</span>
+  <span style="--c:#ef4b5f">Inferno</span><span style="--c:#7fe3ff">Cristal</span>
+  <span style="--c:#ffdd44">Lendário</span>
+</div>
+
+<h3>⚠ Picos de dificuldade detectados (salto &gt; 45% sobre a média das 3 fases anteriores)</h3>
+<table>
+  <tr><th>Fase</th><th>Pts/movimento</th><th>Média anterior</th><th>Salto</th><th>Observação</th></tr>
+  <tr><td>garden-12 (Trilha Verde)</td><td>90</td><td>56</td><td class="warn">+60%</td><td>Já suavizada em auditoria anterior, ainda é o pico do Jardim</td></tr>
+  <tr><td>mountain-02</td><td>122</td><td>75</td><td class="bad">+63%</td><td><strong>Padrão:</strong> 2ª fase do mundo</td></tr>
+  <tr><td>ocean-02</td><td>144</td><td>83</td><td class="bad">+73%</td><td><strong>Padrão:</strong> 2ª fase do mundo</td></tr>
+  <tr><td>inferno-02</td><td>188</td><td>115</td><td class="bad">+63%</td><td><strong>Padrão:</strong> 2ª fase do mundo</td></tr>
+  <tr><td>legendary-07</td><td>347</td><td>159</td><td class="bad">+118%</td><td>Score + cor combinados em 15 movimentos</td></tr>
+</table>
+<p class="warn"><strong>Padrão sistêmico:</strong> a fase 2 de Montanha, Oceano e Inferno é sempre uma fase de score curta (16–18 movimentos) logo após a fase introdutória de obstáculo — o jogador sai de uma fase "tutorial" direto para o 2º maior desafio do mundo. Recomenda-se mover essas fases de score para a posição 5–6 ou reduzir o alvo em ~25%.</p>
+
+<h3>Distribuição de dificuldade por mundo</h3>
+<table>
+  <tr><th>Mundo</th><th>Fases</th><th>Distribuição (fácil/média/difícil)</th><th>Movimentos</th><th>Avaliação</th></tr>
+  <tr><td>🌱 Jardim</td><td>15</td><td><div class="dist"><div class="e" style="width:20%"></div><div class="m" style="width:60%"></div><div class="h" style="width:20%"></div></div></td><td>18–26</td><td class="ok">Curva saudável</td></tr>
+  <tr><td>🌲 Floresta</td><td>10</td><td><div class="dist"><div class="e" style="width:30%"></div><div class="m" style="width:40%"></div><div class="h" style="width:30%"></div></div></td><td>15–24</td><td class="ok">Boa introdução de gelo</td></tr>
+  <tr><td>⛰ Montanha</td><td>10</td><td><div class="dist"><div class="e" style="width:20%"></div><div class="m" style="width:50%"></div><div class="h" style="width:30%"></div></div></td><td>14–26</td><td class="warn">Pico na fase 2</td></tr>
+  <tr><td>🌊 Oceano</td><td>10</td><td><div class="dist"><div class="e" style="width:20%"></div><div class="m" style="width:50%"></div><div class="h" style="width:30%"></div></div></td><td>16–28</td><td class="warn">Pico na fase 2</td></tr>
+  <tr><td>🔥 Inferno</td><td>10</td><td><div class="dist"><div class="e" style="width:20%"></div><div class="m" style="width:50%"></div><div class="h" style="width:30%"></div></div></td><td>12–28</td><td class="warn">Pico na fase 2; inferno-08 = 317 pts/mov</td></tr>
+  <tr><td>💎 Cristal</td><td>20</td><td><div class="dist"><div class="e" style="width:15%"></div><div class="m" style="width:20%"></div><div class="h" style="width:65%"></div></div></td><td>13–30</td><td class="warn">65% hard — platô longo sem "respiro"</td></tr>
+  <tr><td>👑 Lendário</td><td>10</td><td><div class="dist"><div class="h" style="width:100%"></div></div></td><td>13–30</td><td class="info">100% hard — intencional para endgame</td></tr>
+</table>
+
+<h3>Rebalanceamento da cascata automática (aplicado nesta versão)</h3>
+<div class="box good">
+<p>A cascata (grupos que se formam sozinhos após a queda) foi rebalanceada para não "derreter" a economia do jogo:</p>
+<ul>
+  <li>Só dispara com grupos de <strong>3+</strong> (pares ficam para o jogador) — <code>CASCADE_MIN: 3</code></li>
+  <li>Máximo de <strong>3 correntes</strong> por jogada (antes 8) — <code>CASCADE_MAX: 3</code></li>
+  <li>Um grupo por passo (o maior), não o tabuleiro inteiro de uma vez</li>
+  <li><strong>50% da pontuação</strong>, sem multiplicador de combo nem XP de combo — <code>CASCADE_SCORE_MULT: 0.5</code></li>
+  <li><strong>Não cria especiais</strong> (bomba/foguete/arco-íris continuam mérito da jogada manual)</li>
+  <li>Juice atenuado (sem hit-stop/flash) para não roubar o protagonismo da jogada do jogador</li>
+</ul>
+<p class="info">Ainda assim, a cascata adiciona pontos "grátis". Recomenda-se monitorar taxa de vitória nas fases de score após o lançamento — se subir mais de ~8 p.p., subir os alvos de score em 5–10% ou reduzir <code>CASCADE_SCORE_MULT</code> para 0.35.</p>
+</div>
+
+<!-- ═══════════ RECOMENDAÇÕES ═══════════ -->
+<h2>Plano de Ação Priorizado</h2>
+<table>
+  <tr><th>#</th><th>Prioridade</th><th>Ação</th><th>Área</th><th>Esforço</th></tr>
+  <tr><td>1</td><td><span class="pill alta">alta</span></td><td>Criar tema musical para o mundo Lendário (e Desafio Relâmpago)</td><td>Som</td><td>Baixo</td></tr>
+  <tr><td>2</td><td><span class="pill alta">alta</span></td><td>Suavizar fase 2 de Montanha/Oceano/Inferno (reduzir alvo ~25% ou reposicionar)</td><td>Balanceamento</td><td>Baixo</td></tr>
+  <tr><td>3</td><td><span class="pill alta">alta</span></td><td>Som de cascata com pitch crescente por profundidade da corrente</td><td>Som</td><td>Baixo</td></tr>
+  <tr><td>4</td><td><span class="pill media">média</span></td><td>Som + haptic leve de aterrissagem dos blocos (fechar o trio com o squash visual)</td><td>Som/Efeitos</td><td>Baixo</td></tr>
+  <tr><td>5</td><td><span class="pill media">média</span></td><td>Toggle de vibração nas configurações + unificar comportamento do mute</td><td>UI/UX</td><td>Baixo</td></tr>
+  <tr><td>6</td><td><span class="pill media">média</span></td><td>Adicionar 2–3 fases "respiro" (medium) no meio do Cristal</td><td>Balanceamento</td><td>Médio</td></tr>
+  <tr><td>7</td><td><span class="pill media">média</span></td><td>Consolidar partículas legadas no TBJuice; unificar confete</td><td>Efeitos</td><td>Médio</td></tr>
+  <tr><td>8</td><td><span class="pill baixa">baixa</span></td><td>Crossfade entre temas musicais; consumir <code>musicKey</code> do worlds.json</td><td>Som</td><td>Médio</td></tr>
+  <tr><td>9</td><td><span class="pill baixa">baixa</span></td><td>Gravar/licenciar samples reais e alimentar a API <code>loadSample</code> existente</td><td>Som</td><td>Alto</td></tr>
+  <tr><td>10</td><td><span class="pill baixa">baixa</span></td><td>Atlas de sprites pré-renderizados para o próximo salto visual</td><td>Gráfico</td><td>Alto</td></tr>
+</table>
+
+<footer>
+  Relatório gerado por auditoria automatizada + inspeção de código · Tile Blast v1.4.6 · 85 fases analisadas<br>
+  Métricas: pts/movimento (score), alvos/movimento (cor e obstáculos), detecção de picos &gt;45% sobre média móvel de 3 fases
+</footer>
+</div>
+
+<script>
+const LV=[["garden-01","garden",20,"easy",25,null,null],["garden-02","garden",20,"easy",null,0.9,null],["garden-03","garden",20,"easy",null,1.1,null],["garden-04","garden",20,"medium",null,1.1,null],["garden-05","garden",22,"medium",null,1.36,null],["garden-06","garden",18,"medium",66.7,null,null],["garden-07","garden",20,"medium",null,1.25,null],["garden-08","garden",20,"medium",60,null,null],["garden-09","garden",18,"medium",72.2,null,null],["garden-10","garden",20,"hard",40,1.25,null],["garden-11","garden",22,"medium",null,1.27,null],["garden-12","garden",20,"medium",90,null,null],["garden-13","garden",24,"medium",null,1.67,null],["garden-14","garden",20,"hard",90,null,null],["garden-15","garden",26,"hard",46.2,1.15,null],["forest-01","forest",22,"easy",null,null,0.27],["forest-02","forest",22,"easy",null,null,0.36],["forest-03","forest",20,"easy",null,1.25,null],["forest-04","forest",20,"medium",null,null,0.5],["forest-05","forest",22,"medium",null,0.91,0.36],["forest-06","forest",18,"medium",null,1.39,null],["forest-07","forest",22,"medium",null,null,0.55],["forest-08","forest",15,"hard",133.3,null,null],["forest-09","forest",22,"hard",null,1.14,0.45],["forest-10","forest",24,"hard",75,null,0.58],["mountain-01","mountain",22,"easy",null,null,0.27],["mountain-02","mountain",18,"medium",122.2,null,null],["mountain-03","mountain",22,"easy",null,null,0.45],["mountain-04","mountain",26,"medium",null,2.31,null],["mountain-05","mountain",22,"medium",null,null,0.55],["mountain-06","mountain",14,"medium",171.4,null,null],["mountain-07","mountain",24,"medium",null,null,0.58],["mountain-08","mountain",22,"hard",null,1.82,null],["mountain-09","mountain",24,"hard",83.3,null,0.58],["mountain-10","mountain",24,"hard",null,1.04,0.42],["ocean-01","ocean",22,"easy",null,null,0.18],["ocean-02","ocean",18,"medium",144.4,null,null],["ocean-03","ocean",22,"easy",null,null,0.27],["ocean-04","ocean",22,"medium",null,1.82,null],["ocean-05","ocean",24,"medium",null,null,0.33],["ocean-06","ocean",16,"medium",150,null,null],["ocean-07","ocean",24,"medium",null,null,0.5],["ocean-08","ocean",28,"hard",null,1.93,null],["ocean-09","ocean",26,"hard",null,null,0.54],["ocean-10","ocean",26,"hard",115.4,null,0.31],["inferno-01","inferno",20,"easy",null,null,0.6],["inferno-02","inferno",16,"medium",187.5,null,null],["inferno-03","inferno",22,"easy",null,null,0.91],["inferno-04","inferno",22,"medium",null,null,0.91],["inferno-05","inferno",26,"medium",null,2.88,null],["inferno-06","inferno",24,"medium",null,null,1],["inferno-07","inferno",26,"medium",null,null,0.77],["inferno-08","inferno",12,"hard",316.7,null,null],["inferno-09","inferno",26,"hard",null,null,1.08],["inferno-10","inferno",28,"hard",160.7,0.89,0.71],["crystal-01","crystal",22,"easy",null,null,0.55],["crystal-02","crystal",22,"easy",null,null,0.55],["crystal-03","crystal",20,"easy",null,2,null],["crystal-04","crystal",24,"medium",null,null,0.33],["crystal-05","crystal",22,"medium",null,null,0.91],["crystal-06","crystal",22,"medium",null,null,0.45],["crystal-07","crystal",24,"medium",null,null,0.83],["crystal-08","crystal",15,"hard",280,null,null],["crystal-09","crystal",24,"hard",null,null,0.75],["crystal-10","crystal",14,"hard",342.9,null,null],["crystal-11","crystal",24,"hard",null,null,0.58],["crystal-12","crystal",24,"hard",null,null,0.67],["crystal-13","crystal",24,"hard",null,null,0.58],["crystal-14","crystal",28,"hard",null,null,0.79],["crystal-15","crystal",13,"hard",346.2,null,null],["crystal-16","crystal",26,"hard",null,null,1.08],["crystal-17","crystal",28,"hard",null,2.36,null],["crystal-18","crystal",28,"hard",null,null,0.64],["crystal-19","crystal",14,"hard",357.1,null,null],["crystal-20","crystal",30,"hard",166.7,null,1.07],["legendary-01","legendary",18,"hard",250,null,null],["legendary-02","legendary",24,"hard",null,1.25,0.33],["legendary-03","legendary",14,"hard",271.4,null,null],["legendary-04","legendary",24,"hard",null,3.67,null],["legendary-05","legendary",22,"hard",159.1,null,0.55],["legendary-06","legendary",26,"hard",null,3.23,null],["legendary-07","legendary",15,"hard",346.7,2.33,null],["legendary-08","legendary",28,"hard",150,1,0.5],["legendary-09","legendary",13,"hard",353.8,null,null],["legendary-10","legendary",30,"hard",216.7,2.8,null]];
+const WC={garden:'#4ecb71',forest:'#3aa6e0',mountain:'#b46fe0',ocean:'#44c8ff',inferno:'#ef4b5f',crystal:'#7fe3ff',legendary:'#ffdd44'};
+// Intensidade unificada 0..1: normaliza score/mov (÷360), cor/mov (÷3.7) e obst/mov (÷1.1), pega o maior
+const chart=document.getElementById('chart');
+for(const [id,w,mv,df,spm,cpm,opm] of LV){
+  const v=Math.max(spm?spm/360:0,cpm?cpm/3.7:0,opm?opm/1.1:0);
+  const bar=document.createElement('div');
+  bar.className='bar';
+  bar.style.height=Math.max(4,v*160)+'px';
+  bar.style.background=WC[w];
+  bar.style.opacity=df==='easy'?0.55:df==='medium'?0.8:1;
+  const metric=spm?spm+' pts/mov':cpm?cpm+' cor/mov':opm+' obst/mov';
+  bar.setAttribute('data-tip',id+' · '+mv+' mov · '+df+' · '+metric);
+  chart.appendChild(bar);
+}
+</script>
+</body>
+</html>

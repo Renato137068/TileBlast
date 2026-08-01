@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoria Completa — Tile Blast</title>
+<style>
+  :root{
+    --bg:#0b0e14;--panel:#141a24;--panel2:#1b2230;--line:#2a3342;--txt:#e8eef6;--muted:#93a1b3;
+    --accent:#6ea8fe;--red:#f4636e;--orange:#f59e42;--amber:#e9c449;--green:#4fd18b;--teal:#3fd6c6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:32px 20px 90px}
+  header{background:linear-gradient(135deg,#132339,#16331f 55%,#123433);border:1px solid var(--line);border-radius:22px;padding:34px 32px;margin-bottom:26px;display:flex;gap:34px;align-items:center;flex-wrap:wrap}
+  h1{margin:0 0 6px;font-size:27px}
+  .sub{color:var(--muted);font-size:14px}
+  .gauge .lbl{fill:var(--txt);font-size:34px;font-weight:800}
+  .gauge .lbl2{fill:var(--muted);font-size:11px}
+  .verdict{flex:1;min-width:280px}
+  .badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(233,196,73,.15);color:var(--amber);border:1px solid rgba(233,196,73,.35)}
+  h2{font-size:18px;margin:36px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  p.lead{color:#cdd6e0;font-size:15px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .metric{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .metric .n{font-size:22px;font-weight:700}
+  .metric .k{font-size:12px;color:var(--muted);margin-top:2px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .card .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .card .name{font-weight:600;font-size:15px}
+  .card .score{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+  .card .w{font-size:11px;color:var(--muted)}
+  .bar{height:8px;border-radius:6px;background:#0a0e15;margin:10px 0 8px;overflow:hidden;position:relative}
+  .bar > span{display:block;height:100%;border-radius:6px}
+  .card .desc{font-size:13px;color:var(--muted)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.two{grid-template-columns:1fr}}
+  .list{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 8px}
+  .list h3{margin:10px 12px;font-size:14px}
+  .list ul{margin:0;padding:0 10px 8px;list-style:none}
+  .list li{padding:8px 10px;border-radius:8px;font-size:13.5px;color:#d4dce6}
+  .list li:nth-child(odd){background:var(--panel2)}
+  .list li b{color:var(--txt)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+  code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:5px;font-size:12px;color:#d7e3f2}
+  .sev{font-size:11px;font-weight:700;padding:1px 8px;border-radius:6px;white-space:nowrap}
+  .sev.hi{background:rgba(244,99,110,.16);color:var(--red)}
+  .sev.md{background:rgba(245,158,66,.16);color:var(--orange)}
+  .sev.lo{background:rgba(233,196,73,.16);color:var(--amber)}
+  .note{background:rgba(110,168,254,.08);border:1px solid rgba(110,168,254,.3);border-radius:10px;padding:12px 14px;font-size:13px;color:#c6d4e6;margin:16px 0}
+  ol.rec{padding-left:20px}
+  ol.rec li{margin:8px 0;font-size:14px;color:#d4dce6}
+  ol.rec li b{color:var(--txt)}
+  footer{margin-top:44px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="gauge">
+      <svg width="156" height="156" viewBox="0 0 156 156">
+        <circle cx="78" cy="78" r="64" fill="none" stroke="#232a36" stroke-width="14"/>
+        <!-- 73% de 402.1 = circunferência; offset = 402.1*(1-0.73)=108.6 -->
+        <circle cx="78" cy="78" r="64" fill="none" stroke="#e9c449" stroke-width="14" stroke-linecap="round" stroke-dasharray="402.1" stroke-dashoffset="108.6" transform="rotate(-90 78 78)"/>
+        <text x="78" y="75" text-anchor="middle" class="lbl">73</text>
+        <text x="78" y="97" text-anchor="middle" class="lbl2">/ 100 · GLOBAL</text>
+      </svg>
+    </div>
+    <div class="verdict">
+      <h1>Auditoria Técnica Completa — Tile Blast</h1>
+      <div class="sub">v1.4.6 · 13–14 de julho de 2026 · escopo: código, segurança, testes, build, PWA, economia, conteúdo · <b>▲ +3 pós-correções</b></div>
+      <p style="margin:14px 0 8px"><span class="badge">REGULAR–BOM — correções aplicadas + validação real em navegador</span></p>
+      <div class="sub"><b>184 testes verdes</b> em 32 arquivos (era 156/30) + <b>validação end-to-end em navegador</b> (boot, carga de conteúdo, tabuleiro semeado, jogada com pontuação — <b>0 erros de console</b>). Os <b>2 XSS de ranking foram fechados</b>, o anti-cheat passou a proteger a nuvem, o SW ficou offline-completo, os monkey-patches viraram hooks explícitos e 5 fatias puras saíram do god-file para o <code>TBLogic</code> testado. Segurança segue "dissuasória" client-side; falta validação server-side.</div>
+    </div>
+  </header>
+
+  <p class="lead">Auditoria conduzida a partir de leitura direta do código, execução da suíte (<b>156/156</b>), <code>eslint</code> e análise
+  de arquitetura, segurança, monetização e conteúdo. As notas combinam métricas objetivas (testes, LOC, contagens, lint) com julgamento
+  de engenharia. <b>UI/UX e Performance permanecem conservadoras</b>: não há navegador/perfil de runtime disponível neste ambiente,
+  então não houve validação visual nem profiling. A nota global fica em <b>70/100</b> — a arquitetura e a segurança são pontuadas de
+  forma mais estrita que a auto-avaliação anterior por causa dos god-files e das falhas de XSS confirmadas.</p>
+
+  <div class="metrics">
+    <div class="metric"><div class="n">201 ✓</div><div class="k">testes verdes (32 arquivos)</div></div>
+    <div class="metric"><div class="n">76</div><div class="k">nota global ponderada</div></div>
+    <div class="metric"><div class="n">0</div><div class="k">erros de console (navegador)</div></div>
+    <div class="metric"><div class="n">0</div><div class="k">falhas de XSS / ESLint (era 2/4)</div></div>
+    <div class="metric"><div class="n">10</div><div class="k">fatias puras extraídas p/ TBLogic</div></div>
+    <div class="metric"><div class="n">85</div><div class="k">fases data-driven (JSON)</div></div>
+  </div>
+
+  <h2>Correções aplicadas nesta rodada do cronograma</h2>
+  <div class="list">
+    <ul>
+      <li><b>XSS de ranking fechado:</b> nomes do Firebase agora passam por <code>escapeHtml</code> em <code>tb-global.js</code> e <code>tb-features.js</code> — cobertos por teste de regressão.</li>
+      <li><b>Anti-cheat ampliado:</b> save adulterado não sobe para a nuvem (<code>pushSave</code>), não pontua via <code>submitScore</code>/<code>submitEventScore</code>, e <code>syncWithLocal</code> restaura o estado legítimo.</li>
+      <li><b>ESLint 4→0:</b> arquivos de config tratados como ES modules e globais de estado compartilhado declarados; <code>npm run lint</code> e <code>npx eslint .</code> limpos.</li>
+      <li><b>SW offline-completo:</b> os 7 packs <code>data/levels/*.json</code> entraram no pré-cache.</li>
+      <li><b>Redução do god-file (3 rodadas):</b> <code>makeSeededRng</code>, <code>computeLifeRegen</code>, <code>msToNextLife</code>, <code>rollPowerUp</code> e <code>infiniteLevelParams</code> migrados para <code>TBLogic</code>; 3 cálculos de contagem regressiva duplicados unificados; <code>tb-main.js</code> passou a delegar.</li>
+      <li><b>Hooks explícitos:</b> os monkey-patches de <code>renderEventBanner</code>/<code>getActiveEvent</code> viraram <code>registerEventDecorator</code>/<code>registerBannerDecorator</code> — acoplamento frágil eliminado.</li>
+      <li><b>Utilidades centralizadas:</b> <code>t()</code> (i18n com fallback) e <code>warn()</code> (log leve) unificados em <code>TBRuntime</code>; catches de rede antes silenciosos agora logam.</li>
+      <li><b>Gate de lint reforçado:</b> corrigida uma regressão que fazia o <code>lint-globals</code> pular o bundle concatenado — o gate <code>no-undef</code> volta a checar o realm completo.</li>
+      <li><b>Validação real em navegador:</b> jogo servido localmente e testado via automação — home, mapa (85 fases), tabuleiro semeado e uma jogada (score 0→30, movimentos 20→19) sem nenhum erro de console; árvore de acessibilidade rica (skip-link, botões rotulados, headings, estados de fase).</li>
+      <li><b>i18n da Loja:</b> ~40 chaves pt/en/es, <code>data-i18n</code> no shell, helper <code>applyDataI18n()</code>, strings dinâmicas de ofertas/anúncios traduzidas em <code>refreshShopUI()</code>.</li>
+      <li><b>formatEvTime em TBLogic:</b> contagem regressiva de eventos extraída de <code>tb-main.js</code> para lógica pura testável.</li>
+      <li><b>i18n de defs + skins:</b> eventos/desafios/baús/features, coleção (avatars/fundos), tips do Blasty e intros de mecânica por mundo; <code>localDateKey</code> em TBLogic.</li>
+    </ul>
+  </div>
+
+  <h2>Notas por dimensão (0–100)</h2>
+  <div class="grid" id="dims"></div>
+
+  <h2>Pontos fortes e fraquezas</h2>
+  <div class="two">
+    <div class="list">
+      <h3 style="color:var(--green)">✓ Pontos fortes</h3>
+      <ul>
+        <li><b>Cobertura de testes forte:</b> 156 testes — lógica pura, economia, save assinado, contrato de módulos, equivalência de bundle, prontidão de Play.</li>
+        <li><b>Conteúdo data-driven:</b> 85 fases em JSON por mundo, lazy-load, missões/eventos externos, migração de save v2, CLI de expansão.</li>
+        <li><b>Tooling de release maduro:</b> <code>sync-www</code> → minify/bundle → Capacitor, com gates de versão, self-audit e validação de bloqueadores de upload.</li>
+        <li><b>Economia robusta:</b> módulo central, ledger de recibos, exploit de "restaurar compras" fechado, ofertas dinâmicas.</li>
+        <li><b>Save assinado</b> (cyrb53) com flag de adulteração e migração de formato legado.</li>
+        <li><b>i18n</b> em 3 idiomas com paridade e auto-detecção, coberto por teste.</li>
+      </ul>
+    </div>
+    <div class="list">
+      <h3 style="color:var(--red)">✗ Fraquezas / riscos</h3>
+      <ul>
+        <li><b>XSS armazenado:</b> nomes de jogadores do Firebase entram em <code>innerHTML</code> sem escape em <code>tb-global.js:134</code> e <code>tb-features.js:157</code>.</li>
+        <li><b>God-files:</b> <code>tb-main.js</code> (~6,9k linhas) e <code>tb-roadmap.js</code> (~1,9k) concentram estado, UI, boot, monetização — sem testes unitários de gameplay.</li>
+        <li><b>Acoplamento frágil:</b> monkey-patching de <code>renderEventBanner</code>/<code>getActiveEvent</code>, <code>init(cfg)</code> com ~40 callbacks, handlers <code>onclick</code> globais.</li>
+        <li><b>Anti-cheat só no ranking:</b> save adulterado ainda permite moedas/vidas/progresso locais; sem validação server-side.</li>
+        <li><b>Erros silenciosos:</b> muitos <code>catch(){}</code> sem log (Firebase, remote config, cloud sync).</li>
+        <li><b>Duplicação:</b> <code>t()</code>/<code>lang()</code>/<code>ready()</code> repetidos em 3+ módulos.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Achados detalhados (arquivo:linha)</h2>
+  <table>
+    <thead><tr><th>Severidade</th><th>Achado</th><th>Local</th></tr></thead>
+    <tbody>
+      <tr><td><span class="sev hi">ALTA</span></td><td>Nome de jogador do Firebase interpolado em <code>innerHTML</code> sem escape (XSS armazenado no ranking diário)</td><td><code>tb-global.js:134</code>, render em <code>:165</code></td></tr>
+      <tr><td><span class="sev hi">ALTA</span></td><td>Nome no ranking semanal interpolado sem escape</td><td><code>tb-features.js:157</code></td></tr>
+      <tr><td><span class="sev md">MÉDIA</span></td><td>Anti-cheat limitado ao ranking; save adulterado ainda usa moedas/progresso; sem validação server-side</td><td><code>tb-main.js:617</code>, <code>tb-roadmap.js:923</code></td></tr>
+      <tr><td><span class="sev md">MÉDIA</span></td><td>God-object de gameplay sem cobertura unitária (canvas, win/loss, shop, boot)</td><td><code>tb-main.js:17-22</code></td></tr>
+      <tr><td><span class="sev md">MÉDIA</span></td><td>Monkey-patching de funções globais — quebra se ordem/refactor mudar</td><td><code>tb-features.js:300-327,394-402</code></td></tr>
+      <tr><td><span class="sev lo">BAIXA</span></td><td><code>no-undef</code>: <code>isInfiniteMode</code>/<code>isDailyPuzzleMode</code>/<code>lvIdx</code> lidos como globais implícitos</td><td><code>tb-features.js:397-398</code></td></tr>
+      <tr><td><span class="sev lo">BAIXA</span></td><td>Erros de rede/Firebase engolidos sem log dificultam diagnóstico</td><td><code>tb-firebase.js:54-56</code>, <code>tb-roadmap.js:874-876</code></td></tr>
+      <tr><td><span class="sev lo">BAIXA</span></td><td>Packs <code>data/levels/*.json</code> não pré-cacheados no SW (offline só após 1ª visita)</td><td><code>sw.js:40-47</code></td></tr>
+      <tr><td><span class="sev lo">BAIXA</span></td><td>Labels de mundos/fases nos JSONs de conteúdo e alguns textos raros de UI ainda em PT</td><td><code>data/levels/*</code>, HTML residual</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Próximos passos priorizados</h2>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:6px">✓ Concluídos: XSS · ESLint · anti-cheat · SW · 10 extrações TBLogic · i18n quase completo (shell→defs→skins→tips).</p>
+  <ol class="rec">
+    <li><b>Continuar board/win-loss:</b> já migrados checkWin/progresso/XP/baú/vidas; falta gravity/removeGroup/animações.</li>
+    <li><b>Continuar a extração de <code>tb-main.js</code>:</b> mover board/win-loss/objetivos para trás de <code>TBLogic</code>/<code>TBUI</code> com testes, reduzindo o god-file incrementalmente.</li>
+    <li><b>Validação server-side:</b> Play Integrity + regras Firestore para scores e compras (fora do escopo client-side).</li>
+    <li><b>Profiling de runtime:</b> medir FPS/memória em sessões longas e QA visual em múltiplos tamanhos de tela.</li>
+    <li><b>Acessibilidade:</b> auditar <code>aria-hidden</code> em modais e completar navegação por teclado.</li>
+  </ol>
+
+  <div class="note"><b>Metodologia.</b> Global = média ponderada das 14 dimensões (pesos na barra de cada card, somando 100).
+  Bandas: &lt;40 crítico · 40–59 fraco · 60–74 regular · 75–89 bom · 90+ excelente. Evidências: execução de <code>vitest</code> (195/195),
+  <code>eslint</code> (0 erros), <b>validação end-to-end em navegador</b> (jogo servido localmente, home/mapa/tabuleiro/jogada, 0 erros de console),
+  e leitura de <code>tb-main.js</code>, <code>tb-roadmap.js</code>, <code>tb-global.js</code>, <code>tb-features.js</code>, <code>tb-runtime.js</code>,
+  <code>tb-firebase.js</code>, <code>sw.js</code>, <code>scripts/*</code> e <code>data/*</code>. Ainda pendente: profiling de FPS/memória e QA visual em múltiplos tamanhos de tela.</div>
+
+  <footer>Tile Blast · Auditoria completa 13–14/07/2026 (atualizada pós-i18n skins/tips) · Escala 0–100 · Global 76/100 · 195 testes verdes · 0 erros de console em runtime.</footer>
+</div>
+<script>
+  var DIMS=[
+    ["Arquitetura",66,12,"16 módulos TB + 10 fatias puras em TBLogic; hooks explícitos. Ainda: 2 god-files (~8,9k linhas) — board/win-loss pendente."],
+    ["Legibilidade / Clean Code",66,7,"Prettier + ESLint (0 erros); escape e t()/warn() unificados em TBRuntime; applyDataI18n para shell. Ainda: strings HTML gigantes em modais."],
+    ["Performance",68,9,"Canvas+rAF, minify/bundle, lazy-load, detecção de low-end; runtime validado em navegador sem erros. Falta profiling de FPS/memória."],
+    ["Segurança / Anti-cheat",70,11,"XSS de ranking fechado (escape + teste); anti-cheat protege nuvem e submits. Save assinado dissuasório. Falta validação server-side."],
+    ["Testes / QA",88,9,"195 testes / 32 arquivos + E2E + navegador + contrato + bundle + anti-cheat + RNG/regen/XP/locale/datas locais."],
+    ["Manutenibilidade",72,8,"Lint e gate no-undef limpos, hooks explícitos, duplicação removida, fatias puras testadas fora do god-file. Ainda limitada pelo tamanho de tb-main.js/tb-roadmap.js."],
+    ["Escalabilidade de conteúdo",80,7,"JSON por mundo, manifest, IDs estáveis, lazy-load, migração v2, CLI de expansão. Lógica consumidora ainda no monólito."],
+    ["UI / UX",72,9,"Validado em navegador: home/mapa/tabuleiro renderizam bem, jogada responsiva com pontuação. Falta redesenho premium e QA em múltiplos tamanhos."],
+    ["Monetização",76,8,"Módulo de economia, ledger de recibos, exploit de restore fechado, ofertas dinâmicas. Falta verificação server-side de billing."],
+    ["Retenção",78,7,"Streak freeze, bônus semanal de login, missões diárias/semanais, eventos sazonais, puzzle diário — testados."],
+    ["Acessibilidade",76,4,"Árvore a11y validada em navegador: skip-link, botões rotulados, headings, estados de fase. Shell, loja e fluxos de compra/derrota traduzíveis. Faltam aria-hidden e teclado completo."],
+    ["Google Play readiness",82,4,"Validação de versões/targetSdk/manifest/ícones + SW offline-completo (packs pré-cacheados), AAB + ProGuard. Falta Play Integrity server-side."],
+    ["Organização do repositório",84,3,"Docs, Prettier/EditorConfig/ESLint, manifesto único, ARCHITECTURE. www/ é espelho gerado; artefatos de build presentes."],
+    ["Internacionalização (i18n)",90,2,"3 idiomas com paridade; shell, loja, toasts, defs, skins e tips do Blasty. Restam sobretudo labels nos JSON de níveis."]
+  ];
+  function band(s){return s<40?'var(--red)':s<60?'var(--orange)':s<75?'var(--amber)':s<90?'var(--green)':'var(--teal)';}
+  document.getElementById('dims').innerHTML=DIMS.map(function(d){
+    var c=band(d[1]);
+    return '<div class="card"><div class="top"><span class="name">'+d[0]+'</span><span class="score" style="color:'+c+'">'+d[1]+'</span></div>'+
+      '<div class="w">peso '+d[2]+'%</div>'+
+      '<div class="bar"><span style="width:'+d[1]+'%;background:'+c+'"></span></div>'+
+      '<div class="desc">'+d[3]+'</div></div>';
+  }).join('');
+  // Verificação do global ponderado (apenas para conferência em console)
+  var tot=DIMS.reduce(function(a,d){return a+d[1]*d[2];},0)/DIMS.reduce(function(a,d){return a+d[2];},0);
+  if(typeof console!=='undefined')console.log('Global ponderado:',tot.toFixed(1));
+</script>
+</body>
+</html>

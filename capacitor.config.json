@@ -1,0 +1,19 @@
+{
+  "appId": "com.tileblast.puzzle",
+  "appName": "Tile Blast",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#0d0f18"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "backgroundColor": "#0d0f18",
+      "androidSplashResourceName": "splash"
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

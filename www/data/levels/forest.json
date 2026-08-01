@@ -1,0 +1,224 @@
+{
+  "worldId": "forest",
+  "levels": [
+    {
+      "id": "forest-01",
+      "worldId": "forest",
+      "order": 1,
+      "index": 10,
+      "name": "Primeiro Gelo",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 6
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "forest-02",
+      "worldId": "forest",
+      "order": 2,
+      "index": 11,
+      "name": "Degelo",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 8
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "forest-03",
+      "worldId": "forest",
+      "order": 3,
+      "index": 12,
+      "name": "Violeta",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 4,
+          "target": 25
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "forest-04",
+      "worldId": "forest",
+      "order": 4,
+      "index": 13,
+      "name": "Gelo Duplo",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 10
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "forest-05",
+      "worldId": "forest",
+      "order": 5,
+      "index": 14,
+      "name": "Floresta Congelada",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 8
+        },
+        {
+          "type": "color",
+          "color": 2,
+          "target": 20
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "forest-06",
+      "worldId": "forest",
+      "order": 6,
+      "index": 15,
+      "name": "Laranja Quente",
+      "moves": 18,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 5,
+          "target": 25
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "forest-07",
+      "worldId": "forest",
+      "order": 7,
+      "index": 16,
+      "name": "Camada de Gelo",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 12
+        }
+      ],
+      "setup": {
+        "iceHp": 2
+      },
+      "difficulty": "medium",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "forest-08",
+      "worldId": "forest",
+      "order": 8,
+      "index": 17,
+      "name": "Pressão",
+      "moves": 15,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 2000
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "forest-09",
+      "worldId": "forest",
+      "order": 9,
+      "index": 18,
+      "name": "Gelo e Cor",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 10
+        },
+        {
+          "type": "color",
+          "color": 1,
+          "target": 25
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "forest-10",
+      "worldId": "forest",
+      "order": 10,
+      "index": 19,
+      "name": "Chefão de Gelo",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 14
+        },
+        {
+          "type": "score",
+          "target": 1800
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    }
+  ]
+}

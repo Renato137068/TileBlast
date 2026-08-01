@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoria Tile Blast — 12/07/2026</title>
+<style>
+  :root{
+    --bg:#0e1117; --panel:#161b22; --panel2:#1c2230; --line:#2a3140;
+    --txt:#e6edf3; --muted:#9aa7b4; --accent:#6ea8fe;
+    --red:#f4636e; --orange:#f59e42; --amber:#e9c449; --green:#4fd18b; --teal:#3fd6c6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+  header{background:linear-gradient(135deg,#1b2540,#241b3f 55%,#3a1f36);
+    border:1px solid var(--line);border-radius:20px;padding:34px 32px;margin-bottom:26px;
+    display:flex;gap:32px;align-items:center;flex-wrap:wrap}
+  h1{margin:0 0 6px;font-size:26px;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:14px}
+  .gauge{flex:0 0 auto}
+  .gauge .lbl{fill:var(--txt);font-size:30px;font-weight:700}
+  .gauge .lbl2{fill:var(--muted);font-size:11px}
+  .verdict{flex:1;min-width:260px}
+  .badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;
+    background:rgba(233,196,73,.15);color:var(--amber);border:1px solid rgba(233,196,73,.35)}
+  h2{font-size:18px;margin:34px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  p.lead{color:#cdd6e0;font-size:15px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .metric{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .metric .n{font-size:22px;font-weight:700}
+  .metric .k{font-size:12px;color:var(--muted);margin-top:2px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .card .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .card .name{font-weight:600;font-size:15px}
+  .card .score{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+  .card .w{font-size:11px;color:var(--muted)}
+  .bar{height:8px;border-radius:6px;background:#0c1017;margin:10px 0 8px;overflow:hidden}
+  .bar > span{display:block;height:100%;border-radius:6px}
+  .card .desc{font-size:13px;color:var(--muted)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.two{grid-template-columns:1fr}}
+  .list{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 8px}
+  .list h3{margin:10px 12px;font-size:14px}
+  .list ul{margin:0;padding:0 10px 8px;list-style:none}
+  .list li{padding:8px 10px;border-radius:8px;font-size:13.5px;color:#d4dce6}
+  .list li:nth-child(odd){background:var(--panel2)}
+  .list li b{color:var(--txt)}
+  .pri{counter-reset:p}
+  .pri li{position:relative;padding-left:40px;margin-bottom:8px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 12px 12px 44px}
+  .pri li::before{counter-increment:p;content:counter(p);position:absolute;left:10px;top:11px;
+    width:22px;height:22px;border-radius:50%;background:var(--accent);color:#08111f;font-weight:800;
+    font-size:12px;display:flex;align-items:center;justify-content:center}
+  .tag{font-size:11px;padding:2px 8px;border-radius:6px;margin-left:6px}
+  .t-done{background:rgba(79,209,139,.15);color:var(--green)}
+  .t-part{background:rgba(245,158,66,.15);color:var(--orange)}
+  .t-todo{background:rgba(244,99,110,.15);color:var(--red)}
+  .evo{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+  .evo .e{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .evo .e .h{font-weight:600;font-size:14px;margin-bottom:4px}
+  .evo .e .d{font-size:12.5px;color:var(--muted)}
+  footer{margin-top:40px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+  .note{background:rgba(110,168,254,.08);border:1px solid rgba(110,168,254,.3);border-radius:10px;padding:12px 14px;font-size:13px;color:#c6d4e6;margin:14px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="gauge">
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        <circle cx="75" cy="75" r="62" fill="none" stroke="#232a36" stroke-width="14"/>
+        <circle cx="75" cy="75" r="62" fill="none" stroke="#e9c449" stroke-width="14"
+          stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="158.2"
+          transform="rotate(-90 75 75)"/>
+        <text x="75" y="72" text-anchor="middle" class="lbl">59</text>
+        <text x="75" y="94" text-anchor="middle" class="lbl2">/ 100 · GLOBAL</text>
+      </svg>
+    </div>
+    <div class="verdict">
+      <h1>Auditoria Técnica — Tile Blast</h1>
+      <div class="sub">Estado atual · v1.4.6 · 12 de julho de 2026 · pós-refatoração (Etapas 1–3, 5/7)</div>
+      <p style="margin:14px 0 8px;color:#dfe7f0;font-size:14px">
+        <span class="badge">EM PROGRESSO — base sólida, longe de AAA</span>
+      </p>
+      <div class="sub">Produto comercial funcional com sistemas amplos de meta e monetização.
+      Arquitetura, legibilidade e internacionalização são os freios para o nível AAA.</div>
+    </div>
+  </header>
+
+  <p class="lead">O jogo tem <b>corpo de produto comercial</b>: renderização em canvas com <code>requestAnimationFrame</code>,
+  economia, battle pass, missões, ranking, conquistas, coleção, ads e pipeline de publicação Play/Capacitor —
+  tudo coberto por <b>109 testes verdes</b>. A refatoração desta sessão tirou o núcleo de dentro do HTML e adicionou
+  save assinado. Ainda falta o trabalho estrutural profundo: <b>um monólito de 4.819 linhas (<code>tb-main.js</code>)</b>,
+  acoplamento por variáveis globais, minificação manual que mata a legibilidade e ausência de i18n.</p>
+
+  <div class="metrics">
+    <div class="metric"><div class="n">4.819</div><div class="k">linhas em tb-main.js (núcleo monolítico)</div></div>
+    <div class="metric"><div class="n">457</div><div class="k">linhas no HTML <span style="color:#4fd18b">(era 5.266)</span></div></div>
+    <div class="metric"><div class="n">109 ✓</div><div class="k">testes passando (unit + integração)</div></div>
+    <div class="metric"><div class="n">17</div><div class="k">módulos JS (2 novos: secure, runtime)</div></div>
+    <div class="metric"><div class="n">32</div><div class="k">sinks innerHTML não sanitizados</div></div>
+    <div class="metric"><div class="n">0 / 30</div><div class="k">strings com i18n (tudo PT-BR fixo)</div></div>
+  </div>
+
+  <h2>Notas por dimensão (ponderadas)</h2>
+  <div class="grid" id="dims"></div>
+
+  <h2>Pontos fortes × Riscos críticos</h2>
+  <div class="two">
+    <div class="list">
+      <h3 style="color:var(--green)">✓ Pontos fortes</h3>
+      <ul>
+        <li><b>Renderização correta:</b> canvas + rAF + flag de aparelho fraco.</li>
+        <li><b>Cobertura de features:</b> battle pass, missões diárias/semanais, ranking, conquistas, coleção, ofertas dinâmicas, cofrinho.</li>
+        <li><b>Testes:</b> 109 testes unit/integração + e2e Puppeteer, suíte verde.</li>
+        <li><b>Save assinado:</b> anti-cheat retrocompatível e não destrutivo (novo).</li>
+        <li><b>Conteúdo data-driven:</b> 7 mundos em <code>data/*.json</code>.</li>
+        <li><b>Pipeline de publicação:</b> Capacitor, AAB, manifest, SW, privacy.</li>
+      </ul>
+    </div>
+    <div class="list">
+      <h3 style="color:var(--red)">⚠ Riscos críticos</h3>
+      <ul>
+        <li><b>Monólito de 4.819 linhas</b> (<code>tb-main.js</code>) + god-module de 1.335 (<code>tb-roadmap.js</code>).</li>
+        <li><b>Acoplamento global:</b> ~15 <code>window.TB*</code>; ordem das tags <code>&lt;script&gt;</code> é contrato implícito.</li>
+        <li><b>Legibilidade:</b> minificação manual, nomes de 1–2 letras.</li>
+        <li><b>XSS:</b> 32 sinks <code>innerHTML</code>; util de escape existe mas <b>0% adotado</b>.</li>
+        <li><b>Memória:</b> 65 timers + 77 listeners sem limpeza central.</li>
+        <li><b>i18n inexistente</b> — bloqueia lançamento mundial.</li>
+        <li><b>Sem git</b> nesta pasta (rede de segurança frágil).</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Evolução nesta sessão</h2>
+  <div class="evo">
+    <div class="e"><div class="h">Etapa 1 <span class="tag t-done">feito</span></div><div class="d">Repositório organizado: 23 docs → <code>/docs</code>.</div></div>
+    <div class="e"><div class="h">Etapa 2 <span class="tag t-done">feito</span></div><div class="d">Núcleo extraído do HTML → <code>tb-main.js</code> (−4.809 linhas no HTML).</div></div>
+    <div class="e"><div class="h">Etapa 3 <span class="tag t-done">feito</span></div><div class="d">Save assinado <code>tb-secure.js</code>, retrocompatível.</div></div>
+    <div class="e"><div class="h">Etapas 5 e 7 <span class="tag t-part">fundação</span></div><div class="d"><code>tb-runtime.js</code>: registro de timers/listeners + escape XSS. <b>Adoção pendente.</b></div></div>
+    <div class="e"><div class="h">Etapas 4, 6, 8 <span class="tag t-todo">blueprint</span></div><div class="d">Split de módulos, UI/UX premium e i18n — exigem git + QA em navegador.</div></div>
+  </div>
+
+  <h2>Ações prioritárias (maior impacto na nota)</h2>
+  <ol class="pri" style="list-style:none;padding:0">
+    <li><b>Introduzir bundler (esbuild) + <code>src/</code> por domínio</b> e fatiar <code>tb-main.js</code>/<code>tb-roadmap.js</code>. Destrava Arquitetura, Manutenção e Legibilidade de uma vez. <span class="tag t-todo">Etapa 4</span></li>
+    <li><b>Adotar <code>TBRuntime</code> e <code>escapeHtml</code></b> nas 32 sinks e nos timers/listeners. Ganho direto em Segurança e Performance/Memória. <span class="tag t-part">Etapas 5/7</span></li>
+    <li><b>Camada de i18n</b> com catálogo <code>pt-BR</code>/<code>en</code> e <code>t()</code> central. Pré-requisito para lançamento mundial. <span class="tag t-todo">Etapa 8</span></li>
+    <li><b>Verificação server-side</b> de compras (billing) e integridade (Play Integrity) — anti-fraude real além do dissuasor local.</li>
+    <li><b>Design tokens completos</b> (escala tipográfica, espaçamento 4/8pt, estados) + auditoria de fluxo com o jogo aberto. <span class="tag t-todo">Etapa 6</span></li>
+    <li><b>Inicializar git</b> no ambiente local e commitar o baseline antes de continuar.</li>
+  </ol>
+
+  <div class="note">
+    <b>Metodologia & honestidade.</b> As notas combinam métricas objetivas (LOC, contagem de sinks/timers,
+    testes verdes, cobertura de features) com julgamento de engenharia. As dimensões <b>UI/UX</b> e <b>Acessibilidade</b>
+    receberam nota conservadora porque não foi possível abrir o jogo no navegador nesta sessão para validação visual —
+    são estimativas estruturais, não veredictos visuais. A nota global (59) é a média ponderada das 14 dimensões abaixo.
+  </div>
+
+  <footer>
+    Tile Blast · Auditoria gerada em 12/07/2026 · Escala 0–100 (bandas: &lt;40 crítico · 40–59 fraco · 60–74 regular · 75–89 bom · 90+ excelente).
+    Nota global 59/100 = média ponderada. Relatório autocontido, sem dependências externas.
+  </footer>
+
+</div>
+
+<script>
+  var DIMS=[
+    ["Arquitetura",52,12,"Núcleo saiu do HTML e ganhou módulos Core, mas 4.819 linhas em tb-main + globais + sem bundler/DI."],
+    ["Legibilidade / Clean Code",45,8,"Minificação manual, nomes de 1–2 letras, funções densas. Dois arquivos gigantes."],
+    ["Performance",62,10,"Canvas + rAF e flag low-end (bom); 65 timers/77 listeners sem cleanup central; innerHTML no HUD."],
+    ["Segurança / Anti-cheat",55,10,"Save assinado (grande avanço), mas só client-side; 32 innerHTML sem sanitizar; config Firebase exposta."],
+    ["Testes / QA",72,8,"109 testes unit+integração+e2e, suíte verde. Falta cobertura formal medida do núcleo."],
+    ["Manutenibilidade",50,8,"Dois god-files, acoplamento global, sem build. Melhor que o baseline, longe do ideal."],
+    ["Escalabilidade de conteúdo",65,7,"Mundos/fases data-driven (data/*.json), mas a lógica consumidora está presa no monólito."],
+    ["UI / UX",60,10,"Sistema de features completo; tokens finos (14 linhas); 'premium' não validado visualmente."],
+    ["Monetização",68,8,"Rewarded/interstitial/banner, battle pass, cofrinho, ofertas, starter — amplo; falta verificação server-side."],
+    ["Retenção",70,7,"Missões, eventos, conquistas, login streak, XP, ranking, coleção/skins — cobertura forte."],
+    ["Acessibilidade",55,4,"announce/ARIA iniciados; falta modo daltônico e navegação por teclado completos."],
+    ["Google Play readiness",72,4,"Capacitor, AAB, manifest, SW, privacy, scripts de billing/ads; falta Integrity API server-side."],
+    ["Organização do repositório",78,2,"Docs em /docs, raiz limpa; www duplicado (artefato) e ausência de git pesam."],
+    ["Internacionalização (i18n)",30,2,"Strings PT-BR fixas, t() presa no roadmap, sem catálogo. Bloqueia lançamento global."]
+  ];
+  function band(s){return s<40?'var(--red)':s<60?'var(--orange)':s<75?'var(--amber)':s<90?'var(--green)':'var(--teal)';}
+  var html=DIMS.map(function(d){
+    var c=band(d[1]);
+    return '<div class="card"><div class="top"><span class="name">'+d[0]+'</span>'+
+      '<span class="score" style="color:'+c+'">'+d[1]+'</span></div>'+
+      '<div class="w">peso '+d[2]+'%</div>'+
+      '<div class="bar"><span style="width:'+d[1]+'%;background:'+c+'"></span></div>'+
+      '<div class="desc">'+d[3]+'</div></div>';
+  }).join('');
+  document.getElementById('dims').innerHTML=html;
+</script>
+</body>
+</html>

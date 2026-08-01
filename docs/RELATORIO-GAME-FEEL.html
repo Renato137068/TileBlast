@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tile Blast — Relatório de Game Feel</title>
+<style>
+  :root{
+    --bg:#0b0d14; --bg2:#11131c; --card:#161925; --card2:#1c2030;
+    --line:rgba(255,255,255,.08); --text:#e9ebf2; --dim:#9aa0b4;
+    --accent:#f6b23e; --accent2:#a78bfa; --ok:#4ecb71; --warn:#f6c945;
+    --bad:#ef4b5f; --blue:#3aa6e0; --pink:#ff88ff;
+    --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.35);
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:radial-gradient(1200px 600px at 80% -10%,rgba(167,139,250,.12),transparent 60%),
+               radial-gradient(1000px 500px at -10% 10%,rgba(246,178,62,.10),transparent 55%),
+               var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    line-height:1.6; padding-bottom:80px;
+  }
+  a{color:var(--accent2);text-decoration:none;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+
+  /* ── Layout: sidebar + conteúdo ── */
+  .shell{display:grid;grid-template-columns:230px 1fr;gap:28px;max-width:1200px;margin:0 auto;padding:0 20px;}
+  nav.side{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:26px 8px 26px 0;border-right:1px solid var(--line);}
+  nav.side h4{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin:18px 10px 8px;}
+  nav.side a{display:block;color:var(--dim);padding:7px 12px;border-radius:10px;font-size:13.5px;transition:.15s;}
+  nav.side a:hover{background:var(--card);color:var(--text);}
+  main{padding:26px 0 40px;min-width:0;}
+
+  /* ── Cover ── */
+  .cover{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--line);
+    border-radius:24px;padding:38px 34px;box-shadow:var(--shadow);position:relative;overflow:hidden;margin-bottom:30px;}
+  .cover::after{content:'';position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle,rgba(246,178,62,.28),transparent 70%);}
+  .cover .badge{display:inline-block;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--accent);background:rgba(246,178,62,.12);border:1px solid rgba(246,178,62,.35);
+    padding:5px 12px;border-radius:999px;margin-bottom:16px;}
+  .cover h1{font-size:34px;line-height:1.2;letter-spacing:-.5px;margin-bottom:8px;}
+  .cover h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .cover p.lead{color:var(--dim);max-width:640px;font-size:15.5px;}
+  .cover .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;}
+  .cover .meta span{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:13px;}
+  .cover .meta b{color:var(--text);}
+
+  /* ── Score ring ── */
+  .scorebox{display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-top:24px;}
+  .ring{--v:88;width:132px;height:132px;border-radius:50%;flex-shrink:0;
+    background:conic-gradient(var(--ok) calc(var(--v)*1%),rgba(255,255,255,.08) 0);
+    display:grid;place-items:center;position:relative;}
+  .ring::before{content:'';position:absolute;inset:12px;border-radius:50%;background:var(--card);}
+  .ring b{position:relative;font-size:34px;font-weight:800;}
+  .ring b small{font-size:14px;color:var(--dim);font-weight:600;}
+  .scorebox .desc{max-width:520px;}
+  .scorebox .desc h3{font-size:18px;margin-bottom:6px;}
+  .scorebox .desc p{color:var(--dim);font-size:14px;}
+
+  section{margin:44px 0;scroll-margin-top:20px;}
+  section > h2{font-size:23px;letter-spacing:-.3px;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+  section > h2 .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:18px;
+    background:linear-gradient(135deg,rgba(246,178,62,.2),rgba(167,139,250,.16));border:1px solid var(--line);}
+  section > p.sub{color:var(--dim);margin-bottom:18px;font-size:14.5px;}
+
+  .grid{display:grid;gap:16px;}
+  .g2{grid-template-columns:repeat(2,1fr);}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  @media(max-width:900px){.g2,.g3{grid-template-columns:1fr;} .shell{grid-template-columns:1fr;} nav.side{display:none;}}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+  .card h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .card p, .card li{color:var(--dim);font-size:14px;}
+  .card ul{margin:8px 0 0 18px;} .card li{margin:4px 0;}
+  .card .tag{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;margin:2px 4px 2px 0;
+    background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--text);}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{background:var(--card2);color:var(--text);font-weight:700;font-size:12.5px;letter-spacing:.3px;}
+  td{color:var(--dim);} td b{color:var(--text);}
+  tr:last-child td{border-bottom:none;}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;}
+  .p-ok{background:rgba(78,203,113,.16);color:var(--ok);border:1px solid rgba(78,203,113,.4);}
+  .p-mid{background:rgba(246,201,69,.16);color:var(--warn);border:1px solid rgba(246,201,69,.4);}
+  .p-new{background:rgba(167,139,250,.16);color:var(--accent2);border:1px solid rgba(167,139,250,.4);}
+  .p-bad{background:rgba(239,75,95,.16);color:var(--bad);border:1px solid rgba(239,75,95,.4);}
+
+  .ba{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+  .ba > div{padding:16px 18px;}
+  .ba .before{background:rgba(239,75,95,.05);border-right:1px solid var(--line);}
+  .ba .after{background:rgba(78,203,113,.06);}
+  .ba h5{font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  .ba .before h5{color:var(--bad);} .ba .after h5{color:var(--ok);}
+  .ba p{font-size:13.5px;color:var(--dim);}
+  @media(max-width:640px){.ba{grid-template-columns:1fr;}.ba .before{border-right:none;border-bottom:1px solid var(--line);}}
+
+  .bar{height:9px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:6px;}
+  .bar > i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+
+  code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px;font-size:12.5px;color:#ffd9a0;font-family:'Cascadia Code',Consolas,monospace;}
+  .filelist{list-style:none;margin:0;}
+  .filelist li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;}
+  .filelist li:last-child{border-bottom:none;}
+  .filelist code{color:#cbd2e6;background:transparent;padding:0;}
+
+  .top{position:fixed;right:20px;bottom:20px;background:var(--accent);color:#231600;font-weight:800;
+    border:none;border-radius:50%;width:48px;height:48px;font-size:20px;cursor:pointer;box-shadow:var(--shadow);z-index:50;}
+  footer{color:var(--dim);font-size:12.5px;text-align:center;margin-top:50px;padding-top:20px;border-top:1px solid var(--line);}
+  .kbd{font-size:11px;color:var(--dim);}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <h4>Navegação</h4>
+    <a href="#resumo">Resumo executivo</a>
+    <a href="#momentos">Momentos aprimorados</a>
+    <a href="#tecnicas">Técnicas utilizadas</a>
+    <a href="#arquivos">Arquivos modificados</a>
+    <a href="#componentes">Novo componente</a>
+    <a href="#antesdepois">Antes × Depois</a>
+    <a href="#beneficios">Benefícios</a>
+    <a href="#impacto">Impacto no jogador</a>
+    <a href="#fps">FPS & fallback</a>
+    <a href="#futuro">Melhorias futuras</a>
+    <a href="#auto">Autoavaliação</a>
+    <a href="#pendencias">Pendências</a>
+  </nav>
+
+  <main>
+    <!-- COVER -->
+    <div class="cover">
+      <span class="badge">Relatório de Implementação · Game Feel</span>
+      <h1>Tile Blast — <span>Camada de Juice AAA</span></h1>
+      <p class="lead">Aprimoramento exclusivo da <b>sensação de jogo</b> (game feel): partículas modernas,
+      explosões com shockwave, screen shake inteligente, hit-stop, easing avançado, feedback de vitória/derrota,
+      baús, moedas voadoras e XP. <b>Nenhuma regra, dificuldade, economia, monetização, UI, UX ou progressão foi alterada.</b></p>
+      <div class="meta">
+        <span>📅 <b>11 / 07 / 2026</b></span>
+        <span>🧩 Novo módulo: <b>tb-juice.js</b></span>
+        <span>🎯 Escopo: <b>somente Game Feel</b></span>
+        <span>✅ Testes: <b>78 / 78 passando</b></span>
+        <span>🖥️ Validado no <b>navegador · 0 erros</b></span>
+      </div>
+
+      <div class="scorebox">
+        <div class="ring" style="--v:88"><b>88<small>/100</small></b></div>
+        <div class="desc">
+          <h3>Autoavaliação da implementação</h3>
+          <p>Cobertura ampla e desacoplada de todos os momentos-chave, com fallback de performance
+          e preservação total do comportamento existente. Pontos em aberto concentram-se em polimentos
+          de derrota e em áudio via samples reais (estrutura já pronta).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUMO -->
+    <section id="resumo">
+      <h2><span class="ic">📌</span> Resumo executivo</h2>
+      <p class="sub">O que foi feito, em uma olhada.</p>
+      <div class="grid g3">
+        <div class="card"><h3>🎇 13 momentos</h3><p>Todos os pontos de interação do jogador receberam juice dedicado e escalonado por intensidade.</p></div>
+        <div class="card"><h3>🧩 1 módulo novo</h3><p><code>tb-juice.js</code> — 100% desacoplado, reutilizável e comentado. Não conhece regras do jogo.</p></div>
+        <div class="card"><h3>⚙️ 0 quebras</h3><p>Sistemas existentes (partículas de detrito, floaters, som) preservados; efeitos novos são camadas por cima.</p></div>
+        <div class="card"><h3>🚀 60 FPS</h3><p>Monitor de FPS ativa <b>low-power</b> automaticamente; respeita <code>prefers-reduced-motion</code>.</p></div>
+        <div class="card"><h3>🔊 Áudio</h3><p>Impacto reforçado em blasts grandes, cue de objetivo e <b>estrutura para samples reais</b> futuros.</p></div>
+        <div class="card"><h3>🪙 Moedas & XP</h3><p>Moedas voam ao contador com bump; barra de XP com brilho e glow ao subir de nível.</p></div>
+      </div>
+    </section>
+
+    <!-- MOMENTOS -->
+    <section id="momentos">
+      <h2><span class="ic">🎇</span> Momentos aprimorados</h2>
+      <p class="sub">Cada ação do jogador foi identificada no código e recebeu resposta imediata e satisfatória.</p>
+      <table>
+        <thead><tr><th>Momento</th><th>Onde (função)</th><th>O que foi adicionado</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><b>Toca em peça</b></td><td><code>pointerdown</code> / <code>handleClick</code></td><td>Ripple imediato + pop instantâneo do grupo (resposta &lt; 1 frame).</td><td><span class="pill p-ok">mantido+</span></td></tr>
+          <tr><td><b>Toque inválido</b></td><td><code>shakeBlock</code></td><td>Tremor do bloco + flash vermelho + som — comunica “precisa de 2+”.</td><td><span class="pill p-ok">mantido</span></td></tr>
+          <tr><td><b>Destrói blocos</b></td><td><code>removeGroup</code></td><td>Detrito colorido (existente) + <b>burst</b> de faíscas/estrelas/glow do TBJuice.</td><td><span class="pill p-new">novo</span></td></tr>
+          <tr><td><b>Combos</b></td><td><code>removeGroup</code></td><td>Escalonamento: 2→brilho · 4→explosão média · 6→explosão grande · 8+→épico (shockwave + hit-stop + flash).</td><td><span class="pill p-new">novo</span></td></tr>
+          <tr><td><b>Boosters</b></td><td><code>executePU</code></td><td>Shockwave dedicado + faíscas + hit-stop (45ms) + flash da cor do booster.</td><td><span class="pill p-new">novo</span></td></tr>
+          <tr><td><b>Especiais (💣🚀🌈)</b></td><td><code>activateSpecial</code></td><td>Shockwave grande + burst + hit-stop (40–60ms), reforçado em reação em cadeia.</td><td><span class="pill p-new">novo</span></td></tr>
+          <tr><td><b>Vence a fase</b></td><td><code>boardClearFinale</code> / <code>resolveWin</code></td><td>Flash dourado + shockwave gigante + confete em canvas + hit-stop + <b>moedas voando</b> ao contador.</td><td><span class="pill p-new">novo</span></td></tr>
+          <tr><td><b>Perde a fase</b></td><td><code>resolveLoss</code></td><td>Sem tremor agressivo; cue de <i>quase-vitória</i> preservado (convite à revanche).</td><td><span class="pill p-ok">mantido</span></td></tr>
+          <tr><td><b>Completa objetivo</b></td><td><code>_refreshObjDisplay</code></td><td>Pop + giro do ícone + carimbo do check + som ascendente + mini-confete.</td><td><span class="pill p-new">novo</span></td></tr>
+          <tr><td><b>Abre baús</b></td><td><code>openChest</code></td><td>Clarão radial + pop do ícone + moedas voando ao contador do mapa.</td><td><span class="pill p-new">novo</span></td></tr>
+          <tr><td><b>Ganha moedas</b></td><td><code>coinFly</code> (TBJuice)</td><td>Moedas em arco até o contador + bump animado a cada chegada.</td><td><span class="pill p-new">novo</span></td></tr>
+          <tr><td><b>Ganha XP / sobe nível</b></td><td><code>renderXPBar</code></td><td>Preenchimento suave + varredura de brilho ao ganhar + glow especial ao upar.</td><td><span class="pill p-new">novo</span></td></tr>
+          <tr><td><b>Desbloqueia algo</b></td><td><code>Sound.unlock</code> + toasts</td><td>Cue de áudio dedicado (existente) + haptic pesado preservados.</td><td><span class="pill p-ok">mantido</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TECNICAS -->
+    <section id="tecnicas">
+      <h2><span class="ic">🛠️</span> Técnicas utilizadas</h2>
+      <p class="sub">Ferramentas de game feel de estúdios AAA casuais, adaptadas a canvas 2D + Web Audio.</p>
+      <div class="grid g2">
+        <div class="card">
+          <h3>💥 Partículas em camadas</h3>
+          <p>Pool único com tipos distintos que variam pela <b>intensidade</b> da ação:</p>
+          <span class="tag">faíscas</span><span class="tag">estrelas giratórias</span><span class="tag">glow central</span>
+          <span class="tag">poeira/fumaça</span><span class="tag">confete</span>
+          <p style="margin-top:8px">Motion em forma fechada (barato): <code>vx·t + g·t²</code>. Glow com <code>createRadialGradient</code> e sombra aditiva.</p>
+        </div>
+        <div class="card">
+          <h3>🌊 Shockwave (explosão)</h3>
+          <p>Anel que <b>expande</b> com easing <code>outCubic</code>, <b>dissipa</b> (α = (1−t)²), com <b>flash radial</b> na primeira metade e <b>fade</b>. Raio e espessura escalam com o combo.</p>
+        </div>
+        <div class="card">
+          <h3>❄️ Hit-Stop</h3>
+          <p>Congelamento de quadro <b>20–80ms</b> (freeze-frame por skip de render). Teto rígido para nunca “travar”. O áudio continua tocando durante o freeze → impacto amplificado.</p>
+        </div>
+        <div class="card">
+          <h3>📳 Screen Shake inteligente</h3>
+          <p>Amplitude + rotação leve, <b>decaimento easeOut</b>, e <b>combinação</b> de impactos (mantém o mais forte). Calibrado: peça comum ≈ imperceptível · bomba ≈ médio · mega combo ≈ forte · vitória ≈ leve.</p>
+        </div>
+        <div class="card">
+          <h3>📈 Easing (anti-linear)</h3>
+          <p>Biblioteca própria: <code>outCubic</code>, <code>outQuint</code>, <code>outBack</code>, <code>outElastic</code>, <code>outBounce</code>, <code>inOutCubic</code>. Aplicada a shockwaves, pops, bumps e moedas.</p>
+        </div>
+        <div class="card">
+          <h3>🪙 Coin-Fly (WAAPI)</h3>
+          <p><code>element.animate()</code> com keyframe intermediário elevado → <b>arco orgânico</b>. Off-thread, com <code>cubic-bezier</code> e bump do contador no <code>onfinish</code>.</p>
+        </div>
+        <div class="card">
+          <h3>📉 Monitor de FPS</h3>
+          <p>Média por segundo; 3 janelas seguidas &lt; 45 FPS → <b>low-power</b> automático (menos partículas, sem blur/gradientes pesados).</p>
+        </div>
+        <div class="card">
+          <h3>🔊 Áudio procedural + samples</h3>
+          <p>Sub-thump em blasts grandes, cue <code>objComplete</code>, e API <code>loadSample/playSample</code> para trocar por assets reais no futuro sem tocar nos pontos de chamada.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARQUIVOS -->
+    <section id="arquivos">
+      <h2><span class="ic">📁</span> Arquivos modificados</h2>
+      <p class="sub">Mudanças mínimas e cirúrgicas nos arquivos existentes; toda a lógica nova vive no módulo isolado.</p>
+      <div class="card">
+        <ul class="filelist">
+          <li><code>tb-juice.js</code> <span class="pill p-new">NOVO — módulo de juice (~430 linhas)</span></li>
+          <li><code>tile_blast.html</code> <span class="pill p-mid">integração + CSS de FX</span></li>
+          <li><code>scripts/sync-www.js</code> <span class="pill p-ok">copia tb-juice.js</span></li>
+          <li><code>sw.js</code> <span class="pill p-ok">precache do tb-juice.js</span></li>
+          <li><code>www/index.html</code>, <code>www/tb-juice.js</code>, <code>www/sw.js</code> <span class="pill p-ok">sincronizados</span></li>
+        </ul>
+      </div>
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card"><h3>Pontos de integração em <code>tile_blast.html</code></h3>
+          <ul>
+            <li><code>draw()</code> — hit-stop, monitor FPS, shake unificado, <code>TBJuice.render()</code></li>
+            <li><code>triggerShake()</code> — delega ao TBJuice (sistema único de shake)</li>
+            <li><code>removeGroup()</code> — burst/shockwave/hit-stop/flash por combo</li>
+            <li><code>activateSpecial()</code> / <code>executePU()</code> — explosões de especiais e boosters</li>
+            <li><code>boardClearFinale()</code> / <code>resolveWin()</code> — finale + moedas voadoras</li>
+            <li><code>openChest()</code> — clarão + moedas</li>
+            <li><code>renderXPBar()</code> — brilho/glow de XP</li>
+            <li><code>_refreshObjDisplay()</code> — celebração de objetivo</li>
+            <li><code>layoutBoard()</code> + boot — <code>setCell()</code> / <code>init()</code>; <code>reset()</code> em cada início de fase</li>
+          </ul>
+        </div>
+        <div class="card"><h3>CSS adicionado (FX)</h3>
+          <ul>
+            <li><code>#tbj-fx-layer</code>, <code>.tbj-coin</code> — camada de moedas voadoras</li>
+            <li><code>.tbj-bump</code> — pulso do contador ao receber moeda</li>
+            <li><code>#xp-fill.xp-gain / .xp-levelup</code> — varredura + glow de XP</li>
+            <li><code>.obj-just-done</code> — pop, giro do ícone, carimbo do check</li>
+            <li><code>.chm-icon.tbj-chest-pop</code> — pop + clarão radial do baú</li>
+          </ul>
+          <p style="margin-top:8px">Todas as animações CSS respeitam <code>prefers-reduced-motion</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPONENTE -->
+    <section id="componentes">
+      <h2><span class="ic">🧩</span> Novo componente: <code>TBJuice</code></h2>
+      <p class="sub">Módulo IIFE exposto em <code>window.TBJuice</code>. Não importa nada do jogo; o jogo apenas dispara efeitos e chama <code>render</code> dentro do próprio loop.</p>
+      <table>
+        <thead><tr><th>API</th><th>Responsabilidade</th></tr></thead>
+        <tbody>
+          <tr><td><code>init / setCell / setLowPower</code></td><td>Configuração e injeção do verificador de reduce-motion.</td></tr>
+          <tr><td><code>ease</code></td><td>Biblioteca de curvas de easing.</td></tr>
+          <tr><td><code>hitStop / isFrozen</code></td><td>Congelamento de quadro curto (com teto de 80ms).</td></tr>
+          <tr><td><code>shake / getShake</code></td><td>Screen shake com amplitude + rotação e decaimento easeOut.</td></tr>
+          <tr><td><code>burst / confettiBurst</code></td><td>Emissores de partículas modernas escalados por intensidade.</td></tr>
+          <tr><td><code>shockwave / flash</code></td><td>Explosão em anel e clarão de tela (board-space).</td></tr>
+          <tr><td><code>render / active / reset</code></td><td>Desenho no canvas do jogo, keep-alive do rAF e limpeza por fase.</td></tr>
+          <tr><td><code>coinFly</code></td><td>Moedas em arco (WAAPI) até um elemento-alvo, com callbacks.</td></tr>
+          <tr><td><code>tick</code></td><td>Monitor de FPS → low-power automático.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ANTES DEPOIS -->
+    <section id="antesdepois">
+      <h2><span class="ic">🔀</span> Antes × Depois</h2>
+      <p class="sub">Comparativo direto dos principais momentos.</p>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="ba"><div class="before"><h5>Antes — Destruir blocos</h5><p>Detrito colorido simples + floater de pontos. Impacto uniforme independente do tamanho do grupo.</p></div>
+          <div class="after"><h5>Depois</h5><p>Detrito + faíscas/estrelas/glow que <b>escalam</b> com o combo. 4+: shockwave. 6+: hit-stop. 8+: flash de tela.</p></div></div>
+
+        <div class="ba"><div class="before"><h5>Antes — Especiais/Boosters</h5><p>Tremor fixo + partículas. Sem “peso” diferenciado.</p></div>
+          <div class="after"><h5>Depois</h5><p>Shockwave dedicado + hit-stop de 40–60ms + flash da cor → sensação de explosão real e cadeias mais épicas.</p></div></div>
+
+        <div class="ba"><div class="before"><h5>Antes — Vitória</h5><p>Confete DOM + fanfarra. Recompensa presente, porém plana.</p></div>
+          <div class="after"><h5>Depois</h5><p>Flash dourado + shockwave gigante + confete em canvas + hit-stop + <b>moedas voando</b> ao contador com bump.</p></div></div>
+
+        <div class="ba"><div class="before"><h5>Antes — Screen shake</h5><p>Tremor linear com decaimento simples, sem rotação, sobrescrito por novos disparos.</p></div>
+          <div class="after"><h5>Depois</h5><p>Decaimento easeOut + rotação leve + <b>combinação</b> de impactos (nunca cancela um tremor forte).</p></div></div>
+
+        <div class="ba"><div class="before"><h5>Antes — Objetivo concluído</h5><p>Barra marca ✓ estaticamente.</p></div>
+          <div class="after"><h5>Depois</h5><p>Pop + giro do ícone + carimbo do check + som ascendente + mini-confete.</p></div></div>
+
+        <div class="ba"><div class="before"><h5>Antes — XP / Baús</h5><p>Barra preenche direto; baú abre em modal sem destaque.</p></div>
+          <div class="after"><h5>Depois</h5><p>XP com varredura de brilho e glow ao upar; baú com clarão radial, pop e moedas voadoras.</p></div></div>
+      </div>
+    </section>
+
+    <!-- BENEFICIOS -->
+    <section id="beneficios">
+      <h2><span class="ic">📈</span> Benefícios esperados</h2>
+      <p class="sub">Estimativas qualitativas do impacto de game feel (não altera balanceamento).</p>
+      <div class="grid g2">
+        <div class="card"><h3>Satisfação por ação (“crunch”)</h3><div class="bar"><i style="width:92%"></i></div><p style="margin-top:6px">Hit-stop + shockwave + partículas em camadas elevam o retorno tátil de cada explosão.</p></div>
+        <div class="card"><h3>Clareza de progressão de combo</h3><div class="bar"><i style="width:88%"></i></div><p style="margin-top:6px">Cada tier de combo é visivelmente mais intenso — o jogador “sente” a escada.</p></div>
+        <div class="card"><h3>Recompensa de vitória</h3><div class="bar"><i style="width:90%"></i></div><p style="margin-top:6px">Moedas voadoras + finale criam um “momento” memorável ao concluir.</p></div>
+        <div class="card"><h3>Percepção de qualidade (polish)</h3><div class="bar"><i style="width:87%"></i></div><p style="margin-top:6px">Easing não-linear e microanimações aproximam o feel de títulos AAA casuais.</p></div>
+      </div>
+    </section>
+
+    <!-- IMPACTO -->
+    <section id="impacto">
+      <h2><span class="ic">🎮</span> Impacto na experiência do jogador</h2>
+      <div class="grid g3">
+        <div class="card"><h3>🧠 Feedback imediato</h3><p>Toda interação gera resposta em &lt;1 frame (ripple, pop, faíscas), reduzindo a sensação de “input morto”.</p></div>
+        <div class="card"><h3>🎢 Curva de intensidade</h3><p>Combos maiores entregam recompensa audiovisual proporcional, incentivando jogadas ambiciosas.</p></div>
+        <div class="card"><h3>💛 Derrota acolhedora</h3><p>Sem tremor agressivo; cue de quase-vitória mantém o convite à revanche sem frustrar.</p></div>
+        <div class="card"><h3>🪙 Recompensa tangível</h3><p>Ver as moedas voarem ao contador reforça o valor de cada vitória e abertura de baú.</p></div>
+        <div class="card"><h3>⚡ Sensação de fluidez</h3><p>Easing elástico/bounce e microescalas dão vida às animações antes lineares.</p></div>
+        <div class="card"><h3>♿ Respeito às preferências</h3><p><code>prefers-reduced-motion</code> desliga tremores/partículas; low-power preserva 60 FPS.</p></div>
+      </div>
+    </section>
+
+    <!-- FPS -->
+    <section id="fps">
+      <h2><span class="ic">🚀</span> FPS & fallback automático</h2>
+      <p class="sub">Performance tratada como requisito, não como pós-otimização.</p>
+      <div class="grid g2">
+        <div class="card"><h3>Estratégias de custo baixo</h3><ul>
+          <li>Motion de partículas em <b>forma fechada</b> (sem física por passo)</li>
+          <li>Pool único com <b>teto</b> (260 normal / 120 low-power)</li>
+          <li>Hit-stop via <b>skip de render</b> (não recalcula nada)</li>
+          <li>Uma só transform de shake por quadro</li>
+        </ul></div>
+        <div class="card"><h3>Degradação graciosa</h3><ul>
+          <li>Monitor de FPS: 3× &lt; 45 FPS → <b>low-power</b></li>
+          <li>Low-power: menos partículas, <b>sem</b> blur/gradientes de glow, sem hit-stop</li>
+          <li><code>window.__lowEndDevice</code> já entra em low-power no boot</li>
+          <li>Validado no navegador: <span class="pill p-ok">low-power=false em desktop, 0 erros</span></li>
+        </ul></div>
+      </div>
+    </section>
+
+    <!-- FUTURO -->
+    <section id="futuro">
+      <h2><span class="ic">🔭</span> Possíveis melhorias futuras</h2>
+      <div class="grid g2">
+        <div class="card"><h3>🔊 Samples de áudio reais</h3><p>A API <code>loadSample/playSample</code> já existe — basta fornecer <code>.wav</code>/<code>.mp3</code> para blast, combo e vitória.</p></div>
+        <div class="card"><h3>🖼️ Sprite-sheets de partículas</h3><p>Trocar formas vetoriais por texturas (estrelas/brilhos) para um look ainda mais rico.</p></div>
+        <div class="card"><h3>💧 Trilha (rastro) em especiais</h3><p>Rastro de foguete/rainbow ao longo do caminho de destruição.</p></div>
+        <div class="card"><h3>😢 Polimento de derrota</h3><p>Animação suave dedicada (fade/tilt do tabuleiro) e destaque animado do botão “Tentar de novo”.</p></div>
+        <div class="card"><h3>🎨 Paleta de partícula por mundo</h3><p>Variar cores de faísca/confete conforme o tema do mundo atual.</p></div>
+        <div class="card"><h3>📳 Haptics refinados por tier</h3><p>Padrões de vibração distintos por nível de combo em dispositivos compatíveis.</p></div>
+      </div>
+    </section>
+
+    <!-- AUTOAVALIACAO -->
+    <section id="auto">
+      <h2><span class="ic">🧮</span> Autoavaliação da implementação</h2>
+      <p class="sub">Nota por critério e média final.</p>
+      <table>
+        <thead><tr><th>Critério</th><th>Nota</th><th>Comentário</th></tr></thead>
+        <tbody>
+          <tr><td>Cobertura dos momentos</td><td><b>95</b></td><td>Todos os 13 pontos pedidos foram tratados.</td></tr>
+          <tr><td>Qualidade das partículas/explosões</td><td><b>90</b></td><td>Camadas + shockwave + escala por intensidade.</td></tr>
+          <tr><td>Screen shake & hit-stop</td><td><b>92</b></td><td>Calibrados e combináveis; teto de segurança no hit-stop.</td></tr>
+          <tr><td>Animações / easing</td><td><b>88</b></td><td>Biblioteca aplicada; alguns pops antigos ainda podem ganhar elástica.</td></tr>
+          <tr><td>Feedback de vitória/derrota</td><td><b>85</b></td><td>Vitória excelente; derrota mantida gentil (polimento dedicado pendente).</td></tr>
+          <tr><td>Áudio</td><td><b>80</b></td><td>Procedural reforçado + estrutura de samples; falta trocar por assets reais.</td></tr>
+          <tr><td>Performance / 60 FPS</td><td><b>90</b></td><td>Custo baixo + fallback automático + reduce-motion.</td></tr>
+          <tr><td>Organização / desacoplamento</td><td><b>92</b></td><td>Módulo isolado, comentado, sem duplicação; integração cirúrgica.</td></tr>
+          <tr><td>Preservação (nada quebrado)</td><td><b>96</b></td><td>78/78 testes + validação no navegador sem erros.</td></tr>
+        </tbody>
+      </table>
+      <div class="scorebox" style="margin-top:20px">
+        <div class="ring" style="--v:88"><b>88<small>/100</small></b></div>
+        <div class="desc"><h3>Média final: 88</h3><p>Implementação robusta, segura e ampla. As lacunas são de refinamento (samples de áudio e polish de derrota), não de estrutura.</p></div>
+      </div>
+    </section>
+
+    <!-- PENDENCIAS -->
+    <section id="pendencias">
+      <h2><span class="ic">📋</span> Lista de pendências</h2>
+      <p class="sub">Melhorias não implementadas nesta rodada e o motivo.</p>
+      <table>
+        <thead><tr><th>Pendência</th><th>Status</th><th>Motivo</th></tr></thead>
+        <tbody>
+          <tr><td>Áudio via samples reais (blast/combo/vitória)</td><td><span class="pill p-mid">estrutura pronta</span></td><td>O jogo é assumidamente “zero assets”; adicionar arquivos de áudio é decisão de produto. A API <code>loadSample/playSample</code> já permite plugar sem refatorar.</td></tr>
+          <tr><td>Polimento visual dedicado da derrota</td><td><span class="pill p-mid">parcial</span></td><td>Mantida gentil (sem tremor, cue de quase-vitória). Uma animação de derrota própria toca UX/telas — evitada para respeitar “não alterar UI/UX/layout”.</td></tr>
+          <tr><td>Rastro de partículas em especiais</td><td><span class="pill p-bad">futuro</span></td><td>Requer amostrar o caminho de destruição em <code>gatherBlast</code>; adiado para manter o escopo enxuto e o risco baixo.</td></tr>
+          <tr><td>Sprite-sheets / texturas de partícula</td><td><span class="pill p-bad">futuro</span></td><td>Depende de assets de imagem (fora do escopo “só game feel, zero assets”).</td></tr>
+          <tr><td>Paleta de partícula por mundo</td><td><span class="pill p-bad">futuro</span></td><td>Melhoria estética incremental; não essencial para a sensação-base.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      Tile Blast · Relatório de Game Feel · Gerado em 11/07/2026 · Escopo restrito a sensação de jogo — regras, dificuldade, economia, monetização, UI, UX e progressão <b>inalteradas</b>.
+    </footer>
+  </main>
+</div>
+
+<button class="top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">↑</button>
+</body>
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoria Completa — Tile Blast · 2026-07-25 v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #141925;
+    --panel2: #1a2130;
+    --line: #2a3348;
+    --text: #eef2fa;
+    --dim: #8b95ad;
+    --ok: #3dd68c;
+    --warn: #f5a524;
+    --bad: #f31260;
+    --info: #5b9cff;
+    --accent: #7c9cff;
+    --radius: 16px;
+    --sans: "DM Sans", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f3f5fa; --panel: #fff; --panel2: #eef1f7; --line: #d8dee9;
+      --text: #121826; --dim: #5c6780;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); line-height: 1.55; font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 36px 20px 96px; }
+  .hero {
+    background:
+      radial-gradient(ellipse at 20% 0%, #3dd68c22, transparent 50%),
+      radial-gradient(ellipse at 90% 20%, #5b9cff18, transparent 45%),
+      var(--panel);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 32px 28px; margin-bottom: 28px;
+  }
+  .kicker {
+    font-size: 11px; letter-spacing: 2.2px; text-transform: uppercase;
+    color: var(--ok); font-weight: 800;
+  }
+  .hero h1 { margin: 8px 0 6px; font-size: clamp(26px, 4vw, 34px); font-weight: 800; }
+  .meta { color: var(--dim); font-size: 13.5px; }
+  .scoreband { display: flex; gap: 24px; align-items: center; margin-top: 26px; flex-wrap: wrap; }
+  .bigscore { display: flex; align-items: baseline; gap: 2px; }
+  .bigscore .n {
+    font-size: 68px; font-weight: 800; line-height: 1; font-family: var(--mono);
+    background: linear-gradient(125deg, var(--ok), var(--info));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .bigscore .d { font-size: 22px; color: var(--dim); font-weight: 700; }
+  .delta {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-left: 10px; font-family: var(--mono); font-size: 14px; font-weight: 700;
+    color: var(--ok);
+  }
+  .verdict { flex: 1; min-width: 240px; }
+  .badge {
+    display: inline-block; padding: 5px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 800; letter-spacing: .4px;
+  }
+  .b-ok { background: #3dd68c22; color: var(--ok); border: 1px solid #3dd68c55; }
+  .b-warn { background: #f5a52422; color: var(--warn); border: 1px solid #f5a52455; }
+  .b-bad { background: #f3126022; color: var(--bad); border: 1px solid #f3126055; }
+  .b-info { background: #5b9cff22; color: var(--info); border: 1px solid #5b9cff55; }
+  h2.sec {
+    font-size: 20px; margin: 40px 0 14px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--line);
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 18px 18px 16px;
+  }
+  .card h3 {
+    margin: 0 0 10px; font-size: 14px; display: flex;
+    justify-content: space-between; align-items: center; gap: 8px; color: var(--dim);
+    text-transform: uppercase; letter-spacing: .6px; font-weight: 700;
+  }
+  .card .cs { font-size: 28px; font-weight: 800; font-family: var(--mono); }
+  .cs.ok { color: var(--ok); }
+  .cs.warn { color: var(--warn); }
+  .cs.bad { color: var(--bad); }
+  .cs.info { color: var(--info); }
+  .bar {
+    height: 8px; background: var(--panel2); border-radius: 99px;
+    overflow: hidden; margin: 10px 0 12px;
+  }
+  .bar > i {
+    display: block; height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, var(--ok), var(--info));
+  }
+  .bar.warn > i { background: linear-gradient(90deg, var(--warn), #ffcf70); }
+  .bar.bad > i { background: linear-gradient(90deg, var(--bad), #ff7aa2); }
+  .card p { margin: 0; color: var(--dim); font-size: 13.5px; }
+  table {
+    width: 100%; border-collapse: collapse; background: var(--panel);
+    border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+  }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  th { background: var(--panel2); color: var(--dim); font-size: 11px; letter-spacing: .8px; text-transform: uppercase; }
+  tr:last-child td { border-bottom: 0; }
+  td.mono, .mono { font-family: var(--mono); font-size: 12.5px; }
+  .sev { font-weight: 800; font-size: 12px; }
+  .sev.g { color: var(--ok); }
+  .sev.o { color: var(--warn); }
+  .sev.r { color: var(--bad); }
+  .sev.i { color: var(--info); }
+  ul.clean { margin: 0; padding-left: 18px; color: var(--dim); }
+  ul.clean li { margin: 6px 0; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 18px 20px; margin-bottom: 14px;
+  }
+  .panel h3 { margin: 0 0 8px; font-size: 16px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .two { grid-template-columns: 1fr; } }
+  footer { margin-top: 48px; color: var(--dim); font-size: 12.5px; text-align: center; }
+  .kpi {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px; margin-top: 18px;
+  }
+  .kpi .k {
+    background: var(--panel2); border: 1px solid var(--line);
+    border-radius: 12px; padding: 12px 14px;
+  }
+  .kpi .k b { display: block; font-size: 20px; font-family: var(--mono); font-weight: 700; }
+  .kpi .k span { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; }
+  code { font-family: var(--mono); font-size: 12px; background: var(--panel2); padding: 1px 6px; border-radius: 6px; }
+  .diff {
+    display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700;
+    padding: 2px 7px; border-radius: 6px; margin-left: 6px; vertical-align: middle;
+  }
+  .diff.up { background: #3dd68c22; color: var(--ok); }
+  .diff.flat { background: var(--panel2); color: var(--dim); }
+  .done { text-decoration: line-through; opacity: .65; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Auditoria completa · pós-roadmap · evidência ao vivo</div>
+  <h1>Tile Blast — Relatório de Saúde do Projeto</h1>
+  <div class="meta">
+    Data: <strong>25 Jul 2026 (v2)</strong> · Versão app <code>1.4.6</code> ·
+    Baseline: <a href="AUDITORIA-COMPLETA-2026-07-25.html" style="color:var(--info)">v1 (nota 77)</a> ·
+    Gates: lint ✓ · typecheck ✓ · 302 testes ✓ · coverage ✓ · e2e ✓
+  </div>
+
+  <div class="scoreband">
+    <div class="bigscore">
+      <span class="n">84</span><span class="d">/100</span>
+      <span class="delta">▲ +7</span>
+    </div>
+    <div class="verdict">
+      <span class="badge b-ok">SÓLIDO — poucos gaps restantes</span>
+      <p class="meta" style="margin:10px 0 0">
+        O gap crítico do <code>purchaseToken</code> nativo foi fechado; cobertura e docs
+        subiram; <code>bootApp</code> foi fatiado em fases. Nota ainda limitada por
+        <code>tb-meta-ui.js</code> monolítico, cobertura média (~39%) e economia
+        parcialmente client-trusted.
+      </p>
+    </div>
+  </div>
+
+  <div class="kpi">
+    <div class="k"><b>42</b><span>módulos</span></div>
+    <div class="k"><b>40</b><span>globais TB*</span></div>
+    <div class="k"><b>~18.6k</b><span>LOC JS</span></div>
+    <div class="k"><b>302</b><span>testes</span></div>
+    <div class="k"><b>39.0%</b><span>lines cov.</span></div>
+    <div class="k"><b>~1.8k</b><span>tb-main.js</span></div>
+  </div>
+</header>
+
+<h2 class="sec">Delta vs auditoria v1 (mesmo dia)</h2>
+<div class="panel">
+  <table>
+    <thead><tr><th>Item do roadmap v1</th><th>Estado</th><th>Efeito</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Fechar IAP nativo (token → JS → Function)</td>
+        <td><span class="sev g">FEITO</span></td>
+        <td>Segurança / Monetização / Loja (+4~6 previstos, realizados)</td>
+      </tr>
+      <tr>
+        <td>Testes unitários save / grid / start / playbridge (+ a11y / fx)</td>
+        <td><span class="sev g">FEITO</span></td>
+        <td>219 → 302 testes · cov 32.5% → 39.0%</td>
+      </tr>
+      <tr>
+        <td>Subir threshold Vitest</td>
+        <td><span class="sev g">FEITO</span></td>
+        <td>floor 25 → lines/stmts 37 · funcs 54 · branches 62</td>
+      </tr>
+      <tr>
+        <td>Enxugar <code>bootApp</code> (fases + <code>_sessionCfg</code>)</td>
+        <td><span class="sev g">FEITO</span></td>
+        <td>Orquestração nomeada; wiring ainda denso</td>
+      </tr>
+      <tr>
+        <td>README raiz + ECONOMIA + ARCHITECTURE</td>
+        <td><span class="sev g">FEITO</span></td>
+        <td>Docs de entrada e contrato da ponte nativa</td>
+      </tr>
+      <tr>
+        <td>Split fino de <code>tb-meta-ui.js</code></td>
+        <td><span class="sev o">PENDENTE</span></td>
+        <td>Ainda 1742 LOC — próximo alvo</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 class="sec">Notas por eixo (0–100)</h2>
+<div class="grid">
+
+  <article class="card">
+    <h3>Arquitetura <span class="cs ok">86</span><span class="diff up">+4</span></h3>
+    <div class="bar"><i style="width:86%"></i></div>
+    <p>Manifesto único, HTML/SW lock, boot em fases (<code>_initCoreModules</code>…<code>_runPostInit</code>), <code>_sessionCfg</code>/<code>_mergeCfg</code>. Dívida: <code>tb-meta-ui.js</code> 1.7k + wiring denso em <code>tb-main.js</code>.</p>
+  </article>
+
+  <article class="card">
+    <h3>Tooling &amp; qualidade <span class="cs ok">90</span><span class="diff up">+2</span></h3>
+    <div class="bar"><i style="width:90%"></i></div>
+    <p>Lint globals, typecheck JSDoc, Prettier, sync:www, bundle/minify, play:release. Thresholds de cobertura endurecidos. Gates verdes nesta rodada.</p>
+  </article>
+
+  <article class="card">
+    <h3>Testes <span class="cs ok">80</span><span class="diff up">+8</span></h3>
+    <div class="bar"><i style="width:80%"></i></div>
+    <p>40 arquivos / 302 testes; e2e Puppeteer completo verde. Cobertura 39% (floor 37%). Módulos novos com alta cov; board/gameplay/main ainda em 0% unit.</p>
+  </article>
+
+  <article class="card">
+    <h3>Segurança <span class="cs ok">84</span><span class="diff up">+16</span></h3>
+    <div class="bar"><i style="width:84%"></i></div>
+    <p>CSP, TBSecure, Functions IAP. <strong>Token nativo agora chega ao JS</strong> (<code>jsEscape</code> + restore com <code>{id,token}</code>). Economia ainda parcialmente client-trusted.</p>
+  </article>
+
+  <article class="card">
+    <h3>Monetização <span class="cs ok">80</span><span class="diff up">+10</span></h3>
+    <div class="bar"><i style="width:80%"></i></div>
+    <p>Path compra → grant local → <code>queueIapConfirm</code> → reconcile fechado no código. Ads shadow + grant local otimista permanecem por design (fase 3).</p>
+  </article>
+
+  <article class="card">
+    <h3>Acessibilidade <span class="cs ok">82</span><span class="diff up">+4</span></h3>
+    <div class="bar"><i style="width:82%"></i></div>
+    <p><code>TBA11y</code> com suite dedicada (~99% lines). Teclado, focus trap, aria/inert. Sem auditoria automatizada de contraste/AXE em CI.</p>
+  </article>
+
+  <article class="card">
+    <h3>i18n <span class="cs ok">92</span><span class="diff flat">=</span></h3>
+    <div class="bar"><i style="width:92%"></i></div>
+    <p>pt / en / es com paridade de chaves (teste). Alguns textos de mapa ainda hardcoded em PT.</p>
+  </article>
+
+  <article class="card">
+    <h3>Build / PWA / Play <span class="cs ok">88</span><span class="diff up">+2</span></h3>
+    <div class="bar"><i style="width:88%"></i></div>
+    <p>Capacitor 7, SW versionado, bundle, scripts play:*. README agora guia sync/android/release.</p>
+  </article>
+
+  <article class="card">
+    <h3>Documentação <span class="cs ok">82</span><span class="diff up">+18</span></h3>
+    <div class="bar"><i style="width:82%"></i></div>
+    <p>README raiz, <code>ARCHITECTURE.md</code> com fases do boot, contrato da ponte em <code>ECONOMIA-SERVER-SIDE.md</code>. Auditorias HTML históricas abundantes.</p>
+  </article>
+
+  <article class="card">
+    <h3>Performance / juice <span class="cs ok">81</span><span class="diff flat">=</span></h3>
+    <div class="bar"><i style="width:81%"></i></div>
+    <p>Canvas opaco, low-power FPS, DPR capped, juice/hit-stop. Sem profiling automatizado em CI.</p>
+  </article>
+
+  <article class="card">
+    <h3>Conteúdo &amp; meta-loop <span class="cs ok">83</span><span class="diff flat">=</span></h3>
+    <div class="bar"><i style="width:83%"></i></div>
+    <p>Fases, mundos, modos, BP, missões, retenção, conquistas. Integridade de content coberta por testes.</p>
+  </article>
+
+  <article class="card">
+    <h3>Prontidão de loja <span class="cs ok">82</span><span class="diff up">+8</span></h3>
+    <div class="bar"><i style="width:82%"></i></div>
+    <p>Checklists Play, privacy, assets. Bloqueio de token nativo removido. Resta validação com conta de licença de teste na Play Console.</p>
+  </article>
+
+</div>
+
+<h2 class="sec">Como a nota geral foi calculada</h2>
+<div class="panel">
+  <p class="meta" style="margin:0 0 12px">Mesmos pesos da v1 (eixos críticos com mais peso):</p>
+  <table>
+    <thead><tr><th>Eixo</th><th>Nota</th><th>Δ</th><th>Peso</th><th>Contribuição</th></tr></thead>
+    <tbody>
+      <tr><td>Arquitetura</td><td class="mono">86</td><td class="sev g">+4</td><td>12%</td><td class="mono">10.3</td></tr>
+      <tr><td>Tooling</td><td class="mono">90</td><td class="sev g">+2</td><td>8%</td><td class="mono">7.2</td></tr>
+      <tr><td>Testes</td><td class="mono">80</td><td class="sev g">+8</td><td>12%</td><td class="mono">9.6</td></tr>
+      <tr><td>Segurança</td><td class="mono">84</td><td class="sev g">+16</td><td>14%</td><td class="mono">11.8</td></tr>
+      <tr><td>Monetização</td><td class="mono">80</td><td class="sev g">+10</td><td>10%</td><td class="mono">8.0</td></tr>
+      <tr><td>Acessibilidade</td><td class="mono">82</td><td class="sev g">+4</td><td>6%</td><td class="mono">4.9</td></tr>
+      <tr><td>i18n</td><td class="mono">92</td><td class="sev i">0</td><td>6%</td><td class="mono">5.5</td></tr>
+      <tr><td>Build / PWA / Play</td><td class="mono">88</td><td class="sev g">+2</td><td>10%</td><td class="mono">8.8</td></tr>
+      <tr><td>Documentação</td><td class="mono">82</td><td class="sev g">+18</td><td>5%</td><td class="mono">4.1</td></tr>
+      <tr><td>Performance</td><td class="mono">81</td><td class="sev i">0</td><td>5%</td><td class="mono">4.1</td></tr>
+      <tr><td>Conteúdo / meta</td><td class="mono">83</td><td class="sev i">0</td><td>6%</td><td class="mono">5.0</td></tr>
+      <tr><td>Prontidão loja</td><td class="mono">82</td><td class="sev g">+8</td><td>6%</td><td class="mono">4.9</td></tr>
+      <tr><td><strong>Total</strong></td><td></td><td></td><td><strong>100%</strong></td><td class="mono"><strong>≈ 84.2 → 84</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 class="sec">Achados por severidade</h2>
+<table>
+  <thead><tr><th>Sev</th><th>Achado</th><th>Evidência</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="sev o">RISCO</td>
+      <td>Economia / ads / ranking ainda parcialmente client-trusted (grant local imediato; ad reward shadow). Fase 4 (rankings) pendente.</td>
+      <td class="mono">tb-save.js · tb-ads.js · ECONOMIA-SERVER-SIDE.md</td>
+    </tr>
+    <tr>
+      <td class="sev o">RISCO</td>
+      <td><code>tb-meta-ui.js</code> (~1.7k) e wiring de <code>init(cfg)</code> em <code>tb-main.js</code> (~1.8k pós-prettier) concentram superfície.</td>
+      <td class="mono">tb-meta-ui.js · tb-main.js · ARCHITECTURE.md</td>
+    </tr>
+    <tr>
+      <td class="sev o">RISCO</td>
+      <td>Cobertura 39% — board / gameplay / main / shop / map / modes ainda 0% unit (protegidos sobretudo por e2e).</td>
+      <td class="mono">vitest coverage v8 · thresholds 37/54/62</td>
+    </tr>
+    <tr>
+      <td class="sev i">OK</td>
+      <td>IAP nativo: token flui Android → JS → <code>queueIapConfirm</code>. Restore com tokens; legado sem token permanece local-only.</td>
+      <td class="mono">TileBlastBridge.java · tb-playbridge.js · playbridge.test.js</td>
+    </tr>
+    <tr>
+      <td class="sev i">OK</td>
+      <td>innerHTML amplo; escape em nomes/social; CSP com style unsafe-inline; conteúdo de níveis treated as trusted.</td>
+      <td class="mono">tile_blast.html CSP · tb-runtime escapeHtml</td>
+    </tr>
+    <tr>
+      <td class="sev g">BOM</td>
+      <td>Arquitetura lock (MODULES ≡ HTML ≡ SW), lint/typecheck/e2e verdes, i18n parity, README + contrato IAP documentado, TBSecure + Functions.</td>
+      <td class="mono">architecture.test.js · README.md · functions/</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 class="sec">Módulos maiores (LOC)</h2>
+<table>
+  <thead><tr><th>#</th><th>Arquivo</th><th>Linhas</th><th>Leitura</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td class="mono">tb-main.js</td><td class="mono">1844</td><td>Orquestração + boot em fases (getters expandiram LOC)</td></tr>
+    <tr><td>2</td><td class="mono">tb-meta-ui.js</td><td class="mono">1742</td><td>Guarda-chuva — <strong>próximo split</strong></td></tr>
+    <tr><td>3</td><td class="mono">tb-i18n.js</td><td class="mono">1633</td><td>Catálogo (OK data-heavy)</td></tr>
+    <tr><td>4</td><td class="mono">tb-gameplay.js</td><td class="mono">835</td><td>Motor — 0% cov unit</td></tr>
+    <tr><td>5</td><td class="mono">tb-board.js</td><td class="mono">725</td><td>Canvas paint — 0% cov</td></tr>
+    <tr><td>6</td><td class="mono">tb-game-logic.js</td><td class="mono">655</td><td>~99.7% lines — referência</td></tr>
+    <tr><td>7</td><td class="mono">tb-content.js</td><td class="mono">616</td><td>Packs/níveis</td></tr>
+    <tr><td>8</td><td class="mono">tb-juice.js</td><td class="mono">567</td><td>Efeitos</td></tr>
+    <tr><td>9</td><td class="mono">tb-map.js</td><td class="mono">553</td><td>Mapa UI — 0% cov</td></tr>
+    <tr><td>10</td><td class="mono">tb-offers.js</td><td class="mono">537</td><td>Monetização meta</td></tr>
+  </tbody>
+</table>
+
+<h2 class="sec">Cobertura (snapshot 2026-07-25 v2)</h2>
+<div class="two">
+  <div class="panel">
+    <h3>Resumo v8</h3>
+    <ul class="clean">
+      <li>Statements / Lines: <strong>38.95%</strong> (6905 / 17727)</li>
+      <li>Branches: <strong>65.52%</strong></li>
+      <li>Functions: <strong>57.42%</strong></li>
+      <li>Threshold CI: lines/stmts ≥ 37 · funcs ≥ 54 · branches ≥ 62</li>
+      <li>Δ vs v1: <strong>+6.4 pp</strong> lines (32.5 → 39.0)</li>
+    </ul>
+  </div>
+  <div class="panel">
+    <h3>Destaques pós-roadmap</h3>
+    <ul class="clean">
+      <li class="sev g">Altos: a11y 99% · playbridge 94% · fx 92% · grid 91% · save 89% · start 64%</li>
+      <li class="sev r">Ainda 0%: main, meta-ui, board, gameplay, shop, map, modes, ads…</li>
+      <li>Padrão saudável: glue via e2e; lógica pura/init via unit</li>
+    </ul>
+  </div>
+</div>
+
+<h2 class="sec">Gates executados nesta auditoria</h2>
+<table>
+  <thead><tr><th>Gate</th><th>Resultado</th><th>Notas</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">npm run lint</td><td class="sev g">PASS</td><td>no-undef limpo no concat</td></tr>
+    <tr><td class="mono">npm run typecheck</td><td class="sev g">PASS</td><td>tsc -p jsconfig.json</td></tr>
+    <tr><td class="mono">npm test</td><td class="sev g">PASS</td><td>40 files · 302 tests</td></tr>
+    <tr><td class="mono">npm run test:coverage</td><td class="sev g">PASS</td><td>acima dos floors 37/54/62</td></tr>
+    <tr><td class="mono">node scripts/run-e2e.mjs</td><td class="sev g">PASS</td><td>smoke / gameplay / win / loss / progress / map</td></tr>
+  </tbody>
+</table>
+
+<h2 class="sec">Roadmap recomendado (próxima onda)</h2>
+<div class="panel">
+  <h3>1. Split de <code>tb-meta-ui.js</code></h3>
+  <ul class="clean">
+    <li>Separar missões / baús / XP / coleção em módulos com <code>init(cfg)</code>.</li>
+    <li><strong>Impacto estimado: +1 a +2</strong> em Arquitetura (menos superfície crítica).</li>
+  </ul>
+</div>
+<div class="panel">
+  <h3>2. Cobertura de gameplay / board / modes</h3>
+  <ul class="clean">
+    <li>Unit tests com DOM mínimo + cfg injetado (padrão dos módulos novos).</li>
+    <li>Elevar floor gradualmente: lines 37 → 42 → 48.</li>
+    <li><strong>Impacto estimado: +2 a +3</strong> em Testes.</li>
+  </ul>
+</div>
+<div class="panel">
+  <h3>3. Economia — autoridade server (fase 4)</h3>
+  <ul class="clean">
+    <li>Compra real em conta de licença + reconcile observado.</li>
+    <li>Migrar rankings para write-only Function; endurecer Rules.</li>
+    <li>Retirar grant otimista quando servidor for autoridade total.</li>
+    <li><strong>Impacto estimado: +2 a +4</strong> em Segurança / Monetização / Loja.</li>
+  </ul>
+</div>
+<div class="panel">
+  <h3>4. Hardening de loja</h3>
+  <ul class="clean">
+    <li>Validar AdMob IDs de produção, listing e data safety.</li>
+    <li>Rodar <code>npm run play:prepublish</code> / <code>play:release</code> com secrets reais.</li>
+  </ul>
+</div>
+
+<h2 class="sec">Escala de interpretação</h2>
+<div class="two">
+  <div class="panel">
+    <ul class="clean">
+      <li><span class="sev g">90–100</span> — referência de produção endurecida</li>
+      <li><span class="sev g">80–89</span> — sólido, poucos gaps ← <strong>você está aqui (84)</strong></li>
+      <li><span class="sev i">70–79</span> — bom; riscos conhecidos gerenciáveis <span class="done">(v1: 77)</span></li>
+    </ul>
+  </div>
+  <div class="panel">
+    <ul class="clean">
+      <li><span class="sev o">60–69</span> — funcional, dívida relevante</li>
+      <li><span class="sev r">&lt; 60</span> — não recomendado para release amplo</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  Relatório gerado em 25 Jul 2026 · Tile Blast v2 pós-roadmap · fonte: código local + gates npm ·
+  arquivo: <code>docs/AUDITORIA-COMPLETA-2026-07-25-v2.html</code>
+</footer>
+
+</div>
+</body>
+</html>

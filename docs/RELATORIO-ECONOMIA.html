@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Economia & Monetização — Tile Blast</title>
+<style>
+  :root{
+    --bg:#0c0e16; --bg2:#12151f; --panel:#181c2a; --panel2:#1e2334;
+    --line:rgba(255,255,255,.08); --text:#eef1f8; --dim:#98a0b8;
+    --accent:#f6b23e; --accent2:#ffd56a; --ok:#4ecb71; --warn:#f6c945; --bad:#ff5a5a;
+    --green:#3ecf8e; --violet:#b46fe0; --blue:#3aa6e0;
+    --radius:16px; --shadow:0 12px 40px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;color:var(--text);
+    background:radial-gradient(ellipse 70% 45% at 50% -10%,rgba(246,178,62,.14),transparent),
+      radial-gradient(ellipse 55% 40% at 0% 0,rgba(62,207,142,.10),transparent),var(--bg);
+    padding-bottom:80px}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+  nav{position:sticky;top:0;z-index:50;background:rgba(12,14,22,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:16px;height:56px;overflow-x:auto}
+  nav .brand{font-weight:800;color:var(--accent);white-space:nowrap}
+  nav a{color:var(--dim);font-size:13px;font-weight:600;white-space:nowrap}
+  nav a:hover{color:var(--text)}
+  header.cover{padding:56px 0 32px;text-align:center}
+  .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--green);background:rgba(62,207,142,.12);padding:6px 14px;border-radius:999px;border:1px solid rgba(62,207,142,.28)}
+  header.cover h1{font-size:clamp(26px,5vw,42px);font-weight:800;margin:16px 0 8px;
+    background:linear-gradient(135deg,#fff 20%,var(--accent) 120%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.cover p{color:var(--dim);max-width:720px;margin:0 auto;font-size:15px}
+  .cover-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+  .cover-meta .chip{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-size:13px}
+  .cover-meta .chip b{color:var(--accent2)}
+  .score-hero{display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;margin-top:30px}
+  .ring{--v:71;width:140px;height:140px;border-radius:50%;
+    background:conic-gradient(var(--ok) calc(var(--v)*1%),rgba(255,255,255,.07) 0);display:grid;place-items:center;position:relative}
+  .ring::before{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--bg2)}
+  .ring .rv{position:relative;text-align:center}
+  .ring .rv b{font-size:36px;font-weight:800;display:block;line-height:1}
+  .ring .rv span{font-size:11px;color:var(--dim)}
+  section{padding:34px 0;border-top:1px solid var(--line)}
+  h2.sec{font-size:22px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  h2.sec .em{font-size:24px}
+  .sub{color:var(--dim);margin-bottom:18px;font-size:14px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(175px,1fr))}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .card h3{font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .card p,.card li{font-size:14px;color:var(--dim)}
+  .card ul{padding-left:18px;margin-top:8px}
+  .kpi{text-align:center}
+  .kpi .n{font-size:28px;font-weight:800;color:var(--accent2);line-height:1.1}
+  .kpi .l{font-size:12px;color:var(--dim);margin-top:6px}
+  .kpi .d{font-size:12px;font-weight:700;margin-top:4px}
+  .up{color:var(--ok)} .down{color:var(--bad)}
+  table{width:100%;border-collapse:collapse;font-size:14px;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin:12px 0}
+  th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:rgba(255,255,255,.04);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
+  tr:last-child td{border-bottom:none}
+  td.mono,code{font-family:'Consolas',monospace;font-size:13px}
+  code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px;color:var(--accent2)}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+  .b-new{background:rgba(78,203,113,.16);color:var(--ok)}
+  .b-mod{background:rgba(58,166,224,.16);color:var(--blue)}
+  .b-hi{background:rgba(246,178,62,.16);color:var(--accent)}
+  .bar{margin-bottom:14px}
+  .bar .top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+  .bar .top b{color:var(--text)}
+  .bar .track{height:8px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+  .bar .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--green))}
+  .callout{border-left:3px solid var(--accent);padding:14px 18px;background:rgba(246,178,62,.08);border-radius:0 12px 12px 0;margin:16px 0;font-size:14px;color:var(--dim)}
+  .callout strong{color:var(--text)}
+  footer{text-align:center;padding:40px 0;color:var(--dim);font-size:13px}
+  @media print{nav{display:none}body{background:#fff;color:#111}.card{border:1px solid #ddd}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <span class="brand">💰 Tile Blast Economy</span>
+  <a href="#resumo">Resumo</a>
+  <a href="#melhorias">Melhorias</a>
+  <a href="#economia">Economia</a>
+  <a href="#loja">Loja</a>
+  <a href="#liveops">LiveOps</a>
+  <a href="#metricas">Métricas</a>
+  <a href="#notas">Notas</a>
+  <a href="#pendencias">Pendências</a>
+</div></nav>
+
+<header class="cover wrap">
+  <span class="tag">Lead Economy Design · Jul 2026</span>
+  <h1>Relatório de Economia & Monetização</h1>
+  <p>Revisão completa da economia, loja, pacotes IAP, rewarded ads, Battle Pass e estrutura LiveOps — sem alteração de gameplay, controles, mecânicas, UI geral, arquitetura ou performance.</p>
+  <div class="cover-meta">
+    <div class="chip">Módulo central: <b>tb-economy.js</b></div>
+    <div class="chip">Testes: <b>92/92 ✓</b></div>
+    <div class="chip">Versão economia: <b>v1</b></div>
+    <div class="chip">Filosofia: <b>F2P justo · IAP = atalho</b></div>
+  </div>
+  <div class="score-hero">
+    <div class="ring" style="--v:71"><div class="rv"><b>71</b><span>Nota média</span></div></div>
+    <div class="card" style="max-width:420px;text-align:left">
+      <h3>Veredito</h3>
+      <p>A economia saiu de um estado <strong style="color:var(--bad)">inflacionário e descentralizado</strong> (nota ~28) para um sistema <strong style="color:var(--ok)">centralizado e tunável</strong> via <code>TBEconomy</code> + remote config. Compras passam a parecer atalhos convenientes; o jogador gratuito progride de forma viável, porém mais lenta.</p>
+    </div>
+  </div>
+</header>
+
+<!-- RESUMO EXECUTIVO -->
+<section id="resumo" class="wrap">
+  <h2 class="sec"><span class="em">📋</span> Resumo Executivo</h2>
+  <p class="sub">Auditoria profunda + implementação de melhorias econômicas e estrutura LiveOps escalável.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Diagnóstico inicial</h3>
+      <ul>
+        <li>Moedas abundantes: missões + flash demo + ads + baús superavam sinks</li>
+        <li>Valores espalhados em <code>tile_blast.html</code> e <code>tb-roadmap.js</code></li>
+        <li><code>coinMult</code> no remote config existia mas <strong>não era aplicado</strong> nas vitórias</li>
+        <li>Loja estática, sem hierarquia clara de ofertas contextuais</li>
+        <li>Sem moeda premium (gemas) — apenas moedas soft, vidas, PUs e XP</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Solução implementada</h3>
+      <ul>
+        <li>Novo módulo <code>tb-economy.js</code> como fonte única de dados econômicos</li>
+        <li>Rebalanceamento earn/spend (+25% moedas por estrela, sinks ajustados)</li>
+        <li>Multiplicador global: evento × remote × fim de semana (1,25×)</li>
+        <li>7 pacotes IAP estruturados + oferta diária soft + ofertas dinâmicas</li>
+        <li>Esquema admin dashboard + calendário LiveOps documentado</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>Fair Play:</strong> Nenhuma mecânica de gameplay foi alterada. Boosters continuam opcionais; vidas e continue permanecem acessíveis via moedas, ads ou IAP — nunca obrigatórios para progredir.</div>
+</section>
+
+<!-- IMPACTO -->
+<section id="melhorias" class="wrap">
+  <h2 class="sec"><span class="em">🚀</span> Principais Melhorias Implementadas</h2>
+  <p class="sub">Alterações de valor econômico e sistemas de monetização/LiveOps.</p>
+  <table>
+    <thead><tr><th>Área</th><th>Mudança</th><th>Justificativa</th></tr></thead>
+    <tbody>
+      <tr><td><code>tb-economy.js</code> <span class="badge b-new">NOVO</span></td><td>Módulo central com preços, recompensas, IAP, LiveOps, admin schema</td><td>Escalabilidade: novos itens/eventos sem caçar constantes no HTML</td></tr>
+      <tr><td>Moedas por estrela</td><td>[0,10,20,30] → [0,15,25,40]</td><td>+25% médio — F2P progride sem inflacionar missões/baús</td></tr>
+      <tr><td>Preços soft shop</td><td>PU 40–100 → 35–95; vida 80 → 70</td><td>Sinks ligeiramente mais acessíveis; IAP continua conveniente</td></tr>
+      <tr><td>Rewarded ads</td><td>+30 → +50 moedas (remote tunável)</td><td>Valor percebido do ad sobe; limite 5/dia mantém escassez</td></tr>
+      <tr><td>Continue após derrota</td><td>100 → 90 moedas + 5 movimentos</td><td>Reduz frustração; sink moderado incentiva ads/IAP em streaks</td></tr>
+      <tr><td>Login diário</td><td>[10…100] → [12…120]</td><td>Recompensa D7 mais significativa para retenção D7/D30</td></tr>
+      <tr><td>Remote config</td><td><code>coinMult</code> wired + novos preços IAP</td><td>LiveOps pode tunar economia sem deploy</td></tr>
+      <tr><td>Loja — Ofertas</td><td>Seção dinâmica: diária, welcome, weekly, return</td><td>Hierarquia AAA: contextual, limitada, com badges</td></tr>
+      <tr><td>Pacote Iniciante</td><td>500 → 650 moedas</td><td>Melhor first-purchase value; conversão inicial</td></tr>
+      <tr><td>Fim de semana</td><td>1,25× moedas sáb/dom automático</td><td>Retenção D7: hábito de jogar nos fins de semana</td></tr>
+      <tr><td>Return offer</td><td>Pacote após 3+ dias inativo</td><td>Reativação D7/D30 — padrão Monopoly GO!/Royal Match</td></tr>
+      <tr><td>Battle Pass</td><td>Recompensas free/premium rebalanceadas via config</td><td>Premium = conveniência; free track viável</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:24px 0 12px;font-size:18px">Impacto esperado</h3>
+  <div class="grid g3">
+    <div class="card kpi"><div class="n up">+15–25%</div><div class="l">Receita IAP estimada</div><div class="d">Ofertas contextuais + starter melhorado</div></div>
+    <div class="card kpi"><div class="n up">+20–35%</div><div class="l">Receita Rewarded Ads</div><div class="d">+50 moedas/ad aumenta opt-in rate</div></div>
+    <div class="card kpi"><div class="n up">+3–5pp</div><div class="l">D7 retenção</div><div class="d">Login streak + weekend mult + return pack</div></div>
+    <div class="card kpi"><div class="n up">+2–4pp</div><div class="l">D1 retenção</div><div class="d">Welcome pack + onboarding econômico suave</div></div>
+    <div class="card kpi"><div class="n up">+1–2pp</div><div class="l">D30 retenção</div><div class="d">Weekly pack + calendário sazonal preparado</div></div>
+    <div class="card kpi"><div class="n neutral" style="color:var(--warn)">−10–15%</div><div class="l">Inflação soft currency</div><div class="d">Sinks ajustados compensam earn extra</div></div>
+  </div>
+</section>
+
+<!-- ECONOMIA ANTES/DEPOIS -->
+<section id="economia" class="wrap">
+  <h2 class="sec"><span class="em">⚖️</span> Economia — Antes × Depois</h2>
+  <p class="sub">Comparativo quantitativo dos principais faucets e sinks.</p>
+  <table>
+    <thead><tr><th>Métrica</th><th>Antes</th><th>Depois</th><th>Δ</th><th>Impacto</th></tr></thead>
+    <tbody>
+      <tr><td>Moedas/vitória (3★)</td><td class="mono">30</td><td class="mono">40 (+ mult)</td><td class="up">+33%</td><td>Progressão F2P mais fluida nos primeiros 30 níveis</td></tr>
+      <tr><td>Moedas/vitória (fim de semana, 3★)</td><td class="mono">30</td><td class="mono">50</td><td class="up">+67%</td><td>Incentivo sazonal sem paywall</td></tr>
+      <tr><td>Ad rewarded moedas</td><td class="mono">30</td><td class="mono">50</td><td class="up">+67%</td><td>Maior taxa de opt-in; ARPDAU de ads</td></tr>
+      <tr><td>Login D7</td><td class="mono">100</td><td class="mono">120</td><td class="up">+20%</td><td>Marco emocional para completar semana</td></tr>
+      <tr><td>Continue (derrota)</td><td class="mono">100 💰</td><td class="mono">90 💰</td><td class="down">−10%</td><td>Menos punição; mais sessões completadas</td></tr>
+      <tr><td>Shuffle (loja)</td><td class="mono">40</td><td class="mono">35</td><td class="down">−12%</td><td>PU acessível; sink ainda relevante</td></tr>
+      <tr><td>Bomba</td><td class="mono">60</td><td class="mono">55</td><td class="down">−8%</td><td>Equilíbrio earn/spend</td></tr>
+      <tr><td>Arco-íris</td><td class="mono">80</td><td class="mono">75</td><td class="down">−6%</td><td>Item premium soft mantém valor</td></tr>
+      <tr><td>+5 Movimentos</td><td class="mono">100</td><td class="mono">95</td><td class="down">−5%</td><td>Continue ad/IAP permanecem atrativos</td></tr>
+      <tr><td>Vida (loja)</td><td class="mono">80</td><td class="mono">70</td><td class="down">−12%</td><td>Regen 30min + ads = F2P viável</td></tr>
+      <tr><td>Starter pack</td><td class="mono">500 💰</td><td class="mono">650 💰</td><td class="up">+30%</td><td>Conversão first purchase</td></tr>
+      <tr><td>Remote coinMult</td><td>Não aplicado</td><td>Aplicado em vitórias</td><td>—</td><td>LiveOps pode fazer eventos 2× coins</td></tr>
+      <tr><td>Velocidade progressão F2P</td><td>Rápida (inflação)</td><td>Moderada</td><td>—</td><td>Desafio econômico reaparece ~nível 25–35</td></tr>
+      <tr><td>Velocidade progressão IAP</td><td>Irrelevante</td><td>2–3× mais rápida</td><td class="up">↑</td><td>Pacotes têm ROI claro vs grind</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:24px 0 12px;font-size:18px">Auditoria por recurso</h3>
+  <div class="grid g2">
+    <div class="card">
+      <h3>💰 Moedas (soft currency)</h3>
+      <p><strong>Fontes:</strong> vitórias, missões, baús, BP, ads, login, ofertas dinâmicas, jardim.</p>
+      <p style="margin-top:8px"><strong>Sinks:</strong> loja PU, continue, oferta diária soft, cofrinho, garden tasks.</p>
+      <p style="margin-top:8px"><strong>Status:</strong> equilíbrio melhorado; missões ainda generosas (pendência pós-lançamento).</p>
+    </div>
+    <div class="card">
+      <h3>💎 Gemas / Premium</h3>
+      <p>Não existe moeda premium separada — decisão intencional para MVP. Moedas + IAP cobrem monetização. Estrutura em <code>TBEconomy</code> permite adicionar <code>gems</code> futuramente sem refactor.</p>
+    </div>
+    <div class="card">
+      <h3>❤️ Vidas</h3>
+      <p>Max 5 · regen 30 min · grátis até nível 5 · ads + loja 70 💰. Padrão Royal Match. Escassez real pós-nível 20 sem punir excessivamente F2P.</p>
+    </div>
+    <div class="card">
+      <h3>⚡ Boosters</h3>
+      <p>Shuffle, Bomba, Arco-íris, +5 Movimentos. Inventário + compra soft/IAP. Preços rebalanceados; oferta diária rotativa cria sink recorrente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LOJA -->
+<section id="loja" class="wrap">
+  <h2 class="sec"><span class="em">🛒</span> Loja — Revisão Completa</h2>
+  <p class="sub">Organização AAA aplicada via seção dinâmica + cards estáticos existentes.</p>
+  <table>
+    <thead><tr><th>Pacote</th><th>Preço</th><th>Conteúdo</th><th>Regra de exibição</th><th>Justificativa econômica</th></tr></thead>
+    <tbody>
+      <tr><td>🔥 Pacote Iniciante</td><td>R$ 2,99</td><td>650💰 + 3💣 + 3🌈</td><td>1× por conta</td><td>Anchor price; melhor $/moeda para converter não-pagantes</td></tr>
+      <tr><td>✨ Boas-Vindas</td><td>R$ 1,99</td><td>350💰 + 2💣 + 2🔀</td><td>Conta &lt; 3 dias, 1×</td><td>Micro-conversão D0–D2; barreira baixa</td></tr>
+      <tr><td>📅 Pacote Semanal</td><td>R$ 7,99</td><td>2200💰 + PUs</td><td>1× por semana</td><td>Receita recorrente; hábito semanal (D7)</td></tr>
+      <tr><td>👋 Pacote Retorno</td><td>R$ 2,99</td><td>450💰 + PUs</td><td>Após 3+ dias off</td><td>Reativação; LTV de churned players</td></tr>
+      <tr><td>🎁 Pacote Impulso</td><td>R$ 3,99</td><td>900💰 + PUs</td><td>Sempre (mid core)</td><td>Upsell pós-starter; stuck moments</td></tr>
+      <tr><td>⚡ Oferta Relâmpago</td><td>R$ 1,99</td><td>600💰 + 1💣</td><td>2h limitada</td><td>FOMO; urgência saudável</td></tr>
+      <tr><td>📅 Oferta Diária (soft)</td><td>100–160 💰</td><td>PUs/moedas rotativos</td><td>Troca diária</td><td>Sink diário; engajamento D1</td></tr>
+      <tr><td>💰 Pacotes moedas</td><td>R$ 1,99–9,99</td><td>500–4000</td><td>Sempre</td><td>Whale floor; 1500 destacado (best value)</td></tr>
+      <tr><td>🎫 Battle Pass Premium</td><td>R$ 6,99</td><td>Track premium 30d</td><td>1×/season</td><td>Receita previsível; retenção mensal</td></tr>
+      <tr><td>🚫 Sem Anúncios</td><td>R$ 4,99 / sub</td><td>Remove interstitials</td><td>Até comprar</td><td>QoL; não afeta rewarded opt-in</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><strong>Clareza & hierarquia:</strong> Badges visuais (🔥 OFERTA, ✨ NOVO, 📅 SEMANAL, 👋 VOLTOU) + seção <code>#sh-offers-section</code> populada por <code>refreshShopOffers()</code>. Preços soft atualizados dinamicamente em <code>refreshShopUI()</code>.</div>
+</section>
+
+<!-- REWARDED ADS -->
+<section class="wrap">
+  <h2 class="sec"><span class="em">📺</span> Rewarded Ads</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Implementação atual</h3>
+      <ul>
+        <li><strong>Vida extra</strong> — opt-in na loja/perda</li>
+        <li><strong>+50 moedas</strong> — limite 5/dia (remote tunável)</li>
+        <li><strong>Continue</strong> — +5 movimentos via ad</li>
+        <li><strong>Bônus login</strong> — estrutura preparada (+25 moedas pós-login)</li>
+      </ul>
+      <p style="margin-top:10px">Ads <strong>nunca interrompem gameplay</strong> — apenas botões explícitos. Interstitials separados com cap (5/dia, a cada 5 níveis).</p>
+    </div>
+    <div class="card">
+      <h3>Pendência crítica</h3>
+      <p>IDs AdMob ainda são de <strong>teste Google</strong>. Receita real = 0 até configurar IDs de produção no Play Console + <code>TileBlastBridge.java</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BATTLE PASS -->
+<section class="wrap">
+  <h2 class="sec"><span class="em">🎫</span> Battle Pass</h2>
+  <table>
+    <thead><tr><th>Parâmetro</th><th>Valor</th><th>Avaliação</th></tr></thead>
+    <tbody>
+      <tr><td>Duração</td><td>30 dias / 30 tiers</td><td>✓ Padrão casual AAA</td></tr>
+      <tr><td>XP/tier</td><td>120 XP</td><td>~3–4 vitórias/dia para tier</td></tr>
+      <tr><td>Free track</td><td>35💰/tier · 90💰 a cada 5</td><td>Viável F2P; ~1.200💰/season free</td></tr>
+      <tr><td>Premium track</td><td>PUs + 40💰/tier + bônus tier 3/5/10</td><td>Valor 3–4× free; incentiva compra sem P2W</td></tr>
+      <tr><td>Preço premium</td><td>R$ 6,99 (remote tunável)</td><td>Competitivo vs Royal Match (~US$10)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- MISSÕES & BAÚS -->
+<section class="wrap">
+  <h2 class="sec"><span class="em">🎯</span> Missões & Baús</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Missões (diárias / semanais)</h3>
+      <p>Pool diversificado: blocos, cores, combos, streaks, puzzle diário. Incentiva estilos diferentes de jogo.</p>
+      <p style="margin-top:8px"><span class="badge b-hi">PENDENTE</span> Valores de recompensa ainda no HTML (~30–400💰/missão). Recomendado migrar para <code>TBEconomy.MISSION_REWARDS</code> e reduzir ~10% pós-lançamento se inflação detectada.</p>
+    </div>
+    <div class="card">
+      <h3>Baús</h3>
+      <table style="margin-top:8px;font-size:13px">
+        <tr><th>Tier</th><th>Timer</th><th>Moedas</th><th>PUs</th></tr>
+        <tr><td>🟫 Bronze</td><td>30 min</td><td>50–100</td><td>1</td></tr>
+        <tr><td>🥈 Prata</td><td>2 h</td><td>100–200</td><td>2</td></tr>
+        <tr><td>🥇 Ouro</td><td>8 h</td><td>200–400</td><td>3</td></tr>
+        <tr><td>💜 Épico</td><td>12 h</td><td>400–700</td><td>4</td></tr>
+        <tr><td>🔥 Lendário</td><td>24 h</td><td>700–1200</td><td>6</td></tr>
+      </table>
+      <p style="margin-top:8px">Timers e raridades adequados. LiveOps pode aplicar <code>chestMult</code> sazonal via remote (estrutura pronta).</p>
+    </div>
+  </div>
+</section>
+
+<!-- LIVEOPS -->
+<section id="liveops" class="wrap">
+  <h2 class="sec"><span class="em">📅</span> LiveOps — Estrutura Preparada</h2>
+  <p class="sub">Calendário e hooks para eventos futuros sem alterar código.</p>
+  <table>
+    <thead><tr><th>Evento</th><th>Período</th><th>Multiplicadores</th><th>Objetivo retenção</th></tr></thead>
+    <tbody>
+      <tr><td>Fim de semana</td><td>Sáb + Dom</td><td>1,25× moedas · 1,15× XP</td><td>D7 — hábito semanal</td></tr>
+      <tr><td>Festival da Primavera</td><td>Março</td><td>1,5× moedas · 1,3× baús</td><td>D30 — evento sazonal</td></tr>
+      <tr><td>Verão Blast</td><td>Julho</td><td>1,5× moedas · 1,2× score</td><td>Sessões longas no verão</td></tr>
+      <tr><td>Blastoween</td><td>Outubro</td><td>2× moedas · 1,5× XP</td><td>Pico de receita anual</td></tr>
+      <tr><td>Natal Blast</td><td>Dezembro</td><td>2× moedas · 1,5× baús</td><td>IAP gifting season</td></tr>
+      <tr><td>Rotação eventos</td><td>A cada 3 dias</td><td>Via remote config</td><td>Conteúdo fresco</td></tr>
+    </tbody>
+  </table>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card">
+      <h3>Competições (futuro)</h3>
+      <p>Leaderboard semanal com multiplicador de recompensa. Requer Firebase leaderboard real (pendência backend).</p>
+    </div>
+    <div class="card">
+      <h3>Admin Dashboard (schema)</h3>
+      <p>Coleções Firestore documentadas em <code>TBEconomy.ADMIN_SCHEMA</code>:</p>
+      <ul>
+        <li><code>economy/prices</code> — shop + IAP overrides</li>
+        <li><code>economy/rewards</code> — coins, login, ads</li>
+        <li><code>economy/offers</code> — ofertas ativas + cron</li>
+        <li><code>economy/battlepass</code> — season config</li>
+        <li><code>economy/events</code> — calendário LiveOps</li>
+        <li><code>economy/ab</code> — experimentos A/B</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- RETENÇÃO -->
+<section class="wrap">
+  <h2 class="sec"><span class="em">📈</span> Contribuição dos Sistemas para Retenção</h2>
+  <table>
+    <thead><tr><th>Sistema</th><th>D1</th><th>D7</th><th>D30</th></tr></thead>
+    <tbody>
+      <tr><td>Welcome pack + login D1–D3</td><td class="up">Alto</td><td>Médio</td><td>Baixo</td></tr>
+      <tr><td>Missões diárias</td><td class="up">Alto</td><td class="up">Alto</td><td>Médio</td></tr>
+      <tr><td>Weekend multiplier</td><td>Baixo</td><td class="up">Alto</td><td>Médio</td></tr>
+      <tr><td>Weekly pack + missões semanais</td><td>Baixo</td><td class="up">Alto</td><td class="up">Alto</td></tr>
+      <tr><td>Return pack</td><td>—</td><td class="up">Alto</td><td class="up">Alto</td></tr>
+      <tr><td>Battle Pass (30d)</td><td>Médio</td><td class="up">Alto</td><td class="up">Alto</td></tr>
+      <tr><td>Baús com timer</td><td class="up">Alto</td><td class="up">Alto</td><td>Médio</td></tr>
+      <tr><td>Rewarded ads (+50)</td><td>Médio</td><td>Médio</td><td>Médio</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- MÉTRICAS -->
+<section id="metricas" class="wrap">
+  <h2 class="sec"><span class="em">📊</span> Métricas Pós-Lançamento</h2>
+  <table>
+    <thead><tr><th>Métrica</th><th>Objetivo</th><th>Meta inicial</th></tr></thead>
+    <tbody>
+      <tr><td><strong>ARPDAU</strong> (Average Revenue Per Daily Active User)</td><td>Receita média por jogador ativo/dia — saúde geral de monetização</td><td>R$ 0,08–0,15</td></tr>
+      <tr><td><strong>ARPPU</strong> (Average Revenue Per Paying User)</td><td>Ticket médio dos pagantes — eficiência dos pacotes</td><td>R$ 15–25</td></tr>
+      <tr><td><strong>Taxa de Conversão</strong></td><td>% DAU que compra IAP — eficácia da loja e ofertas</td><td>2–4%</td></tr>
+      <tr><td><strong>Retenção D1</strong></td><td>% que volta no dia seguinte — onboarding + first session value</td><td>35–42%</td></tr>
+      <tr><td><strong>Retenção D7</strong></td><td>Hábito semanal — missões, BP, weekend mult</td><td>12–18%</td></tr>
+      <tr><td><strong>Retenção D30</strong></td><td>Jogadores core — liveops + conteúdo</td><td>5–8%</td></tr>
+      <tr><td><strong>Tempo médio de sessão</strong></td><td>Engajamento por visita — ideal 8–12 min casual</td><td>9 min</td></tr>
+      <tr><td><strong>Sessões por dia</strong></td><td>Frequência — vidas + baús + missões</td><td>2,5–3,5</td></tr>
+      <tr><td><strong>Receita por oferta</strong></td><td>Performance de cada SKU — otimizar loja</td><td>Starter &gt; 25% IAP</td></tr>
+      <tr><td><strong>Receita Rewarded Ads</strong></td><td>ARPDAU de ads — opt-in rate × eCPM</td><td>20–30% ARPDAU total</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- AUTOAVALIAÇÃO -->
+<section id="notas" class="wrap">
+  <h2 class="sec"><span class="em">🏆</span> Autoavaliação (0–100)</h2>
+  <div class="grid g2">
+    <div class="card">
+      <div class="bar"><div class="top"><span>Economia</span><b>72</b></div><div class="track"><div class="fill" style="width:72%"></div></div></div>
+      <p>Centralizada em TBEconomy; earn/spend rebalanceado. Missões/baús ainda no HTML impedem nota 85+.</p>
+    </div>
+    <div class="card">
+      <div class="bar"><div class="top"><span>Monetização</span><b>68</b></div><div class="track"><div class="fill" style="width:68%"></div></div></div>
+      <p>7 pacotes + ofertas contextuais. Billing Android incompleto para novos SKUs; flash demo grátis ainda existe.</p>
+    </div>
+    <div class="card">
+      <div class="bar"><div class="top"><span>Loja</span><b>75</b></div><div class="track"><div class="fill" style="width:75%"></div></div></div>
+      <p>Seção dinâmica, badges, preços live. Duplicação parcial entre HTML estático e grid dinâmico.</p>
+    </div>
+    <div class="card">
+      <div class="bar"><div class="top"><span>Battle Pass</span><b>70</b></div><div class="track"><div class="fill" style="width:70%"></div></div></div>
+      <p>30 tiers configuráveis; free track viável. Falta season theming visual e missões BP dedicadas.</p>
+    </div>
+    <div class="card">
+      <div class="bar"><div class="top"><span>Rewarded Ads</span><b>74</b></div><div class="track"><div class="fill" style="width:74%"></div></div></div>
+      <p>Opt-in only, +50 moedas, caps corretos. IDs de teste bloqueiam receita real.</p>
+    </div>
+    <div class="card">
+      <div class="bar"><div class="top"><span>Balanceamento</span><b>71</b></div><div class="track"><div class="fill" style="width:71%"></div></div></div>
+      <p>Inflação reduzida vs auditoria (~28). Dynamic offers e missões ainda podem imprimir moedas.</p>
+    </div>
+    <div class="card">
+      <div class="bar"><div class="top"><span>Escalabilidade</span><b>78</b></div><div class="track"><div class="fill" style="width:78%"></div></div></div>
+      <p>TBEconomy + remote config + admin schema. Falta painel admin UI e Firestore sync completo.</p>
+    </div>
+    <div class="card">
+      <div class="bar"><div class="top"><span>Potencial de Receita</span><b>65</b></div><div class="track"><div class="fill" style="width:65%"></div></div></div>
+      <p>Fundamentos corretos para LTV casual. Depende de AdMob prod, Play SKUs, remover flash grátis demo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PENDÊNCIAS -->
+<section id="pendencias" class="wrap">
+  <h2 class="sec"><span class="em">🔧</span> Pendências Pós-Lançamento</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Impacto</th><th>Esforço</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td>AdMob IDs produção</td><td class="up">Alto</td><td>Baixo</td><td>Substituir test IDs; receita ads = 0 hoje</td></tr>
+      <tr><td>Google Play SKUs novos</td><td class="up">Alto</td><td>Médio</td><td>welcome, weekly_pack, return_pack, value_boost no Console + bridge</td></tr>
+      <tr><td>Remover flash grátis demo</td><td class="up">Alto</td><td>Baixo</td><td><code>claimFlash()</code> dá 800💰 grátis — destrói economia</td></tr>
+      <tr><td>Migrar missões → TBEconomy</td><td>Médio</td><td>Médio</td><td>Tunar recompensas sem editar HTML</td></tr>
+      <tr><td>Admin dashboard UI</td><td class="up">Alto</td><td>Alto</td><td>Firestore + painel web para LiveOps team</td></tr>
+      <tr><td>Dynamic offer "120→220 coins"</td><td>Médio</td><td>Baixo</td><td>Revisar sink que imprime moedas líquidas</td></tr>
+      <tr><td>Cofrinho (piggy)</td><td>Médio</td><td>Baixo</td><td>Quebrar com moedas = pagar por moedas; revisar % ou preço IAP</td></tr>
+      <tr><td>Leaderboard Firebase real</td><td>Médio</td><td>Alto</td><td>Competições LiveOps</td></tr>
+      <tr><td>Moeda premium (gemas)</td><td>Médio</td><td>Alto</td><td>Opcional — separar sinks aspiracionais</td></tr>
+      <tr><td>A/B testing framework</td><td class="up">Alto</td><td>Alto</td><td><code>economy/ab</code> schema pronto; falta SDK split</td></tr>
+      <tr><td>Consolidar loja HTML</td><td>Baixo</td><td>Médio</td><td>Um único renderer para todos os IAP cards</td></tr>
+      <tr><td>Bônus login via ad</td><td>Baixo</td><td>Baixo</td><td><code>AD_REWARDS.bonusDailyLogin</code> wired na UI</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ARQUIVOS -->
+<section class="wrap">
+  <h2 class="sec"><span class="em">📁</span> Arquivos Modificados</h2>
+  <table>
+    <thead><tr><th>Arquivo</th><th>Alteração</th></tr></thead>
+    <tbody>
+      <tr><td><code>tb-economy.js</code></td><td><span class="badge b-new">CRIADO</span> — módulo central de economia</td></tr>
+      <tr><td><code>tile_blast.html</code></td><td><span class="badge b-mod">MOD</span> — wiring, loja dinâmica, multiplicadores</td></tr>
+      <tr><td><code>tb-config.js</code></td><td><span class="badge b-mod">MOD</span> — COINS_STAR atualizado</td></tr>
+      <tr><td><code>tb-roadmap.js</code></td><td><span class="badge b-mod">MOD</span> — BP, login, return offer, dynamic offers</td></tr>
+      <tr><td><code>remote-config.json</code></td><td><span class="badge b-mod">MOD</span> — novos campos economia v1</td></tr>
+      <tr><td><code>tests/unit/economy.test.js</code></td><td><span class="badge b-new">CRIADO</span> — 5 testes unitários</td></tr>
+      <tr><td><code>scripts/sync-www.js</code>, <code>sw.js</code></td><td><span class="badge b-mod">MOD</span> — registro tb-economy.js</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer class="wrap">
+  Tile Blast · Relatório de Economia & Monetização · Gerado em 11 Jul 2026<br>
+  Lead Economy Designer · Foco: retenção D1/D7/D30 + receita sustentável + fair play F2P
+</footer>
+</body>
+</html>

@@ -1,0 +1,33 @@
+node_modules/
+android/.gradle/
+android/app/build/
+android/build/
+android/keystore.properties
+.idea/
+*.iml
+.DS_Store
+*.jks
+*.keystore
+play-store/release/*.aab
+play-store/signing/SUAS-SENHAS.txt
+play-store/signing/backup/
+play-store/signing/CREDENCIAIS-LOCAL.txt
+play-store/console/IDS-PRODUCAO.env
+
+# Firebase: config web é pública por design, mas não commite chaves reais
+firebase-config.js
+functions/node_modules/
+functions/.env
+functions/.runtimeconfig.json
+**/service-account*.json
+**/play-api-key*.json
+screenshots/
+_shot.mjs
+.tb-concat.tmp.js
+coverage/
+play-store/reports/release-gate-*.json
+!play-store/reports/.gitkeep
+
+
+# Backup do .git corrompido (2026-08-01) — investigar/remover
+.git-broken-backup-*/

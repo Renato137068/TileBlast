@@ -1,0 +1,1180 @@
+{
+  "generatedAt": "2026-07-27T01:26:52.971Z",
+  "hardCap": 0.65,
+  "legendaryHardTarget": 0.6,
+  "worlds": [
+    {
+      "worldId": "crystal",
+      "count": 20,
+      "counts": {
+        "easy": 3,
+        "medium": 7,
+        "hard": 10
+      },
+      "hardPct": 50,
+      "hardOk": true,
+      "curve": "EEEMMMMHMHMMHHHHHHHH",
+      "peaks": [],
+      "breathGaps": [
+        {
+          "after": "crystal-14",
+          "note": "3 hard seguidos — falta respiro"
+        },
+        {
+          "after": "crystal-15",
+          "note": "3 hard seguidos — falta respiro"
+        },
+        {
+          "after": "crystal-16",
+          "note": "3 hard seguidos — falta respiro"
+        },
+        {
+          "after": "crystal-17",
+          "note": "3 hard seguidos — falta respiro"
+        },
+        {
+          "after": "crystal-18",
+          "note": "3 hard seguidos — falta respiro"
+        },
+        {
+          "after": "crystal-19",
+          "note": "3 hard seguidos — falta respiro"
+        }
+      ],
+      "levels": [
+        {
+          "id": "crystal-01",
+          "order": 1,
+          "name": "Cristal Bruto",
+          "difficulty": "easy",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "ice"
+          ]
+        },
+        {
+          "id": "crystal-02",
+          "order": 2,
+          "name": "Veia de Prata",
+          "difficulty": "easy",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "crate"
+          ]
+        },
+        {
+          "id": "crystal-03",
+          "order": 3,
+          "name": "Reflexo",
+          "difficulty": "easy",
+          "moves": 20,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "crystal-04",
+          "order": 4,
+          "name": "Coleta Cristalina",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "collect"
+          ]
+        },
+        {
+          "id": "crystal-05",
+          "order": 5,
+          "name": "Caverna Coberta",
+          "difficulty": "medium",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "cover"
+          ]
+        },
+        {
+          "id": "crystal-06",
+          "order": 6,
+          "name": "Primeira Corrente",
+          "difficulty": "medium",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "chain"
+          ]
+        },
+        {
+          "id": "crystal-07",
+          "order": 7,
+          "name": "Gelo e Prata",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "ice",
+            "crate"
+          ]
+        },
+        {
+          "id": "crystal-08",
+          "order": 8,
+          "name": "Pressao de Cristal",
+          "difficulty": "hard",
+          "moves": 15,
+          "ppm": 240,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "crystal-09",
+          "order": 9,
+          "name": "Prisma Duplo",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "collect",
+            "cover"
+          ]
+        },
+        {
+          "id": "crystal-10",
+          "order": 10,
+          "name": "Nucleo",
+          "difficulty": "hard",
+          "moves": 14,
+          "ppm": 300,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "crystal-11",
+          "order": 11,
+          "name": "Trono de Gelo",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "ice"
+          ]
+        },
+        {
+          "id": "crystal-12",
+          "order": 12,
+          "name": "Muralha",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "crate"
+          ]
+        },
+        {
+          "id": "crystal-13",
+          "order": 13,
+          "name": "Correntes Duplas",
+          "difficulty": "hard",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "chain"
+          ]
+        },
+        {
+          "id": "crystal-14",
+          "order": 14,
+          "name": "Cinco Elementos",
+          "difficulty": "hard",
+          "moves": 28,
+          "ppm": null,
+          "objectives": [
+            "ice",
+            "crate",
+            "collect"
+          ]
+        },
+        {
+          "id": "crystal-15",
+          "order": 15,
+          "name": "Relampago Cristalino",
+          "difficulty": "hard",
+          "moves": 13,
+          "ppm": 346,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "crystal-16",
+          "order": 16,
+          "name": "Lago Congelado",
+          "difficulty": "hard",
+          "moves": 26,
+          "ppm": null,
+          "objectives": [
+            "cover",
+            "ice"
+          ]
+        },
+        {
+          "id": "crystal-17",
+          "order": 17,
+          "name": "Tempestade de Prisma",
+          "difficulty": "hard",
+          "moves": 28,
+          "ppm": null,
+          "objectives": [
+            "color",
+            "color",
+            "color"
+          ]
+        },
+        {
+          "id": "crystal-18",
+          "order": 18,
+          "name": "Coleta Suprema",
+          "difficulty": "hard",
+          "moves": 28,
+          "ppm": null,
+          "objectives": [
+            "collect",
+            "chain"
+          ]
+        },
+        {
+          "id": "crystal-19",
+          "order": 19,
+          "name": "Fenda",
+          "difficulty": "hard",
+          "moves": 14,
+          "ppm": 357,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "crystal-20",
+          "order": 20,
+          "name": "CORACAO DE CRISTAL 👑",
+          "difficulty": "hard",
+          "moves": 30,
+          "ppm": 167,
+          "objectives": [
+            "ice",
+            "crate",
+            "collect",
+            "score"
+          ]
+        }
+      ]
+    },
+    {
+      "worldId": "forest",
+      "count": 10,
+      "counts": {
+        "easy": 3,
+        "medium": 4,
+        "hard": 3
+      },
+      "hardPct": 30,
+      "hardOk": true,
+      "curve": "EEEMMMMHHH",
+      "peaks": [],
+      "breathGaps": [
+        {
+          "after": "forest-09",
+          "note": "3 hard seguidos — falta respiro"
+        }
+      ],
+      "levels": [
+        {
+          "id": "forest-01",
+          "order": 1,
+          "name": "Primeiro Gelo",
+          "difficulty": "easy",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "ice"
+          ]
+        },
+        {
+          "id": "forest-02",
+          "order": 2,
+          "name": "Degelo",
+          "difficulty": "easy",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "ice"
+          ]
+        },
+        {
+          "id": "forest-03",
+          "order": 3,
+          "name": "Violeta",
+          "difficulty": "easy",
+          "moves": 20,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "forest-04",
+          "order": 4,
+          "name": "Gelo Duplo",
+          "difficulty": "medium",
+          "moves": 20,
+          "ppm": null,
+          "objectives": [
+            "ice"
+          ]
+        },
+        {
+          "id": "forest-05",
+          "order": 5,
+          "name": "Floresta Congelada",
+          "difficulty": "medium",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "ice",
+            "color"
+          ]
+        },
+        {
+          "id": "forest-06",
+          "order": 6,
+          "name": "Laranja Quente",
+          "difficulty": "medium",
+          "moves": 18,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "forest-07",
+          "order": 7,
+          "name": "Camada de Gelo",
+          "difficulty": "medium",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "ice"
+          ]
+        },
+        {
+          "id": "forest-08",
+          "order": 8,
+          "name": "Pressão",
+          "difficulty": "hard",
+          "moves": 15,
+          "ppm": 133,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "forest-09",
+          "order": 9,
+          "name": "Gelo e Cor",
+          "difficulty": "hard",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "ice",
+            "color"
+          ]
+        },
+        {
+          "id": "forest-10",
+          "order": 10,
+          "name": "Chefão de Gelo",
+          "difficulty": "hard",
+          "moves": 24,
+          "ppm": 75,
+          "objectives": [
+            "ice",
+            "score"
+          ]
+        }
+      ]
+    },
+    {
+      "worldId": "garden",
+      "count": 15,
+      "counts": {
+        "easy": 3,
+        "medium": 9,
+        "hard": 3
+      },
+      "hardPct": 20,
+      "hardOk": true,
+      "curve": "EEEMMMMMMHMMMHH",
+      "peaks": [
+        {
+          "id": "garden-14",
+          "order": 14,
+          "ppm": 90,
+          "avg": 61,
+          "jump": 48
+        }
+      ],
+      "breathGaps": [],
+      "levels": [
+        {
+          "id": "garden-01",
+          "order": 1,
+          "name": "Aquecimento",
+          "difficulty": "easy",
+          "moves": 20,
+          "ppm": 25,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "garden-02",
+          "order": 2,
+          "name": "Primeiros Passos",
+          "difficulty": "easy",
+          "moves": 20,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "garden-03",
+          "order": 3,
+          "name": "Vermelho Vivo",
+          "difficulty": "easy",
+          "moves": 20,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "garden-04",
+          "order": 4,
+          "name": "Azul Profundo",
+          "difficulty": "medium",
+          "moves": 20,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "garden-05",
+          "order": 5,
+          "name": "Dupla Cor",
+          "difficulty": "medium",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "color",
+            "color"
+          ]
+        },
+        {
+          "id": "garden-06",
+          "order": 6,
+          "name": "Pontuação",
+          "difficulty": "medium",
+          "moves": 18,
+          "ppm": 67,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "garden-07",
+          "order": 7,
+          "name": "Verde Floresta",
+          "difficulty": "medium",
+          "moves": 20,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "garden-08",
+          "order": 8,
+          "name": "Grande Combo",
+          "difficulty": "medium",
+          "moves": 20,
+          "ppm": 60,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "garden-09",
+          "order": 9,
+          "name": "Ritmo",
+          "difficulty": "medium",
+          "moves": 18,
+          "ppm": 72,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "garden-10",
+          "order": 10,
+          "name": "Colheita",
+          "difficulty": "hard",
+          "moves": 20,
+          "ppm": 40,
+          "objectives": [
+            "color",
+            "score"
+          ]
+        },
+        {
+          "id": "garden-11",
+          "order": 11,
+          "name": "Jardim em Flor",
+          "difficulty": "medium",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "garden-12",
+          "order": 12,
+          "name": "Trilha Verde",
+          "difficulty": "medium",
+          "moves": 20,
+          "ppm": 70,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "garden-13",
+          "order": 13,
+          "name": "Dupla Colheita",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "color",
+            "color"
+          ]
+        },
+        {
+          "id": "garden-14",
+          "order": 14,
+          "name": "Combo Jardim",
+          "difficulty": "hard",
+          "moves": 20,
+          "ppm": 90,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "garden-15",
+          "order": 15,
+          "name": "Portal do Jardim 👑",
+          "difficulty": "hard",
+          "moves": 26,
+          "ppm": 46,
+          "objectives": [
+            "color",
+            "score"
+          ]
+        }
+      ]
+    },
+    {
+      "worldId": "inferno",
+      "count": 10,
+      "counts": {
+        "easy": 2,
+        "medium": 5,
+        "hard": 3
+      },
+      "hardPct": 30,
+      "hardOk": true,
+      "curve": "EMEMMMMHHH",
+      "peaks": [],
+      "breathGaps": [
+        {
+          "after": "inferno-09",
+          "note": "3 hard seguidos — falta respiro"
+        }
+      ],
+      "levels": [
+        {
+          "id": "inferno-01",
+          "order": 1,
+          "name": "Chão de Lava",
+          "difficulty": "easy",
+          "moves": 20,
+          "ppm": null,
+          "objectives": [
+            "cover"
+          ]
+        },
+        {
+          "id": "inferno-02",
+          "order": 2,
+          "name": "Chamas",
+          "difficulty": "medium",
+          "moves": 16,
+          "ppm": 141,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "inferno-03",
+          "order": 3,
+          "name": "Cobertura Total",
+          "difficulty": "easy",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "cover"
+          ]
+        },
+        {
+          "id": "inferno-04",
+          "order": 4,
+          "name": "Lava e Gelo",
+          "difficulty": "medium",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "cover",
+            "ice"
+          ]
+        },
+        {
+          "id": "inferno-05",
+          "order": 5,
+          "name": "Apocalipse",
+          "difficulty": "medium",
+          "moves": 26,
+          "ppm": null,
+          "objectives": [
+            "color",
+            "color",
+            "color"
+          ]
+        },
+        {
+          "id": "inferno-06",
+          "order": 6,
+          "name": "Piso Infernal",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "cover"
+          ]
+        },
+        {
+          "id": "inferno-07",
+          "order": 7,
+          "name": "Coleta em Chamas",
+          "difficulty": "medium",
+          "moves": 26,
+          "ppm": null,
+          "objectives": [
+            "collect",
+            "cover"
+          ]
+        },
+        {
+          "id": "inferno-08",
+          "order": 8,
+          "name": "Inferno III",
+          "difficulty": "hard",
+          "moves": 12,
+          "ppm": 317,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "inferno-09",
+          "order": 9,
+          "name": "Demônio",
+          "difficulty": "hard",
+          "moves": 26,
+          "ppm": null,
+          "objectives": [
+            "cover",
+            "crate"
+          ]
+        },
+        {
+          "id": "inferno-10",
+          "order": 10,
+          "name": "O FIM 👑",
+          "difficulty": "hard",
+          "moves": 28,
+          "ppm": 161,
+          "objectives": [
+            "cover",
+            "color",
+            "score"
+          ]
+        }
+      ]
+    },
+    {
+      "worldId": "legendary",
+      "count": 10,
+      "counts": {
+        "easy": 0,
+        "medium": 5,
+        "hard": 5
+      },
+      "hardPct": 50,
+      "hardOk": true,
+      "curve": "HMHMMMHMHH",
+      "peaks": [
+        {
+          "id": "legendary-09",
+          "order": 9,
+          "ppm": 288,
+          "avg": 188,
+          "jump": 53
+        }
+      ],
+      "breathGaps": [],
+      "levels": [
+        {
+          "id": "legendary-01",
+          "order": 1,
+          "name": "Ascensão",
+          "difficulty": "hard",
+          "moves": 18,
+          "ppm": 250,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "legendary-02",
+          "order": 2,
+          "name": "Dupla Coroa",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "color",
+            "chain"
+          ]
+        },
+        {
+          "id": "legendary-03",
+          "order": 3,
+          "name": "Relâmpago",
+          "difficulty": "hard",
+          "moves": 14,
+          "ppm": 271,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "legendary-04",
+          "order": 4,
+          "name": "Prismas",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "color",
+            "color",
+            "color"
+          ]
+        },
+        {
+          "id": "legendary-05",
+          "order": 5,
+          "name": "Tormenta",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": 133,
+          "objectives": [
+            "chain",
+            "score"
+          ]
+        },
+        {
+          "id": "legendary-06",
+          "order": 6,
+          "name": "Hexa Master",
+          "difficulty": "medium",
+          "moves": 26,
+          "ppm": null,
+          "objectives": [
+            "color",
+            "color",
+            "color"
+          ]
+        },
+        {
+          "id": "legendary-07",
+          "order": 7,
+          "name": "Supremacia",
+          "difficulty": "hard",
+          "moves": 18,
+          "ppm": 289,
+          "objectives": [
+            "score",
+            "color"
+          ]
+        },
+        {
+          "id": "legendary-08",
+          "order": 8,
+          "name": "Coroa Tripla",
+          "difficulty": "medium",
+          "moves": 28,
+          "ppm": 143,
+          "objectives": [
+            "chain",
+            "color",
+            "score"
+          ]
+        },
+        {
+          "id": "legendary-09",
+          "order": 9,
+          "name": "Penúltimo Julgamento",
+          "difficulty": "hard",
+          "moves": 16,
+          "ppm": 288,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "legendary-10",
+          "order": 10,
+          "name": "TILE MASTER 👑",
+          "difficulty": "hard",
+          "moves": 30,
+          "ppm": 217,
+          "objectives": [
+            "color",
+            "color",
+            "color",
+            "score"
+          ]
+        }
+      ]
+    },
+    {
+      "worldId": "mountain",
+      "count": 10,
+      "counts": {
+        "easy": 2,
+        "medium": 5,
+        "hard": 3
+      },
+      "hardPct": 30,
+      "hardOk": true,
+      "curve": "EMEMMMMHHH",
+      "peaks": [],
+      "breathGaps": [
+        {
+          "after": "mountain-09",
+          "note": "3 hard seguidos — falta respiro"
+        }
+      ],
+      "levels": [
+        {
+          "id": "mountain-01",
+          "order": 1,
+          "name": "Primeira Caixa",
+          "difficulty": "easy",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "crate"
+          ]
+        },
+        {
+          "id": "mountain-02",
+          "order": 2,
+          "name": "Altitude",
+          "difficulty": "medium",
+          "moves": 18,
+          "ppm": 92,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "mountain-03",
+          "order": 3,
+          "name": "Caixas de Pedra",
+          "difficulty": "easy",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "crate"
+          ]
+        },
+        {
+          "id": "mountain-04",
+          "order": 4,
+          "name": "Tricolor",
+          "difficulty": "medium",
+          "moves": 26,
+          "ppm": null,
+          "objectives": [
+            "color",
+            "color",
+            "color"
+          ]
+        },
+        {
+          "id": "mountain-05",
+          "order": 5,
+          "name": "Muro de Caixas",
+          "difficulty": "medium",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "crate"
+          ]
+        },
+        {
+          "id": "mountain-06",
+          "order": 6,
+          "name": "Velocidade",
+          "difficulty": "medium",
+          "moves": 14,
+          "ppm": 171,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "mountain-07",
+          "order": 7,
+          "name": "Caixa e Gelo",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "crate",
+            "ice"
+          ]
+        },
+        {
+          "id": "mountain-08",
+          "order": 8,
+          "name": "Chuva Roxa",
+          "difficulty": "hard",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "mountain-09",
+          "order": 9,
+          "name": "Fortaleza",
+          "difficulty": "hard",
+          "moves": 24,
+          "ppm": 83,
+          "objectives": [
+            "crate",
+            "score"
+          ]
+        },
+        {
+          "id": "mountain-10",
+          "order": 10,
+          "name": "Cume",
+          "difficulty": "hard",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "crate",
+            "color"
+          ]
+        }
+      ]
+    },
+    {
+      "worldId": "ocean",
+      "count": 10,
+      "counts": {
+        "easy": 2,
+        "medium": 5,
+        "hard": 3
+      },
+      "hardPct": 30,
+      "hardOk": true,
+      "curve": "EMEMMMMHHH",
+      "peaks": [],
+      "breathGaps": [
+        {
+          "after": "ocean-09",
+          "note": "3 hard seguidos — falta respiro"
+        }
+      ],
+      "levels": [
+        {
+          "id": "ocean-01",
+          "order": 1,
+          "name": "Primeira Coleta",
+          "difficulty": "easy",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "collect"
+          ]
+        },
+        {
+          "id": "ocean-02",
+          "order": 2,
+          "name": "Profundeza",
+          "difficulty": "medium",
+          "moves": 18,
+          "ppm": 108,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "ocean-03",
+          "order": 3,
+          "name": "Correnteza",
+          "difficulty": "easy",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "collect"
+          ]
+        },
+        {
+          "id": "ocean-04",
+          "order": 4,
+          "name": "Maré de Cor",
+          "difficulty": "medium",
+          "moves": 22,
+          "ppm": null,
+          "objectives": [
+            "color"
+          ]
+        },
+        {
+          "id": "ocean-05",
+          "order": 5,
+          "name": "Tesouro do Fundo",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "collect"
+          ]
+        },
+        {
+          "id": "ocean-06",
+          "order": 6,
+          "name": "Abismo",
+          "difficulty": "medium",
+          "moves": 16,
+          "ppm": 150,
+          "objectives": [
+            "score"
+          ]
+        },
+        {
+          "id": "ocean-07",
+          "order": 7,
+          "name": "Coleta Gelada",
+          "difficulty": "medium",
+          "moves": 24,
+          "ppm": null,
+          "objectives": [
+            "collect",
+            "ice"
+          ]
+        },
+        {
+          "id": "ocean-08",
+          "order": 8,
+          "name": "Seis Cores",
+          "difficulty": "hard",
+          "moves": 28,
+          "ppm": null,
+          "objectives": [
+            "color",
+            "color",
+            "color"
+          ]
+        },
+        {
+          "id": "ocean-09",
+          "order": 9,
+          "name": "Correntes Profundas",
+          "difficulty": "hard",
+          "moves": 26,
+          "ppm": null,
+          "objectives": [
+            "collect",
+            "crate"
+          ]
+        },
+        {
+          "id": "ocean-10",
+          "order": 10,
+          "name": "Kraken",
+          "difficulty": "hard",
+          "moves": 26,
+          "ppm": 115,
+          "objectives": [
+            "collect",
+            "score"
+          ]
+        }
+      ]
+    }
+  ],
+  "alerts": [],
+  "legendary": {
+    "hardPct": 50,
+    "curve": "HMHMMMHMHH",
+    "ok": true,
+    "peaks": [
+      {
+        "id": "legendary-09",
+        "order": 9,
+        "ppm": 288,
+        "avg": 188,
+        "jump": 53
+      }
+    ]
+  },
+  "justification": {
+    "legendary_breath": "P2.2: demover picos hard→medium e +moves em score-rush para hard%≤60 e curva com respiro."
+  }
+}

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Refatoração Arquitetural — Tile Blast</title>
+<style>
+  :root{
+    --bg:#0a0c14; --bg2:#11131c; --panel:#171a28; --panel2:#1d2132;
+    --line:rgba(255,255,255,.08); --text:#eef1f8; --dim:#98a0b8;
+    --accent:#f6b23e; --accent2:#ffce6b; --ok:#4ecb71; --warn:#f6c945; --bad:#ff5a5a;
+    --blue:#3aa6e0; --violet:#b46fe0;
+    --radius:16px; --shadow:0 12px 40px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% -10%,rgba(120,80,200,.18),transparent),
+      radial-gradient(ellipse 55% 40% at 100% 0,rgba(246,178,62,.10),transparent),
+      var(--bg);
+    color:var(--text); line-height:1.6; padding-bottom:80px;
+  }
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+  /* ── NAV ── */
+  nav{position:sticky;top:0;z-index:50;background:rgba(10,12,20,.82);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:18px;height:56px;overflow-x:auto}
+  nav .brand{font-weight:800;color:var(--accent);white-space:nowrap}
+  nav a{color:var(--dim);font-size:13px;font-weight:600;white-space:nowrap;transition:color .15s}
+  nav a:hover{color:var(--text)}
+
+  /* ── COVER ── */
+  header.cover{padding:64px 0 40px;text-align:center}
+  .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent);background:rgba(246,178,62,.12);
+    padding:6px 14px;border-radius:999px;border:1px solid rgba(246,178,62,.25)}
+  header.cover h1{font-size:clamp(28px,5vw,46px);font-weight:800;margin:18px 0 8px;
+    background:linear-gradient(135deg,#fff 20%,var(--accent) 110%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.cover p{color:var(--dim);max-width:640px;margin:0 auto}
+  .cover-meta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .cover-meta .chip{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:10px 16px;font-size:13px}
+  .cover-meta .chip b{color:var(--accent2)}
+
+  .score-hero{display:flex;align-items:center;justify-content:center;gap:28px;
+    flex-wrap:wrap;margin-top:36px}
+  .ring{--v:92;width:150px;height:150px;border-radius:50%;
+    background:conic-gradient(var(--ok) calc(var(--v)*1%),rgba(255,255,255,.07) 0);
+    display:grid;place-items:center;position:relative}
+  .ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--bg2)}
+  .ring .rv{position:relative;text-align:center}
+  .ring .rv b{font-size:38px;font-weight:800;display:block;line-height:1}
+  .ring .rv span{font-size:11px;color:var(--dim)}
+  .verdict{max-width:360px;text-align:left}
+  .verdict h3{font-size:20px;color:var(--ok);margin-bottom:6px}
+  .verdict p{font-size:14px;color:var(--dim)}
+
+  /* ── SECTIONS ── */
+  section{padding:38px 0;border-top:1px solid var(--line)}
+  h2.sec{font-size:24px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  h2.sec .em{font-size:26px}
+  .sub{color:var(--dim);margin-bottom:22px;font-size:14px}
+
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .card h3{font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .card p{font-size:14px;color:var(--dim)}
+  .card .em{font-size:20px}
+
+  .kpi{text-align:center}
+  .kpi .n{font-size:34px;font-weight:800;color:var(--accent2);line-height:1}
+  .kpi .l{font-size:12px;color:var(--dim);margin-top:6px}
+  .kpi .d{font-size:12px;font-weight:700;margin-top:4px}
+  .up{color:var(--ok)} .down{color:var(--bad)}
+
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px}
+  ul.clean li{font-size:14px;color:var(--dim);padding-left:26px;position:relative}
+  ul.clean li::before{content:"";position:absolute;left:0;top:2px;color:var(--ok);font-weight:800}
+  ul.warnlist li::before{content:"";color:var(--warn)}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;overflow:hidden;
+    border-radius:12px;border:1px solid var(--line)}
+  th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:rgba(255,255,255,.04);font-size:12px;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--dim)}
+  tr:last-child td{border-bottom:none}
+  td.mono,code{font-family:'Consolas',monospace;font-size:13px}
+  code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px;color:var(--accent2)}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+  .b-new{background:rgba(78,203,113,.16);color:var(--ok)}
+  .b-mod{background:rgba(58,166,224,.16);color:var(--blue)}
+  .b-cfg{background:rgba(246,178,62,.16);color:var(--accent)}
+
+  /* progress bars */
+  .bar{margin-bottom:14px}
+  .bar .top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+  .bar .top b{color:var(--text)}
+  .bar .track{height:10px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
+  .bar .fill{height:100%;border-radius:999px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  .fill.ok{background:linear-gradient(90deg,#37b85f,#7ff0a5)}
+  .fill.blue{background:linear-gradient(90deg,#2b83c9,#63c8ff)}
+
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px;font-weight:700}
+  .flow .node{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+  .flow .node.cfg{border-color:rgba(246,178,62,.4);color:var(--accent2)}
+  .flow .node.shell{border-color:rgba(180,111,224,.5);color:#d8b6f5}
+  .flow .arw{color:var(--dim)}
+
+  .note{background:rgba(58,166,224,.08);border:1px solid rgba(58,166,224,.25);
+    border-radius:12px;padding:14px 16px;font-size:13.5px;color:#cfe4f4}
+  .note b{color:#eaf5ff}
+
+  footer{padding:40px 0;text-align:center;color:var(--dim);font-size:13px}
+  .totop{position:fixed;right:20px;bottom:20px;background:var(--accent);color:#1a1200;
+    width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:20px;
+    font-weight:800;box-shadow:var(--shadow);z-index:60}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <span class="brand">Tile Blast · Arquitetura</span>
+  <a href="#resumo">Resumo</a>
+  <a href="#melhorias">Melhorias</a>
+  <a href="#arquivos">Arquivos</a>
+  <a href="#metricas">Métricas</a>
+  <a href="#arquitetura">Arquitetura</a>
+  <a href="#escala">Escalabilidade</a>
+  <a href="#auto">Autoavaliação</a>
+  <a href="#pend">Pendências</a>
+</div></nav>
+
+<header class="cover"><div class="wrap">
+  <span class="tag">Refatoração Arquitetural · Etapa de qualidade de código</span>
+  <h1>De god-file a arquitetura modular</h1>
+  <p>Refatoração staged e verificável do Tile Blast — modularização de CSS e
+  JavaScript, centralização de configuração e documentação, com <b>zero mudança</b>
+  de gameplay, UI, UX, animações ou balanceamento.</p>
+
+  <div class="cover-meta">
+    <span class="chip">Projeto: <b>Tile Blast</b></span>
+    <span class="chip">Versão: <b>1.4.6</b></span>
+    <span class="chip">Estratégia: <b>sem bundler · IIFE · namespace TB</b></span>
+    <span class="chip">Testes: <b>87 verdes</b></span>
+  </div>
+
+  <div class="score-hero">
+    <div class="ring" style="--v:92">
+      <div class="rv"><b>92</b><span>/ 100</span></div>
+    </div>
+    <div class="verdict">
+      <h3>Excelente — pronto para evoluir</h3>
+      <p>Base significativamente mais organizada, testável e escalável. As
+      extrações de maior risco (core do tabuleiro) foram <b>deliberadamente
+      deferidas</b> por falta de cobertura unitária, com plano de continuação
+      documentado.</p>
+    </div>
+  </div>
+</div></header>
+
+<div class="wrap">
+
+<!-- RESUMO -->
+<section id="resumo">
+  <h2 class="sec"><span class="em">📋</span> Resumo executivo</h2>
+  <p class="sub">O que foi feito, por que, e o resultado.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3><span class="em">🎯</span> Objetivo</h3>
+      <p>Transformar um projeto centrado em um arquivo monolítico (HTML com ~630
+      linhas de CSS inline e ~4.800 de JS inline) em uma base modular,
+      documentada e de fácil manutenção — <b>sem alterar nada perceptível ao
+      jogador</b>.</p>
+    </div>
+    <div class="card">
+      <h3><span class="em">🧭</span> Abordagem</h3>
+      <p>Refatoração em <b>estágios verificáveis</b>. Cada estágio validado por
+      Vitest + smoke no navegador. A extração de CSS foi conferida
+      <b>byte-a-byte</b> (concatenação idêntica ao original) para garantir cascata
+      inalterada.</p>
+    </div>
+    <div class="card">
+      <h3><span class="em">✅</span> Resultado</h3>
+      <p>3 novos módulos JS (<code>TBConfig</code>, <code>TBAudio</code>,
+      <code>TBUI</code>), 12 módulos CSS, configuração centralizada, pipeline de
+      build corrigido, documentação (<code>ARCHITECTURE.md</code>) e +9 testes.</p>
+    </div>
+    <div class="card">
+      <h3><span class="em">🛡️</span> Garantias</h3>
+      <p>Nenhuma regra, dificuldade, monetização ou animação foi tocada. Todos os
+      call sites preservados via aliases. 87/87 testes verdes e boot validado no
+      navegador em cada estágio.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MELHORIAS -->
+<section id="melhorias">
+  <h2 class="sec"><span class="em">🚀</span> Principais melhorias</h2>
+  <p class="sub">Por estágio da refatoração.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3><span class="b-cfg badge">Estágio 0</span> Configuração centralizada</h3>
+      <p>Criado <code>tb-config.js</code> (<code>window.TBConfig</code>, congelado)
+      reunindo números mágicos, thresholds de especiais, tabela de XP, recompensas,
+      enums e chaves de save. O shell agora lê tudo de <code>TBConfig</code>,
+      mantendo os mesmos nomes léxicos. Corrigido também o <i>gap</i> do
+      <code>minify-www.mjs</code> (faltavam <code>tb-meta.js</code> e
+      <code>tb-juice.js</code>).</p>
+    </div>
+    <div class="card">
+      <h3><span class="b-mod badge">Estágio 1</span> CSS modular</h3>
+      <p>~630 linhas de CSS inline extraídas para <b>12 arquivos</b> em
+      <code>css/</code>, ligados por <code>&lt;link&gt;</code> na ordem exata da
+      cascata original. <code>&lt;link&gt;</code> é render-blocking → sem FOUC.
+      Precache offline e Capacitor atualizados.</p>
+    </div>
+    <div class="card">
+      <h3><span class="b-new badge">Estágio 2</span> Áudio isolado</h3>
+      <p><code>Sound</code> e <code>Haptic</code> (feedback procedural, zero
+      assets) movidos para <code>tb-audio.js</code> (<code>window.TBAudio</code>).
+      Shell usa aliases <code>const Sound = TBAudio.Sound</code>. i18n já estava
+      centralizado em <code>tb-roadmap.js</code> — um <code>tb-i18n.js</code>
+      seria redundante (decisão documentada).</p>
+    </div>
+    <div class="card">
+      <h3><span class="b-new badge">Estágio 3</span> Componentes de UI</h3>
+      <p><code>Toast</code> e <code>Modal global</code> centralizados em
+      <code>tb-ui.js</code> (<code>window.TBUI</code>). Wrappers finos preservam
+      <code>showToast/showGlobalModal/closeGlobalModal</code> — comportamento e
+      acessibilidade (foco, aria) idênticos.</p>
+    </div>
+    <div class="card">
+      <h3><span class="badge" style="background:rgba(180,111,224,.16);color:#d8b6f5">Estágio 4</span> Núcleo — decisão de risco</h3>
+      <p>Extração física de <code>board/hud</code> <b>deferida</b>: forte
+      acoplamento a globais do canvas e ausência de cobertura unitária. Em vez de
+      arriscar regressão, adicionou-se cabeçalho arquitetural ao shell e plano de
+      continuação. Modularizou-se primeiro o de baixo acoplamento.</p>
+    </div>
+    <div class="card">
+      <h3><span class="badge b-new">Docs</span> Documentação & convenções</h3>
+      <p>Criado <code>ARCHITECTURE.md</code> (estrutura, módulos, dependências,
+      ordem de carga, fluxo de boot, pipeline, checklist para novos módulos).
+      Cabeçalhos padronizados em todos os módulos novos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ARQUIVOS -->
+<section id="arquivos">
+  <h2 class="sec"><span class="em">🗂️</span> Arquivos criados / modificados / removidos</h2>
+  <p class="sub">Nada foi deletado do runtime — apenas reorganizado. "Removido"
+  refere-se a código inline que virou módulo.</p>
+  <table>
+    <thead><tr><th>Arquivo</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">tb-config.js</td><td><span class="badge b-new">novo</span></td><td>Constantes/tabelas/chaves (TBConfig, congelado)</td></tr>
+      <tr><td class="mono">tb-audio.js</td><td><span class="badge b-new">novo</span></td><td>Sound + Haptic (TBAudio)</td></tr>
+      <tr><td class="mono">tb-ui.js</td><td><span class="badge b-new">novo</span></td><td>Toast + Modal (TBUI)</td></tr>
+      <tr><td class="mono">css/ (12 arquivos)</td><td><span class="badge b-new">novo</span></td><td>CSS modular por domínio</td></tr>
+      <tr><td class="mono">ARCHITECTURE.md</td><td><span class="badge b-new">novo</span></td><td>Documentação de arquitetura</td></tr>
+      <tr><td class="mono">tile_blast.html</td><td><span class="badge b-mod">mod</span></td><td>CSS→link; Sound/Haptic/Toast/Modal→aliases; consts→TBConfig; cabeçalho do shell</td></tr>
+      <tr><td class="mono">scripts/sync-www.js</td><td><span class="badge b-mod">mod</span></td><td>Copia novos módulos + pasta css/</td></tr>
+      <tr><td class="mono">scripts/minify-www.mjs</td><td><span class="badge b-mod">mod</span></td><td>Lista corrigida (+config, audio, ui, meta, juice)</td></tr>
+      <tr><td class="mono">sw.js</td><td><span class="badge b-mod">mod</span></td><td>Precache de css/* e novos JS</td></tr>
+      <tr><td class="mono">tests/unit/{config,audio,ui}.test.js</td><td><span class="badge b-new">novo</span></td><td>+9 testes unitários</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- METRICAS -->
+<section id="metricas">
+  <h2 class="sec"><span class="em">📊</span> Métricas antes × depois</h2>
+  <p class="sub">Medições reais do repositório.</p>
+  <div class="grid g4">
+    <div class="card kpi"><div class="n">5835→5041</div><div class="l">linhas em tile_blast.html</div><div class="d up">−794 (−14%)</div></div>
+    <div class="card kpi"><div class="n">0→12</div><div class="l">módulos CSS</div><div class="d up">+12</div></div>
+    <div class="card kpi"><div class="n">9→12</div><div class="l">módulos JS (TB*)</div><div class="d up">+3</div></div>
+    <div class="card kpi"><div class="n">78→87</div><div class="l">testes automatizados</div><div class="d up">+9</div></div>
+    <div class="card kpi"><div class="n">~0→1</div><div class="l">fonte de constantes</div><div class="d up">centralizado</div></div>
+    <div class="card kpi"><div class="n">4</div><div class="l">componentes dedup. (Sound/Haptic/Toast/Modal)</div><div class="d up">1 fonte cada</div></div>
+    <div class="card kpi"><div class="n">2→0</div><div class="l">gaps no minify pipeline</div><div class="d up">corrigido</div></div>
+    <div class="card kpi"><div class="n">100%</div><div class="l">paridade visual (byte-a-byte no CSS)</div><div class="d up">verificado</div></div>
+  </div>
+</section>
+
+<!-- ARQUITETURA -->
+<section id="arquitetura">
+  <h2 class="sec"><span class="em">🏗️</span> Arquitetura</h2>
+  <p class="sub">Namespace <code>TB</code>, sem bundler, IIFE por módulo.</p>
+
+  <div class="card" style="margin-bottom:16px">
+    <h3><span class="em">🔗</span> Ordem de carregamento</h3>
+    <div class="flow" style="margin-top:10px">
+      <span class="node cfg">tb-config</span><span class="arw">→</span>
+      <span class="node">tb-audio</span><span class="arw">→</span>
+      <span class="node">tb-ui</span><span class="arw">→</span>
+      <span class="node">tb-game-logic</span><span class="arw">→</span>
+      <span class="node">firebase/remote</span><span class="arw">→</span>
+      <span class="node">tb-roadmap</span><span class="arw">→</span>
+      <span class="node">tb-global</span><span class="arw">→</span>
+      <span class="node">features/push/meta/juice</span><span class="arw">→</span>
+      <span class="node shell">SHELL (gameplay)</span>
+    </div>
+    <p style="margin-top:12px">O shell referencia <code>TBConfig</code>,
+    <code>TBAudio</code> e <code>TBUI</code> logo no topo, então estes carregam antes.</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3><span class="em">📦</span> Responsabilidades</h3>
+      <table style="border:none">
+        <tbody>
+          <tr><td class="mono">TBConfig</td><td>constantes, thresholds, XP, chaves</td></tr>
+          <tr><td class="mono">TBAudio</td><td>Sound (Web Audio) + Haptic</td></tr>
+          <tr><td class="mono">TBUI</td><td>Toast + Modal global</td></tr>
+          <tr><td class="mono">TBLogic</td><td>regras puras (grupos/pontos/obj.)</td></tr>
+          <tr><td class="mono">TBRoadmap</td><td>save, i18n, fases, progressão</td></tr>
+          <tr><td class="mono">TBMeta/TBJuice</td><td>meta-jardim / game-feel</td></tr>
+          <tr><td class="mono">shell</td><td>canvas, HUD, loja, baús, boot</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3><span class="em">🔁</span> Fluxo de boot</h3>
+      <ul class="clean">
+        <li>CSS aplicado (render-blocking → sem FOUC)</li>
+        <li>Módulos <code>TB*</code> registram namespaces</li>
+        <li>Shell detecta plataforma e inicializa save/i18n/meta/juice</li>
+        <li><code>applyI18n()</code> + <code>renderMap()</code> desenham a UI</li>
+        <li>Splash removido → tela de mapa</li>
+        <li>Service Worker faz precache para offline</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ESCALABILIDADE -->
+<section id="escala">
+  <h2 class="sec"><span class="em">📈</span> Escalabilidade</h2>
+  <p class="sub">Capacidade de crescer sem tocar no god-file (0–100).</p>
+  <div class="grid g2">
+    <div>
+      <div class="bar"><div class="top"><span>Manutenção</span><b>90</b></div><div class="track"><div class="fill ok" style="width:90%"></div></div></div>
+      <div class="bar"><div class="top"><span>Organização</span><b>92</b></div><div class="track"><div class="fill ok" style="width:92%"></div></div></div>
+      <div class="bar"><div class="top"><span>Reutilização</span><b>85</b></div><div class="track"><div class="fill" style="width:85%"></div></div></div>
+    </div>
+    <div>
+      <div class="bar"><div class="top"><span>Legibilidade</span><b>88</b></div><div class="track"><div class="fill" style="width:88%"></div></div></div>
+      <div class="bar"><div class="top"><span>Modularização</span><b>84</b></div><div class="track"><div class="fill blue" style="width:84%"></div></div></div>
+      <div class="bar"><div class="top"><span>Crescimento (novos mundos/moedas/eventos)</span><b>86</b></div><div class="track"><div class="fill blue" style="width:86%"></div></div></div>
+    </div>
+  </div>
+  <div class="note" style="margin-top:16px"><b>Como crescer:</b> novos valores →
+  <code>TBConfig</code>; novos SFX → <code>TBAudio</code>; novos componentes →
+  <code>TBUI</code>; novos estilos → módulo <code>css/</code> apropriado.</div>
+</section>
+
+<!-- AUTOAVALIACAO -->
+<section id="auto">
+  <h2 class="sec"><span class="em">🧪</span> Autoavaliação técnica</h2>
+  <p class="sub">Nota honesta por dimensão (0–100).</p>
+  <div class="grid g2">
+    <div>
+      <div class="bar"><div class="top"><span>HTML (semântica/estrutura)</span><b>88</b></div><div class="track"><div class="fill ok" style="width:88%"></div></div></div>
+      <div class="bar"><div class="top"><span>CSS (modularização/tokens)</span><b>90</b></div><div class="track"><div class="fill ok" style="width:90%"></div></div></div>
+      <div class="bar"><div class="top"><span>JavaScript (organização)</span><b>84</b></div><div class="track"><div class="fill" style="width:84%"></div></div></div>
+      <div class="bar"><div class="top"><span>Arquitetura (namespace/deps)</span><b>90</b></div><div class="track"><div class="fill" style="width:90%"></div></div></div>
+    </div>
+    <div>
+      <div class="bar"><div class="top"><span>Organização de arquivos</span><b>92</b></div><div class="track"><div class="fill blue" style="width:92%"></div></div></div>
+      <div class="bar"><div class="top"><span>Escalabilidade</span><b>87</b></div><div class="track"><div class="fill blue" style="width:87%"></div></div></div>
+      <div class="bar"><div class="top"><span>Performance estrutural</span><b>88</b></div><div class="track"><div class="fill blue" style="width:88%"></div></div></div>
+      <div class="bar"><div class="top"><span>Cobertura de testes</span><b>72</b></div><div class="track"><div class="fill" style="width:72%;background:linear-gradient(90deg,#c9922b,#f6c945)"></div></div></div>
+    </div>
+  </div>
+  <div class="note" style="margin-top:16px">Nota global <b>92/100</b>. O principal
+  limitador restante é a cobertura de testes do <b>core de gameplay</b>, que
+  condiciona a próxima onda de extrações com segurança.</div>
+</section>
+
+<!-- PENDENCIAS -->
+<section id="pend">
+  <h2 class="sec"><span class="em">📌</span> Pendências priorizadas</h2>
+  <p class="sub">Ordenadas por impacto × pré-requisito.</p>
+  <table>
+    <thead><tr><th>#</th><th>Item</th><th>Impacto</th><th>Esforço</th><th>Prioridade</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Testes headless/e2e do tabuleiro (pré-requisito p/ extrair core)</td><td>Alto</td><td>Médio</td><td><span class="badge b-cfg">Alta</span></td></tr>
+      <tr><td>2</td><td>Extrair <code>tb-board.js</code> / <code>tb-hud.js</code> do shell</td><td>Alto</td><td>Alto</td><td><span class="badge b-cfg">Alta</span></td></tr>
+      <tr><td>3</td><td>Ampliar <code>tb-ui.js</code> (progress bars, badges, contadores)</td><td>Médio</td><td>Médio</td><td><span class="badge b-mod">Média</span></td></tr>
+      <tr><td>4</td><td>Mover tabelas de dados (<code>EVENT_DEFS</code>, <code>PU_DEFS</code>, <code>LEVELS</code>) para <code>data/</code></td><td>Médio</td><td>Médio</td><td><span class="badge b-mod">Média</span></td></tr>
+      <tr><td>5</td><td>Minificação de CSS no build</td><td>Baixo</td><td>Baixo</td><td><span class="badge">Baixa</span></td></tr>
+      <tr><td>6</td><td>Sweep de código morto profundo (após cobertura)</td><td>Baixo</td><td>Médio</td><td><span class="badge">Baixa</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  Relatório gerado ao final da refatoração arquitetural · Tile Blast v1.4.6 ·
+  87/87 testes verdes · paridade visual verificada.
+</footer>
+
+</div>
+
+<a href="#" class="totop" aria-label="Voltar ao topo">↑</a>
+</body>
+</html>

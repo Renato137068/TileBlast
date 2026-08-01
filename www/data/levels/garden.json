@@ -1,0 +1,333 @@
+{
+  "worldId": "garden",
+  "levels": [
+    {
+      "id": "garden-01",
+      "worldId": "garden",
+      "order": 1,
+      "index": 0,
+      "name": "Aquecimento",
+      "seed": 1001,
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 500
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-02",
+      "worldId": "garden",
+      "order": 2,
+      "index": 1,
+      "name": "Primeiros Passos",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 0,
+          "target": 18
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-03",
+      "worldId": "garden",
+      "order": 3,
+      "index": 2,
+      "name": "Vermelho Vivo",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 0,
+          "target": 22
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-04",
+      "worldId": "garden",
+      "order": 4,
+      "index": 3,
+      "name": "Azul Profundo",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 1,
+          "target": 22
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-05",
+      "worldId": "garden",
+      "order": 5,
+      "index": 4,
+      "name": "Dupla Cor",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 2,
+          "target": 15
+        },
+        {
+          "type": "color",
+          "color": 3,
+          "target": 15
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-06",
+      "worldId": "garden",
+      "order": 6,
+      "index": 5,
+      "name": "Pontuação",
+      "moves": 18,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 1200
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-07",
+      "worldId": "garden",
+      "order": 7,
+      "index": 6,
+      "name": "Verde Floresta",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 2,
+          "target": 25
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-08",
+      "worldId": "garden",
+      "order": 8,
+      "index": 7,
+      "name": "Grande Combo",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 1200
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-09",
+      "worldId": "garden",
+      "order": 9,
+      "index": 8,
+      "name": "Ritmo",
+      "moves": 18,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 1300
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-10",
+      "worldId": "garden",
+      "order": 10,
+      "index": 9,
+      "name": "Colheita",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 0,
+          "target": 25
+        },
+        {
+          "type": "score",
+          "target": 800
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-11",
+      "worldId": "garden",
+      "order": 11,
+      "name": "Jardim em Flor",
+      "moves": 22,
+      "seed": 1011,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 2,
+          "target": 28
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-12",
+      "worldId": "garden",
+      "order": 12,
+      "name": "Trilha Verde",
+      "moves": 20,
+      "seed": 1012,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 1400
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-13",
+      "worldId": "garden",
+      "order": 13,
+      "name": "Dupla Colheita",
+      "moves": 24,
+      "seed": 1013,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 0,
+          "target": 20
+        },
+        {
+          "type": "color",
+          "color": 3,
+          "target": 20
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 60
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-14",
+      "worldId": "garden",
+      "order": 14,
+      "name": "Combo Jardim",
+      "moves": 20,
+      "seed": 1014,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 1800
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 65
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "garden-15",
+      "worldId": "garden",
+      "order": 15,
+      "name": "Portal do Jardim 👑",
+      "moves": 26,
+      "seed": 1015,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 0,
+          "target": 30
+        },
+        {
+          "type": "score",
+          "target": 1200
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 80
+      },
+      "mode": "classic_blast"
+    }
+  ]
+}

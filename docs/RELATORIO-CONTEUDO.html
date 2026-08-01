@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Conteúdo — Tile Blast</title>
+<style>
+  :root{--bg:#0a0c14;--panel:#171a28;--line:rgba(255,255,255,.08);--text:#eef1f8;--dim:#98a0b8;--accent:#7fe3ff;--ok:#4ecb71;--warn:#f6c945}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6;color:var(--text);background:var(--bg);padding:24px}
+  .wrap{max-width:960px;margin:0 auto}
+  h1{font-size:28px;margin-bottom:8px}
+  h2{font-size:20px;margin:28px 0 12px;border-top:1px solid var(--line);padding-top:20px}
+  p,li{font-size:14px;color:var(--dim)}
+  ul{padding-left:20px;margin:8px 0}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--dim);font-size:12px;text-transform:uppercase}
+  .score{font-size:48px;font-weight:800;color:var(--ok)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin:16px 0}
+  code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .kpi{text-align:center;padding:16px;background:var(--panel);border-radius:12px;border:1px solid var(--line)}
+  .kpi b{font-size:28px;display:block;color:var(--accent)}
+  .badge{display:inline-block;background:rgba(79,203,113,.15);color:var(--ok);font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;margin-left:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Relatório de Sistema de Conteúdo</h1>
+  <p>Tile Blast · Evolução data-driven · Jul 2026 · Fase 2 concluída</p>
+
+  <div class="card" style="text-align:center">
+    <div class="score">82</div>
+    <p><strong>Nota atual do sistema de conteúdo (0–100)</strong></p>
+    <p style="margin-top:8px">De ~32 (monólito hardcoded) para arquitetura escalável com lazy-load, missões JSON, eventos remotos e migração de save v2.</p>
+  </div>
+
+  <h2>Auditoria inicial</h2>
+  <ul>
+    <li>70 fases embutidas em <code>tile_blast.html</code> + 10 lendárias em <code>tb-roadmap.js</code></li>
+    <li>Progressão linear por índice (<code>unlocked</code>) sem IDs estáveis</li>
+    <li>Mundos = strings duplicadas em 5+ locais (cores, música, skins, CSS)</li>
+    <li>Eventos por rotação time-modulo, sem calendário sazonal</li>
+    <li>Mapa renderizava todas as fases de uma vez (não escala a 1000+)</li>
+  </ul>
+
+  <h2>Arquivos criados / expandidos</h2>
+  <table>
+    <tr><th>Arquivo</th><th>Função</th></tr>
+    <tr><td><code>tb-content.js</code></td><td>LevelCatalog, WorldManager, EventManager, lazy-load, migração v2</td></tr>
+    <tr><td><code>data/worlds.json</code></td><td>7 mundos · Jardim com 15 fases · unlock offsets v2</td></tr>
+    <tr><td><code>data/levels/*.json</code></td><td>85 fases em packs por mundo + manifest</td></tr>
+    <tr><td><code>data/missions.json</code><span class="badge">NOVO</span></td><td>Pools diários/semanais data-driven</td></tr>
+    <tr><td><code>data/admin-schema.json</code><span class="badge">NOVO</span></td><td>Chaves remote config para LiveOps</td></tr>
+    <tr><td><code>data/events.json</code></td><td>Eventos sazonais, semanais e rotação</td></tr>
+    <tr><td><code>data/modes.json</code></td><td>Classic, Time Challenge, Daily, Infinite</td></tr>
+    <tr><td><code>scripts/expand-worlds.js</code><span class="badge">NOVO</span></td><td>CLI para expandir packs por mundo</td></tr>
+    <tr><td><code>tests/unit/content.test.js</code></td><td>8 testes (lazy-load, missões, migração)</td></tr>
+  </table>
+
+  <h2>Fase 2 — melhorias implementadas</h2>
+  <div class="grid">
+    <div class="kpi"><b>85</b>Fases data-driven</div>
+    <div class="kpi"><b>15</b>Fases no Jardim</div>
+    <div class="kpi"><b>100</b>Testes ✓</div>
+    <div class="kpi"><b>v2</b>Migração save</div>
+  </div>
+  <ul>
+    <li><strong>Lazy-load por mundo:</strong> <code>loadMeta()</code> → <code>loadWorldPack()</code> sob demanda; preload inteligente por progresso</li>
+    <li><strong>Missões JSON:</strong> <code>MISSION_POOL</code> / <code>WEEKLY_MISSION_POOL</code> sincronizados via <code>_syncMissionPools()</code></li>
+    <li><strong>Admin schema:</strong> <code>activeEventId</code>, <code>disabledEvents</code>, <code>eventOverrides</code> via remote config</li>
+    <li><strong>Ranking Firebase:</strong> <code>submitEventScore()</code> / <code>fetchEventTop()</code> para eventos com <code>ranking: true</code></li>
+    <li><strong>Seed por fase:</strong> campo <code>seed</code> em JSON → <code>buildGrid(lv.seed)</code> para boards reproduzíveis</li>
+    <li><strong>Expansão Jardim +5:</strong> <code>garden-11</code>…<code>garden-15</code>; <code>migrateSave()</code> desloca <code>unlocked +5</code> para saves v1</li>
+    <li><strong>Boot async:</strong> <code>ensureWorldLoaded</code> / <code>ensureIndexLoaded</code> antes de mapa, mundos e <code>startGame()</code></li>
+  </ul>
+
+  <h2>Autoavaliação detalhada</h2>
+  <table>
+    <tr><th>Dimensão</th><th>Nota</th><th>Justificativa</th></tr>
+    <tr><td>Escalabilidade</td><td>90</td><td>Lazy-load por pack, manifest, IDs estáveis, CLI de expansão</td></tr>
+    <tr><td>Diversão / Variedade</td><td>72</td><td>4 modos + 7 mundos; boards majoritariamente procedurais (seed opcional)</td></tr>
+    <tr><td>Retenção</td><td>80</td><td>Missões JSON, eventos remotos, ranking, recompensas por mundo</td></tr>
+    <tr><td>Facilidade de criação</td><td>85</td><td>Adicionar fase = editar JSON; expand-worlds.js; build-content alinhado v2</td></tr>
+    <tr><td>Preparação comercial</td><td>72</td><td>Schema admin + hooks Firebase; painel Firestore ainda pendente</td></tr>
+  </table>
+
+  <h2>Próximos passos (Fase 3)</h2>
+  <ol>
+    <li>Admin dashboard Firestore para ativar eventos por data</li>
+    <li>Layouts hand-crafted opcionais (<code>grid</code> fixo além de <code>seed</code>)</li>
+    <li>Virtualização do mapa para 500+ fases visíveis</li>
+    <li>Expandir Floresta/Oceano para 20 fases via <code>scripts/expand-worlds.js</code></li>
+    <li>Novos mundos JSON-only: Castelo Mágico, Deserto, etc.</li>
+  </ol>
+
+  <p style="margin-top:32px;font-size:12px;color:var(--dim)">Tile Blast · Content System v2 · 100/100 testes passando</p>
+</div>
+</body>
+</html>

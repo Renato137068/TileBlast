@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoria Completa v3 — Tile Blast · 2026-07-14</title>
+<style>
+  :root{
+    --bg:#0d0f18; --panel:#161a29; --panel2:#1d2233; --line:#2a3048;
+    --text:#eef1f8; --dim:#9aa3bd; --accent:#7c5cff; --accent2:#ff5c8a;
+    --ok:#3ecf8e; --warn:#ffb454; --bad:#ff6b6b; --info:#4aa8ff;
+    --radius:14px; --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:"Baloo 2",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:light){
+    :root{--bg:#f4f5fb;--panel:#ffffff;--panel2:#f0f1f8;--line:#e2e4f0;--text:#171a2b;--dim:#5c6480;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;
+    -webkit-font-smoothing:antialiased;font-size:15px}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px}
+  header.hero{background:linear-gradient(135deg,#3ecf8e22,#4aa8ff11);border:1px solid var(--line);
+    border-radius:var(--radius);padding:28px 26px;margin-bottom:26px}
+  .hero .kicker{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ok);font-weight:800}
+  .hero h1{margin:6px 0 4px;font-size:30px;font-weight:800}
+  .hero .meta{color:var(--dim);font-size:13px}
+  .scoreband{display:flex;gap:20px;align-items:center;margin-top:22px;flex-wrap:wrap}
+  .bigscore{display:flex;align-items:baseline;gap:4px}
+  .bigscore .n{font-size:60px;font-weight:800;line-height:1;
+    background:linear-gradient(120deg,var(--ok),var(--info));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .bigscore .d{font-size:22px;color:var(--dim);font-weight:700}
+  .delta{font-size:15px;font-weight:800;color:var(--ok);margin-left:6px}
+  .verdict{flex:1;min-width:220px}
+  .badge{display:inline-block;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.5px}
+  .b-ok{background:#3ecf8e22;color:var(--ok);border:1px solid #3ecf8e55}
+  h2.sec{font-size:20px;margin:34px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .card h3{margin:0 0 4px;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .card .cs{font-size:22px;font-weight:800;font-family:var(--mono);display:flex;align-items:baseline;gap:6px}
+  .card .cs small{font-size:12px;color:var(--dim);font-weight:700}
+  .bar{height:7px;border-radius:99px;background:var(--panel2);overflow:hidden;margin:8px 0 10px;position:relative}
+  .bar > i{display:block;height:100%;border-radius:99px}
+  .bar > u{position:absolute;top:-2px;width:2px;height:11px;background:var(--dim);opacity:.6}
+  .card p{margin:0;font-size:12.5px;color:var(--dim);line-height:1.5}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+  td.w{font-family:var(--mono);font-weight:800;white-space:nowrap}
+  .up{color:var(--ok);font-weight:800;font-family:var(--mono)}
+  .flat{color:var(--dim);font-weight:800;font-family:var(--mono)}
+  ul.f{margin:6px 0 0;padding-left:18px}
+  ul.f li{margin:5px 0;font-size:13.5px}
+  .tag{font-size:10.5px;font-family:var(--mono);padding:1px 6px;border-radius:5px;font-weight:700}
+  .t-done{background:#3ecf8e22;color:var(--ok)}
+  .t-part{background:#ffb45422;color:var(--warn)}
+  .t-open{background:#4aa8ff22;color:var(--info)}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:680px){.split{grid-template-columns:1fr}.bigscore .n{font-size:48px}}
+  code{font-family:var(--mono);background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:12.5px}
+  .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--dim);font-size:12px}
+  .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;flex:1;min-width:110px}
+  .kpi .v{font-size:20px;font-weight:800;font-family:var(--mono)}
+  .kpi .l{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+  .note{background:var(--panel2);border-left:3px solid var(--ok);border-radius:8px;padding:12px 16px;margin-top:14px;font-size:13px;color:var(--text)}
+  .trend{font-family:var(--mono);font-size:12px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">Reauditoria Pós-Rodada 2 · v3</div>
+    <h1>💥 Tile Blast — Auditoria Completa v3</h1>
+    <div class="meta">Data: 14 de julho de 2026 · Terceira medição · Metodologia: leitura de código + execução de <code>lint</code>, <code>test</code>, <code>typecheck</code> e <code>coverage</code> (métrica agora representativa)</div>
+    <div class="scoreband">
+      <div class="bigscore"><span class="n">87</span><span class="d">/100</span><span class="delta">▲ +2</span></div>
+      <div class="verdict">
+        <span class="badge b-ok">MADURO — trajetória consistente (80 → 85 → 87)</span>
+        <p style="margin:10px 0 0;color:var(--dim);font-size:13.5px">Os 4 follow-ups da v2 foram implementados e verificados. Destaques: <strong>cobertura agora é real</strong> (99% na lógica de jogo), <strong>ciclo IAP server-side fechado</strong> (validação de receipt + idempotência) e <strong>mais dois módulos extraídos</strong> de <code>tb-main.js</code>. O único teto remanescente é o tamanho de <code>tb-main.js</code> (ainda ~6.443 linhas).</p>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="v">219 <span style="font-size:12px;color:var(--ok)">▲13</span></div><div class="l">Testes passando</div></div>
+      <div class="kpi"><div class="v">34% <span style="font-size:12px;color:var(--ok)">▲</span></div><div class="l">Cobertura (real)</div></div>
+      <div class="kpi"><div class="v">6.443 <span style="font-size:12px;color:var(--ok)">▼583</span></div><div class="l">Linhas tb-main.js</div></div>
+      <div class="kpi"><div class="v">10</div><div class="l">Módulos com @ts-check</div></div>
+    </div>
+  </header>
+
+  <h2 class="sec">Status dos 4 follow-ups da v2</h2>
+  <table>
+    <thead><tr><th>#</th><th>Follow-up</th><th>Status</th><th>Evidência verificada</th></tr></thead>
+    <tbody>
+      <tr><td class="w">2</td><td>Cobertura representativa</td><td><span class="tag t-done">FEITO</span></td><td>Loader instrumentado: de ~1,5% enganoso para <strong>34% real</strong>. Lógica pura em nível excelente: <code>tb-game-logic</code> 99,67%, <code>tb-economy</code> 97%, <code>tb-roadmap</code> 77%.</td></tr>
+      <tr><td class="w">3</td><td>Ciclo IAP server-side</td><td><span class="tag t-done">FEITO</span></td><td><code>confirmIapPurchase</code> (Cloud Function) com validação de receipt, <strong>idempotência</strong> via <code>iapReceipts/{sha256(token)}</code>, service account por <strong>Secret Manager</strong> (sem segredo no repo) e lógica pura testável. 11 testes em <code>functions-iap.test.js</code>.</td></tr>
+      <tr><td class="w">4</td><td>Expandir <code>@ts-check</code></td><td><span class="tag t-done">FEITO</span></td><td>De 3 para <strong>10 módulos</strong> tipados (incl. <code>tb-state</code>, <code>tb-runtime</code>, <code>tb-shop</code>, <code>tb-result</code>, <code>tb-map</code>, <code>tb-config</code>, <code>tb-content</code>). <code>npm run typecheck</code> limpo.</td></tr>
+      <tr><td class="w">1</td><td>Extrair mais de <code>tb-main.js</code></td><td><span class="tag t-part">EM ANDAMENTO</span></td><td>Mais 2 módulos extraídos (<code>tb-result.js</code> 369 · <code>tb-map.js</code> 552), corretamente cabeados. <code>tb-main.js</code>: 7.026 → 6.443. Meta &lt; 3.000 ainda não atingida (HUD e outros pendentes).</td></tr>
+    </tbody>
+  </table>
+  <div class="note">
+    <strong>✅ Sobre a cobertura (agora confiável):</strong> a métrica que na v2 era enganosa (~1,5%) foi corrigida instrumentando o <em>loader</em> de testes. O número global (34%) é honesto — os módulos de UI (<code>tb-main</code>, <code>tb-map</code>, <code>tb-result</code>, <code>tb-shop</code>) aparecem em 0% por dependerem de interação/DOM (cobertos pelos e2e, não pelos unitários), enquanto <strong>toda a lógica de jogo e economia está entre 77% e 99,7%</strong>. É exatamente o perfil desejado para este tipo de projeto.
+  </div>
+
+  <h2 class="sec">Notas por categoria (v2 → v3)</h2>
+  <div class="grid">
+    <div class="card"><h3>Testes &amp; QA <span class="cs" style="color:var(--ok)">90 <small>◄ 86</small></span></h3>
+      <div class="bar"><u style="left:86%"></u><i style="width:90%;background:var(--ok)"></i></div>
+      <p>+4. 219 testes verdes (+13), incluindo 11 novos para as Cloud Functions. A cobertura deixou de ser enganosa e agora comprova ~99% na lógica de jogo. O maior avanço da rodada.</p></div>
+
+    <div class="card"><h3>Segurança <span class="cs" style="color:var(--ok)">88 <small>◄ 85</small></span></h3>
+      <div class="bar"><u style="left:85%"></u><i style="width:88%;background:var(--ok)"></i></div>
+      <p>+3. Ciclo de economia fechado: validação de receipt de IAP no servidor, idempotência anti-duplo-crédito e segredos via Secret Manager. Falta apenas comprovar em produção (deploy + conta Play).</p></div>
+
+    <div class="card"><h3>Qualidade de Código <span class="cs" style="color:var(--ok)">86 <small>◄ 82</small></span></h3>
+      <div class="bar"><u style="left:82%"></u><i style="width:86%;background:var(--ok)"></i></div>
+      <p>+4. <code>@ts-check</code> em 10 módulos, lógica pura das functions testável e isolada, typecheck limpo. Disciplina de tipos virou hábito no projeto.</p></div>
+
+    <div class="card"><h3>Manutenibilidade <span class="cs" style="color:var(--ok)">85 <small>◄ 80</small></span></h3>
+      <div class="bar"><u style="left:80%"></u><i style="width:85%;background:var(--ok)"></i></div>
+      <p>+5. Mais domínios extraídos, tipos em mais superfícies e visibilidade real de cobertura. Teto: <code>tb-main.js</code> segue grande, mas em queda consistente.</p></div>
+
+    <div class="card"><h3>Arquitetura <span class="cs" style="color:var(--ok)">84 <small>◄ 80</small></span></h3>
+      <div class="bar"><u style="left:80%"></u><i style="width:84%;background:var(--ok)"></i></div>
+      <p>+4. O padrão de extração provou-se repetível (<code>tb-result</code>, <code>tb-map</code>) com o trio <code>modules.mjs</code>/<code>html</code>/<code>sw.js</code> sempre sincronizado. Chegar a &lt; 3.000 linhas em <code>tb-main.js</code> destrava a nota máxima aqui.</p></div>
+
+    <div class="card"><h3>Build / DevOps <span class="cs" style="color:var(--ok)">89 <small>◄ 88</small></span></h3>
+      <div class="bar"><u style="left:88%"></u><i style="width:89%;background:var(--ok)"></i></div>
+      <p>+1. Cobertura agora informativa no pipeline e testes das Cloud Functions no gate, somando ao já robusto bundle/minify/typecheck/Play Store.</p></div>
+
+    <div class="card"><h3>Documentação <span class="cs" style="color:var(--ok)">90 <small>◄ 90</small></span></h3>
+      <div class="bar"><u style="left:90%"></u><i style="width:90%;background:var(--ok)"></i></div>
+      <p>Mantida. <code>ECONOMIA-SERVER-SIDE.md</code> acompanha o fluxo de IAP implementado; arquitetura segue viva e validada por teste.</p></div>
+
+    <div class="card"><h3>Acessibilidade <span class="cs" style="color:var(--ok)">90 <small>◄ 90</small></span></h3>
+      <div class="bar"><u style="left:90%"></u><i style="width:90%;background:var(--ok)"></i></div>
+      <p>Mantida. Continua sendo um diferencial do projeto; sem regressões nesta rodada.</p></div>
+
+    <div class="card"><h3>Performance / PWA <span class="cs" style="color:var(--ok)">85 <small>◄ 85</small></span></h3>
+      <div class="bar"><u style="left:85%"></u><i style="width:85%;background:var(--ok)"></i></div>
+      <p>Mantida. As mudanças foram de engenharia/backend; carregamento e offline seguem sólidos. Extrações futuras podem habilitar carregamento sob demanda.</p></div>
+
+    <div class="card"><h3>Produto / Game Design <span class="cs" style="color:var(--ok)">85 <small>◄ 85</small></span></h3>
+      <div class="bar"><u style="left:85%"></u><i style="width:85%;background:var(--ok)"></i></div>
+      <p>Mantida. Escopo de conteúdo inalterado — foco da rodada foi robustez técnica.</p></div>
+  </div>
+
+  <h2 class="sec">Evolução das notas (v1 → v2 → v3)</h2>
+  <table>
+    <thead><tr><th>Categoria</th><th>v1</th><th>v2</th><th>v3</th><th>Δ total</th><th>Peso</th></tr></thead>
+    <tbody>
+      <tr><td>Testes &amp; QA</td><td class="w">85</td><td class="w">86</td><td class="w" style="color:var(--ok)">90</td><td class="up">+5</td><td>16%</td></tr>
+      <tr><td>Qualidade de Código</td><td class="w">75</td><td class="w">82</td><td class="w" style="color:var(--ok)">86</td><td class="up">+11</td><td>14%</td></tr>
+      <tr><td>Arquitetura</td><td class="w">72</td><td class="w">80</td><td class="w" style="color:var(--ok)">84</td><td class="up">+12</td><td>10%</td></tr>
+      <tr><td>Segurança</td><td class="w">70</td><td class="w">85</td><td class="w" style="color:var(--ok)">88</td><td class="up">+18</td><td>10%</td></tr>
+      <tr><td>Performance / PWA</td><td class="w">85</td><td class="w">85</td><td class="w">85</td><td class="flat">—</td><td>10%</td></tr>
+      <tr><td>Build / DevOps</td><td class="w">85</td><td class="w">88</td><td class="w" style="color:var(--ok)">89</td><td class="up">+4</td><td>10%</td></tr>
+      <tr><td>Produto / Game Design</td><td class="w">85</td><td class="w">85</td><td class="w">85</td><td class="flat">—</td><td>9%</td></tr>
+      <tr><td>Acessibilidade</td><td class="w">90</td><td class="w">90</td><td class="w">90</td><td class="flat">—</td><td>8%</td></tr>
+      <tr><td>Documentação</td><td class="w">88</td><td class="w">90</td><td class="w">90</td><td class="up">+2</td><td>7%</td></tr>
+      <tr><td>Manutenibilidade</td><td class="w">68</td><td class="w">80</td><td class="w" style="color:var(--ok)">85</td><td class="up">+17</td><td>6%</td></tr>
+      <tr><td style="font-weight:800">Nota global ponderada</td><td class="w">80</td><td class="w">85</td><td class="w" style="color:var(--accent)">87</td><td class="up">+7</td><td>100%</td></tr>
+    </tbody>
+  </table>
+
+  <div class="split">
+    <div>
+      <h2 class="sec">✅ Ganhos desta rodada</h2>
+      <ul class="f">
+        <li><strong>Cobertura confiável:</strong> lógica de jogo em 99,67% e economia em 97% — comprovado, não estimado.</li>
+        <li><strong>IAP à prova de fraude:</strong> receipt validado no servidor, idempotência por hash do token, segredos fora do repo.</li>
+        <li><strong>+2 módulos de domínio</strong> (<code>tb-result</code>, <code>tb-map</code>) com o pipeline de sincronização intacto.</li>
+        <li><strong>Type-safety em 10 módulos</strong> com <code>tsc --noEmit</code> limpo.</li>
+        <li><strong>Sem regressões:</strong> 219/219 testes, lint e typecheck verdes.</li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="sec">🎯 O que ainda segura a nota</h2>
+      <ul class="f">
+        <li><span class="tag t-part">PRINCIPAL</span> <strong><code>tb-main.js</code> com ~6.443 linhas.</strong> É o único teto relevante restante — continuar extraindo (HUD, board, diálogos) rumo a &lt; 3.000 destrava Arquitetura e Manutenibilidade.</li>
+        <li><span class="tag t-open">PRODUÇÃO</span> <strong>Comprovar o server-side em produção:</strong> deploy das functions, service account real e um teste de compra ponta a ponta.</li>
+        <li><span class="tag t-open">OPCIONAL</span> <strong>Elevar cobertura de UI</strong> ampliando os e2e (ou ativar thresholds no CI agora que a métrica é confiável).</li>
+        <li><span class="tag t-open">OPCIONAL</span> <strong>Carregamento sob demanda</strong> dos módulos extraídos para ganho de performance no boot.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="sec">Metodologia</h2>
+  <p style="color:var(--dim);font-size:13px;max-width:760px">
+    Verificação direta do repositório: <code>npm run lint</code> (limpo), <code>npm test</code> (219/219),
+    <code>npm run typecheck</code> (limpo) e <code>npm run test:coverage</code> (34% global, métrica agora
+    representativa). Inspeção de <code>functions/index.js</code> (<code>confirmIapPurchase</code>),
+    <code>tests/unit/functions-iap.test.js</code>, <code>tb-result.js</code>, <code>tb-map.js</code>,
+    <code>vitest.config.js</code>, <code>jsconfig.json</code> e da ordem de módulos. Notas seguem as
+    mesmas dimensões e pesos das versões anteriores para comparação direta. Não foram executados testes em
+    dispositivo Android nem deploy real das Cloud Functions.
+  </p>
+
+  <div class="foot">
+    Tile Blast · Auditoria v3 gerada em 2026-07-14 · Trajetória: v1 80 → v2 85 → v3 87. As notas refletem o estado do repositório no momento da análise.
+  </div>
+
+</div>
+</body>
+</html>

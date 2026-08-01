@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoria Completa — Tile Blast · 2026-07-14</title>
+<style>
+  :root{
+    --bg:#0d0f18; --panel:#161a29; --panel2:#1d2233; --line:#2a3048;
+    --text:#eef1f8; --dim:#9aa3bd; --accent:#7c5cff; --accent2:#ff5c8a;
+    --ok:#3ecf8e; --warn:#ffb454; --bad:#ff6b6b; --info:#4aa8ff;
+    --radius:14px; --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:"Baloo 2",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:light){
+    :root{--bg:#f4f5fb;--panel:#ffffff;--panel2:#f0f1f8;--line:#e2e4f0;--text:#171a2b;--dim:#5c6480;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;
+    -webkit-font-smoothing:antialiased;font-size:15px}
+  .wrap{max-width:960px;margin:0 auto;padding:32px 20px 80px}
+  header.hero{background:linear-gradient(135deg,#7c5cff22,#ff5c8a11);border:1px solid var(--line);
+    border-radius:var(--radius);padding:28px 26px;margin-bottom:26px}
+  .hero .kicker{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:800}
+  .hero h1{margin:6px 0 4px;font-size:30px;font-weight:800}
+  .hero .meta{color:var(--dim);font-size:13px}
+  .scoreband{display:flex;gap:20px;align-items:center;margin-top:22px;flex-wrap:wrap}
+  .bigscore{display:flex;align-items:baseline;gap:4px}
+  .bigscore .n{font-size:60px;font-weight:800;line-height:1;
+    background:linear-gradient(120deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .bigscore .d{font-size:22px;color:var(--dim);font-weight:700}
+  .verdict{flex:1;min-width:220px}
+  .badge{display:inline-block;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.5px}
+  .b-ok{background:#3ecf8e22;color:var(--ok);border:1px solid #3ecf8e55}
+  .b-warn{background:#ffb45422;color:var(--warn);border:1px solid #ffb45455}
+  h2.sec{font-size:20px;margin:34px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .card h3{margin:0 0 4px;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .card .cs{font-size:22px;font-weight:800;font-family:var(--mono)}
+  .bar{height:7px;border-radius:99px;background:var(--panel2);overflow:hidden;margin:8px 0 10px}
+  .bar > i{display:block;height:100%;border-radius:99px}
+  .card p{margin:0;font-size:12.5px;color:var(--dim);line-height:1.5}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+  td.w{font-family:var(--mono);font-weight:800;white-space:nowrap}
+  ul.f{margin:6px 0 0;padding-left:18px}
+  ul.f li{margin:4px 0;font-size:13.5px}
+  .tag{font-size:10.5px;font-family:var(--mono);padding:1px 6px;border-radius:5px;font-weight:700}
+  .t-hi{background:#ff6b6b22;color:var(--bad)}
+  .t-md{background:#ffb45422;color:var(--warn)}
+  .t-lo{background:#4aa8ff22;color:var(--info)}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:680px){.split{grid-template-columns:1fr}.bigscore .n{font-size:48px}}
+  code{font-family:var(--mono);background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:12.5px}
+  .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--dim);font-size:12px}
+  .kpis{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;flex:1;min-width:120px}
+  .kpi .v{font-size:20px;font-weight:800;font-family:var(--mono)}
+  .kpi .l{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">Auditoria Técnica Independente</div>
+    <h1>💥 Tile Blast — Auditoria Completa</h1>
+    <div class="meta">Data: 14 de julho de 2026 · Escopo: código-fonte, testes, segurança, arquitetura, PWA/build, acessibilidade · Metodologia: leitura de código + execução de testes/lint</div>
+    <div class="scoreband">
+      <div class="bigscore"><span class="n">80</span><span class="d">/100</span></div>
+      <div class="verdict">
+        <span class="badge b-ok">PRONTO PARA PUBLICAR — com ressalvas</span>
+        <p style="margin:10px 0 0;color:var(--dim);font-size:13.5px">Projeto sólido e maduro para um jogo mobile solo: cobertura de testes real, CI, pipeline de build/Play Store, boa disciplina de segurança e acessibilidade acima da média. O principal débito é de <strong>manutenibilidade</strong> (arquivos monolíticos e estado global compartilhado).</p>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="v">195</div><div class="l">Testes passando</div></div>
+      <div class="kpi"><div class="v">32</div><div class="l">Arquivos de teste</div></div>
+      <div class="kpi"><div class="v">~14,6k</div><div class="l">Linhas JS (módulos)</div></div>
+      <div class="kpi"><div class="v">0</div><div class="l">TODO/FIXME/erros lint</div></div>
+    </div>
+  </header>
+
+  <h2 class="sec">Notas por categoria</h2>
+  <div class="grid">
+    <div class="card"><h3>Testes &amp; QA <span class="cs" style="color:var(--ok)">85</span></h3>
+      <div class="bar"><i style="width:85%;background:var(--ok)"></i></div>
+      <p>195 testes (unit + integração + e2e Puppeteer), todos verdes em 5,8s. CI no GitHub Actions com job unit/boot e e2e-smoke. Falta relatório de <strong>cobertura</strong> (%) configurado.</p></div>
+
+    <div class="card"><h3>Acessibilidade <span class="cs" style="color:var(--ok)">90</span></h3>
+      <div class="bar"><i style="width:90%;background:var(--ok)"></i></div>
+      <p>ARIA extensivo, regiões <code>aria-live</code>, <code>sr-only</code>, skip-link, modo daltônico, "reduzir animações", <code>a11y.css</code> dedicado e canvas com instruções de teclado. Referência para jogos mobile.</p></div>
+
+    <div class="card"><h3>Documentação <span class="cs" style="color:var(--ok)">88</span></h3>
+      <div class="bar"><i style="width:88%;background:var(--ok)"></i></div>
+      <p><code>ARCHITECTURE.md</code> é "documento vivo" validado por teste de integração. Diversos relatórios temáticos (economia, game-feel, performance). Muito acima do típico.</p></div>
+
+    <div class="card"><h3>Build / DevOps <span class="cs" style="color:var(--ok)">85</span></h3>
+      <div class="bar"><i style="width:85%;background:var(--ok)"></i></div>
+      <p>Bundle concatenado (18→1), minificação, Capacitor Android, geração de ícones/assets Play Store, pipeline <code>play:release</code>. Higiene de segredos correta (keystore/firebase no <code>.gitignore</code>).</p></div>
+
+    <div class="card"><h3>Performance / PWA <span class="cs" style="color:var(--ok)">85</span></h3>
+      <div class="bar"><i style="width:85%;background:var(--ok)"></i></div>
+      <p>Canvas + <code>requestAnimationFrame</code>, service worker com precache offline, manifest completo (maskable, display_override), <code>preload</code>/<code>preconnect</code> e fonte carregada de forma diferida.</p></div>
+
+    <div class="card"><h3>Qualidade de Código <span class="cs" style="color:var(--warn)">75</span></h3>
+      <div class="bar"><i style="width:75%;background:var(--warn)"></i></div>
+      <p>Prettier + ESLint (gate <code>no-undef</code> sobre bundle concatenado) limpos, zero marcadores de débito. <code>tb-game-logic.js</code> é lógica pura, testável e bem comentada. Puxado para baixo pelos monólitos.</p></div>
+
+    <div class="card"><h3>Arquitetura <span class="cs" style="color:var(--warn)">72</span></h3>
+      <div class="bar"><i style="width:72%;background:var(--warn)"></i></div>
+      <p>Modularização por globais <code>window.TB*</code> com ordem de carga como fonte única da verdade (validada por teste). Boa ideia, mas <code>tb-main.js</code> (7.243 linhas) e <code>tb-roadmap.js</code> (~117 KB) concentram responsabilidade demais.</p></div>
+
+    <div class="card"><h3>Segurança <span class="cs" style="color:var(--warn)">70</span></h3>
+      <div class="bar"><i style="width:70%;background:var(--warn)"></i></div>
+      <p>Escape de HTML disciplinado (<code>_escTB</code>/<code>escapeHtml</code>), assinatura de save (deterrent honesto e documentado), segredos fora do repo. Falta <strong>CSP</strong>; economia é client-trust; <code>innerHTML</code> via template exige vigilância contínua.</p></div>
+
+    <div class="card"><h3>Manutenibilidade <span class="cs" style="color:var(--warn)">68</span></h3>
+      <div class="bar"><i style="width:68%;background:var(--warn)"></i></div>
+      <p>Estado mutável compartilhado no realm global (<code>lvIdx</code>, <code>LEVELS</code>, <code>isInfiniteMode</code>…) acopla os módulos satélites ao <code>tb-main.js</code>. Sem TypeScript, refatorar 250 KB de JS é arriscado. Testes mitigam parte do risco.</p></div>
+
+    <div class="card"><h3>Produto / Game Design <span class="cs" style="color:var(--ok)">85</span></h3>
+      <div class="bar"><i style="width:85%;background:var(--ok)"></i></div>
+      <p>Conjunto de features amplo e coerente: 60 fases + mundos, puzzle diário global, modo infinito/tempo, passe de batalha, eventos, missões, meta (jardim), skins, i18n pt/en/es, loja com IAP e recompensa por anúncio.</p></div>
+  </div>
+
+  <h2 class="sec">Resumo das notas</h2>
+  <table>
+    <thead><tr><th>Categoria</th><th>Nota</th><th>Peso</th><th>Leitura</th></tr></thead>
+    <tbody>
+      <tr><td>Acessibilidade</td><td class="w" style="color:var(--ok)">90</td><td>8%</td><td>Diferencial competitivo real.</td></tr>
+      <tr><td>Documentação</td><td class="w" style="color:var(--ok)">88</td><td>7%</td><td>Viva e validada por teste.</td></tr>
+      <tr><td>Testes &amp; QA</td><td class="w" style="color:var(--ok)">85</td><td>16%</td><td>Falta métrica de cobertura.</td></tr>
+      <tr><td>Build / DevOps</td><td class="w" style="color:var(--ok)">85</td><td>10%</td><td>Pipeline de release completo.</td></tr>
+      <tr><td>Performance / PWA</td><td class="w" style="color:var(--ok)">85</td><td>10%</td><td>Offline-first bem feito.</td></tr>
+      <tr><td>Produto / Game Design</td><td class="w" style="color:var(--ok)">85</td><td>9%</td><td>Escopo de feature grande.</td></tr>
+      <tr><td>Qualidade de Código</td><td class="w" style="color:var(--warn)">75</td><td>14%</td><td>Limpo, mas monolítico.</td></tr>
+      <tr><td>Arquitetura</td><td class="w" style="color:var(--warn)">72</td><td>10%</td><td>Boa ideia, arquivos grandes.</td></tr>
+      <tr><td>Segurança</td><td class="w" style="color:var(--warn)">70</td><td>10%</td><td>Sem CSP; economia client-trust.</td></tr>
+      <tr><td>Manutenibilidade</td><td class="w" style="color:var(--warn)">68</td><td>6%</td><td>Estado global acopla módulos.</td></tr>
+      <tr><td style="font-weight:800">Nota global ponderada</td><td class="w" style="color:var(--accent)">80</td><td>100%</td><td style="font-weight:700">Bom / publicável com ressalvas.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="split">
+    <div>
+      <h2 class="sec">✅ Pontos fortes</h2>
+      <ul class="f">
+        <li><strong>Testes reais e verdes:</strong> 195 casos, incl. e2e de gameplay/vitória/derrota/mapa.</li>
+        <li><strong>CI/CD:</strong> GitHub Actions roda unit + e2e a cada push/PR.</li>
+        <li><strong>Lógica pura isolada:</strong> <code>tb-game-logic.js</code> — flood-fill, pontuação, regeneração de vidas, RNG determinístico (mulberry32) por seed.</li>
+        <li><strong>Segurança de segredos:</strong> keystore, <code>firebase-config.js</code> e senhas no <code>.gitignore</code>; só placeholders versionados.</li>
+        <li><strong>Anti-tamper honesto:</strong> <code>tb-secure.js</code> assina o save e documenta explicitamente que é deterrent, não garantia criptográfica.</li>
+        <li><strong>Acessibilidade de primeira linha</strong> e <strong>PWA offline</strong> completo.</li>
+        <li><strong>Zero débito sinalizado</strong> (nenhum TODO/FIXME/HACK) e lint limpo.</li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="sec">⚠️ Riscos &amp; recomendações</h2>
+      <ul class="f">
+        <li><span class="tag t-hi">ALTA</span> <strong>Quebrar <code>tb-main.js</code> (7.243 linhas / 270 funções).</strong> Extrair módulos por domínio (loja, mapa, HUD, resultado). É o maior risco de manutenção.</li>
+        <li><span class="tag t-md">MÉDIA</span> <strong>Adicionar <code>Content-Security-Policy</code></strong> (meta ou header) para blindar as ~41 escritas de <code>innerHTML</code>.</li>
+        <li><span class="tag t-md">MÉDIA</span> <strong>Reduzir estado global mutável</strong> (<code>lvIdx</code>, <code>LEVELS</code>…). Encapsular num objeto de estado único injeta testabilidade.</li>
+        <li><span class="tag t-md">MÉDIA</span> <strong>Validação server-side da economia</strong> se moedas/IAP virarem alvo de fraude (hoje é client-trust).</li>
+        <li><span class="tag t-lo">BAIXA</span> <strong>Configurar cobertura</strong> (<code>vitest --coverage</code>) e publicar % no CI.</li>
+        <li><span class="tag t-lo">BAIXA</span> <strong>Migrar <code>onclick</code> inline</strong> do HTML para listeners (melhora CSP e separação de responsabilidades).</li>
+        <li><span class="tag t-lo">BAIXA</span> Avaliar <strong>JSDoc/TypeScript incremental</strong> ou <code>// @ts-check</code> nos módulos puros para segurança de tipos sem reescrever tudo.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="sec">Metodologia</h2>
+  <p style="color:var(--dim);font-size:13px;max-width:760px">
+    Análise baseada em leitura direta do código-fonte (módulos <code>tb-*.js</code>, CSS, HTML, scripts de build, dados de fases), execução da suíte de testes (<code>npm test</code> → 195/195) e do lint (<code>npm run lint</code> → limpo), inspeção do pipeline de CI, do manifest/service worker e das práticas de segredos. As notas são qualitativas (0–100) por dimensão de engenharia; a nota global é a média ponderada da tabela acima. Não foram executados testes de dispositivo Android nem análise dinâmica em produção.
+  </p>
+
+  <div class="foot">
+    Tile Blast · Auditoria gerada em 2026-07-14 · Documento técnico interno. As notas refletem o estado do repositório no momento da análise e devem ser reavaliadas após mudanças estruturais.
+  </div>
+
+</div>
+</body>
+</html>

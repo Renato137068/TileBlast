@@ -1,0 +1,82 @@
+/* Meta: Jardim de Blasty — extraído de tile_blast.html (fatia contígua, ordem preservada) */
+
+/* Meta "Jardim de Blasty" */
+.meta-scene {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 8px 0;
+}
+.meta-scene-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 0.35;
+  filter: grayscale(1);
+  transition: 0.3s;
+}
+.meta-scene-cell.built {
+  opacity: 1;
+  filter: none;
+  background: rgba(78, 203, 113, 0.14);
+}
+.meta-bar {
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin: 2px 0;
+}
+.meta-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ecb71, #8fe3ff);
+  transition: width 0.4s;
+}
+.meta-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  text-align: left;
+}
+.meta-task {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+}
+.meta-task.done {
+  opacity: 0.6;
+}
+.meta-task-ic {
+  font-size: 19px;
+}
+.meta-task-name {
+  flex: 1;
+  font-weight: 600;
+}
+.meta-task-reward {
+  font-size: 11px;
+  color: var(--accent);
+}
+.meta-task-ok {
+  color: var(--success);
+  font-weight: 800;
+}
+.meta-build,
+.meta-rush {
+  font-size: 12px;
+  padding: 6px 10px;
+  min-width: 56px;
+}
+.meta-rush {
+  background: rgba(246, 178, 62, 0.14);
+}

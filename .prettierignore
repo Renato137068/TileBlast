@@ -1,0 +1,16 @@
+# Gerado / vendorizado — não formatar
+node_modules/
+www/
+android/
+play-store/
+package-lock.json
+*.min.js
+*.min.css
+# Artefatos e markup com âncoras de wiring
+tile_blast.html
+privacy.html
+data/
+screenshots/
+_shot.mjs
+.tb-concat.tmp.js
+eslint.config.mjs

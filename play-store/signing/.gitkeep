@@ -1,0 +1,6 @@
+# Chaves de assinatura
+
+- `tileblast-upload.jks` — crie com `keytool` (veja COMO-ASSINAR.md)
+- **Nunca** commite o arquivo `.jks` no Git
+
+O `.gitignore` já ignora `*.jks` e `keystore.properties`.

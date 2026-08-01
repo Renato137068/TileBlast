@@ -1,0 +1,40 @@
+package com.tileblast.game;
+
+import android.webkit.WebView;
+import com.getcapacitor.BridgeActivity;
+
+/**
+ * Referência — o projeto android/ já inclui esta implementação.
+ */
+public class MainActivity extends BridgeActivity {
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        WebView webView = getBridge().getWebView();
+        if (webView == null) return;
+
+        webView.addJavascriptInterface(
+            new TileBlastBridge(this, webView),
+            "AndroidBridge"
+        );
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onBackPressed() {
+        WebView webView = getBridge().getWebView();
+        if (webView == null) {
+            super.onBackPressed();
+            return;
+        }
+        webView.evaluateJavascript(
+            "window.handleAppBack ? window.handleAppBack() : false",
+            value -> {
+                if (!"true".equals(value)) {
+                    runOnUiThread(this::finish);
+                }
+            }
+        );
+    }
+}

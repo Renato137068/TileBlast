@@ -1,0 +1,72 @@
+/* Variáveis / tokens de design (:root) — extraído de tile_blast.html (fatia contígua, ordem preservada) */
+
+:root {
+  --bg: #11131c;
+  --panel: #1b1e2c;
+  --accent: #f6b23e;
+  --as: rgba(246, 178, 62, 0.16);
+  --text: #f1f2f6;
+  --dim: #9197ab;
+  --success: #4ecb71;
+  --danger: #ff5a5a;
+  --radius: 14px;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glow-accent: 0 0 24px rgba(246, 178, 62, 0.35);
+  --glow-success: 0 0 20px rgba(78, 203, 113, 0.4);
+  --play-world-color: #f6b23e;
+  --play-world-rgb: 246, 178, 62;
+  --inset-top: max(env(safe-area-inset-top, 0px), var(--safe-top, 0px));
+  --inset-right: max(env(safe-area-inset-right, 0px), var(--safe-right, 0px));
+  --inset-bottom: max(env(safe-area-inset-bottom, 0px), var(--safe-bottom, 0px));
+  --inset-left: max(env(safe-area-inset-left, 0px), var(--safe-left, 0px));
+}
+
+/* ── Tokens premium (aditivos — não alteram o visual atual) ──
+   Vocabulário para polimento consistente de UI. Consuma-os
+   gradualmente nas telas (espaçamento 4/8pt, escala, elevação). */
+:root {
+  /* Espaçamento (base 4pt) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-8: 48px;
+  /* Raios */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+  /* Escala tipográfica */
+  --fs-xs: 11px;
+  --fs-sm: 13px;
+  --fs-md: 15px;
+  --fs-lg: 18px;
+  --fs-xl: 24px;
+  --fs-2xl: 32px;
+  /* Elevação */
+  --elev-1: 0 2px 8px rgba(0, 0, 0, 0.28);
+  --elev-2: 0 8px 28px rgba(0, 0, 0, 0.35);
+  --elev-3: 0 16px 48px rgba(0, 0, 0, 0.45);
+  /* Movimento */
+  --dur-fast: 0.12s;
+  --dur-mid: 0.22s;
+  --dur-slow: 0.4s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Foco (usado por a11y.css) */
+  --focus-ring: var(--accent);
+  /* Cor de texto secundário com melhor contraste (AA) para uso futuro */
+  --dim-strong: #b4bccd;
+}
+
+/* Fallback para quem pede menos transparência (a11y do SO) */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass: rgba(30, 34, 48, 0.96);
+    --glass-border: rgba(255, 255, 255, 0.2);
+  }
+}

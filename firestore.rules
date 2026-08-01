@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ── Economia autoritativa (só Admin SDK / Cloud Functions) ───────────
+    // Cliente NÃO pode escrever coins, entitlements nem adGrants.
+    // iapReceipts/{sha256(token)} também é somente Function (default deny).
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update, delete: if false;
+
+      match /ledger/{entryId} {
+        allow read: if isOwner(uid);
+        allow create, update, delete: if false;
+      }
+    }
+
+    // ── Save de progresso (fase 1: ainda client-writable) ────────────────
+    // Não deve conter o saldo autoritativo; ver docs/ECONOMIA-SERVER-SIDE.md.
+    match /saves/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // ── Rankings (fase 4) ────────────────────────────────────────────────
+    // Leitura autenticada; escrita SOMENTE via Callable (Admin SDK).
+    match /leaderboards/{boardId}/scores/{scoreUid} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    // ── Desafios compartilháveis (P3.2) ──────────────────────────────────
+    // Cliente não escreve; create/claim via Callable.
+    match /challenges/{challengeId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    // ── Remote config pública (leitura); escrita console/Admin ───────────
+    match /config/{doc} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,69 @@
+═══════════════════════════════════════════════════════════════
+ TILE BLAST — COPIAR E COLAR NA PLAY CONSOLE
+═══════════════════════════════════════════════════════════════
+
+PACKAGE NAME (nao altere):
+com.tileblast.game
+
+CATEGORIA:
+Jogos > Puzzle
+
+───────────────────────────────────────────────────────────────
+PORTUGUÊS (Brasil) — Página da loja
+───────────────────────────────────────────────────────────────
+
+TÍTULO (máx. 30):
+Tile Blast
+
+DESCRIÇÃO CURTA (máx. 80):
+Puzzle viciante: combine blocos, 60 fases, puzzle diário e modo infinito!
+
+DESCRIÇÃO COMPLETA:
+(cole o conteúdo de play-store/listing/pt-BR/full-description.txt)
+
+───────────────────────────────────────────────────────────────
+INGLÊS (EUA) — opcional
+───────────────────────────────────────────────────────────────
+
+TÍTULO:
+Tile Blast
+
+DESCRIÇÃO CURTA:
+Addictive puzzle: match blocks, 60 levels, daily challenge & infinite mode!
+
+DESCRIÇÃO COMPLETA:
+(cole play-store/listing/en-US/full-description.txt)
+
+───────────────────────────────────────────────────────────────
+IMAGENS — caminhos no seu PC
+───────────────────────────────────────────────────────────────
+
+Ícone 512×512:
+play-store\assets\icon-512.png
+
+Feature graphic 1024×500:
+play-store\assets\feature-graphic-1024x500.png
+
+Screenshots celular (mín. 2):
+play-store\assets\screenshots\phone\phone-01.png
+play-store\assets\screenshots\phone\phone-02.png
+(etc.)
+
+───────────────────────────────────────────────────────────────
+PRODUTOS IN-APP (IDs exatos)
+───────────────────────────────────────────────────────────────
+
+Não consumível: starter, noads, bppremium
+Consumível: coins500, coins1500, coins4000
+
+Detalhes: play-store\console\PRODUTOS-IAP.md
+
+───────────────────────────────────────────────────────────────
+DECLARAÇÕES
+───────────────────────────────────────────────────────────────
+
+Contém anúncios: SIM
+Compras no app: SIM
+Política de privacidade: (sua URL HTTPS — veja SO-PUBLICAR.md)
+
+═══════════════════════════════════════════════════════════════

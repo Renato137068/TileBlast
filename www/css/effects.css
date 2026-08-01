@@ -1,0 +1,230 @@
+/* Juice FX (moedas/XP/objetivo) e confetti — extraído de tile_blast.html (fatia contígua, ordem preservada) */
+/* ── JUICE FX (TBJuice: moedas voadoras, brilho XP, celebração de objetivo) ── */
+#tbj-fx-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10050;
+  overflow: visible;
+}
+.tbj-coin {
+  position: fixed;
+  font-size: 20px;
+  line-height: 1;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 0 6px rgba(246, 201, 69, 0.8));
+  pointer-events: none;
+}
+.tbj-bump {
+  animation: tbjBump 0.32s cubic-bezier(0.22, 1.5, 0.4, 1);
+}
+@keyframes tbjBump {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.28);
+    filter: brightness(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+/* XP: brilho ao ganhar / ao completar nível */
+#xp-fill {
+  position: relative;
+  overflow: hidden;
+}
+#xp-fill.xp-gain {
+  box-shadow:
+    0 0 10px rgba(167, 139, 250, 0.75),
+    0 0 20px rgba(124, 58, 237, 0.5);
+}
+#xp-fill.xp-gain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  transform: translateX(-100%);
+  animation: xpShine 0.7s ease-out;
+}
+@keyframes xpShine {
+  to {
+    transform: translateX(100%);
+  }
+}
+#xp-fill.xp-levelup {
+  box-shadow:
+    0 0 14px rgba(255, 221, 120, 0.95),
+    0 0 26px rgba(246, 178, 62, 0.6);
+}
+/* Objetivo recém-concluído: pop + glow + carimbo do check */
+@media (prefers-reduced-motion: no-preference) {
+  .obj-just-done {
+    animation: objDonePop 0.6s cubic-bezier(0.22, 1.4, 0.4, 1);
+  }
+  .obj-just-done .obj-icon {
+    animation: objIconSpin 0.6s ease-out;
+  }
+  .obj-just-done .obj-val.done {
+    animation: objCheckPop 0.5s cubic-bezier(0.22, 1.6, 0.4, 1);
+  }
+}
+@keyframes objDonePop {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.14);
+  }
+  60% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes objIconSpin {
+  0% {
+    transform: scale(1) rotate(0);
+  }
+  50% {
+    transform: scale(1.5) rotate(18deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes objCheckPop {
+  0% {
+    transform: scale(0) rotate(-30deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.5) rotate(6deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+/* Chest reveal: clarão radial pulsante atrás do ícone */
+.chm-icon {
+  position: relative;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .chm-icon.tbj-chest-pop {
+    animation: chestPop 0.8s cubic-bezier(0.22, 1.5, 0.4, 1);
+  }
+  .chm-icon.tbj-chest-pop::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 160px;
+    height: 160px;
+    margin: -80px 0 0 -80px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(255, 225, 130, 0.9),
+      rgba(255, 200, 80, 0.35) 40%,
+      transparent 70%
+    );
+    animation: chestGlow 0.9s ease-out;
+    z-index: -1;
+  }
+}
+@keyframes chestPop {
+  0% {
+    transform: scale(0.3) rotate(-12deg);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.25) rotate(6deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes chestGlow {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+/* ── CONFETTI ── */
+#confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10001;
+  overflow: hidden;
+  opacity: 0;
+}
+#confetti-layer.active {
+  opacity: 1;
+}
+.confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 7px;
+  height: 12px;
+  border-radius: 2px;
+  opacity: 0.92;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg) translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg) translateX(var(--drift, 0px));
+    opacity: 0;
+  }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+#board:focus {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+#board:focus:not(:focus-visible) {
+  outline: none;
+}
+#board:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.lc[role='button']:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoria AAA — Tile Blast | Consultoria Executiva</title>
+<style>
+:root{
+  --bg:#0a0c12;--panel:#12161f;--panel2:#171c28;--border:#252b3a;
+  --text:#e8ecf4;--muted:#8b93a7;--dim:#5c6478;
+  --accent:#5b8cff;--good:#3dd68c;--warn:#f5a524;--bad:#f04438;--crit:#ff2d55;
+  --sidebar:260px;--radius:14px;
+  --font:"Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.layout{display:flex;min-height:100vh}
+.sidebar{
+  position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+  background:linear-gradient(180deg,#0e121a 0%,#0a0c12 100%);
+  border-right:1px solid var(--border);padding:24px 16px;overflow-y:auto;z-index:40;
+}
+.brand{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.brand-title{font-size:18px;font-weight:700;margin-bottom:20px}
+.nav a{
+  display:block;padding:8px 12px;border-radius:10px;color:var(--muted);
+  font-size:13px;margin-bottom:2px;text-decoration:none;
+}
+.nav a:hover,.nav a.active{background:var(--panel2);color:var(--text)}
+.main{margin-left:var(--sidebar);flex:1;padding:28px 32px 80px;max-width:1200px}
+.cover{
+  background:
+    radial-gradient(ellipse at 80% 0%,rgba(91,140,255,.18),transparent 50%),
+    radial-gradient(ellipse at 10% 100%,rgba(240,68,56,.12),transparent 45%),
+    var(--panel);
+  border:1px solid var(--border);border-radius:20px;padding:36px 32px;margin-bottom:28px;
+}
+.cover-grid{display:grid;grid-template-columns:1.4fr .8fr;gap:28px;align-items:center}
+.cover h1{font-size:clamp(28px,4vw,42px);letter-spacing:-.02em;margin:8px 0 6px}
+.cover .meta{color:var(--muted);font-size:14px;display:flex;flex-wrap:wrap;gap:12px 20px;margin-top:14px}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+  font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+}
+.badge.fail{background:rgba(240,68,56,.15);color:#ff7a70;border:1px solid rgba(240,68,56,.35)}
+.score-hero{
+  text-align:center;background:var(--panel2);border:1px solid var(--border);
+  border-radius:18px;padding:28px 20px;
+}
+.score-hero .num{font-size:72px;font-weight:800;line-height:1;color:var(--bad);
+  background:linear-gradient(180deg,#ff8a7a,#f04438);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.score-hero .label{color:var(--muted);font-size:13px;margin-top:8px}
+.section{margin:40px 0;scroll-margin-top:24px}
+.section h2{
+  font-size:22px;margin-bottom:14px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;
+}
+.section h3{font-size:16px;margin:22px 0 10px;color:#c9d1e3}
+.section p,.section li{color:#c5ccdb;font-size:14.5px}
+.section ul,.section ol{padding-left:18px;margin:8px 0 12px}
+.section li{margin:6px 0}
+.lead{font-size:15.5px;color:#d4dae8;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;position:relative;overflow:hidden;
+}
+.card .k{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.card .v{font-size:28px;font-weight:800;margin-bottom:8px}
+.card .d{font-size:12.5px;color:var(--muted)}
+.bar{height:8px;background:#1c2230;border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.bar > i{
+  display:block;height:100%;border-radius:99px;width:0;
+  animation:fillBar 1.1s ease forwards;
+  background:linear-gradient(90deg,var(--bad),var(--warn));
+}
+.bar.ok > i{background:linear-gradient(90deg,#2f9e6b,var(--good))}
+.bar.mid > i{background:linear-gradient(90deg,#c47f12,var(--warn))}
+.bar.bad > i{background:linear-gradient(90deg,#a8192a,var(--bad))}
+@keyframes fillBar{to{width:var(--w)}}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border)}
+th{background:#141925;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+tr:hover td{background:rgba(255,255,255,.02)}
+.score-cell{font-weight:800;font-variant-numeric:tabular-nums}
+.sev{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.callout{
+  border-left:3px solid var(--bad);background:rgba(240,68,56,.08);
+  padding:14px 16px;border-radius:0 12px 12px 0;margin:14px 0;font-size:14px;
+}
+.callout.warn{border-left-color:var(--warn);background:rgba(245,165,36,.08)}
+.callout.ok{border-left-color:var(--good);background:rgba(61,214,140,.07)}
+.chart{
+  display:flex;align-items:flex-end;gap:8px;height:160px;padding:16px 8px 0;
+  border:1px solid var(--border);border-radius:12px;background:var(--panel);margin:14px 0;
+}
+.chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.chart .col .stem{
+  width:100%;max-width:42px;border-radius:8px 8px 2px 2px;
+  background:linear-gradient(180deg,#6a8fff,#3a4f8a);animation:grow .9s ease forwards;
+  transform-origin:bottom;min-height:4px;
+}
+.chart .col.low .stem{background:linear-gradient(180deg,#ff7a70,#8a1f28)}
+.chart .col.mid .stem{background:linear-gradient(180deg,#ffc15a,#8a5a12)}
+.chart .col span{font-size:10px;color:var(--muted);text-align:center;line-height:1.2}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700}
+.tag.p0{background:rgba(240,68,56,.2);color:#ff8f86}
+.tag.p1{background:rgba(245,165,36,.2);color:#ffc15a}
+.tag.p2{background:rgba(91,140,255,.2);color:#9bbbff}
+.tag.p3{background:rgba(61,214,140,.15);color:#7dffb8}
+.roadmap{display:grid;gap:12px}
+.roadmap .phase{
+  background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;
+}
+.roadmap .phase h4{margin-bottom:8px;font-size:15px}
+.verdict-box{
+  background:linear-gradient(135deg,rgba(240,68,56,.12),rgba(10,12,18,.9));
+  border:1px solid rgba(240,68,56,.35);border-radius:18px;padding:24px;margin-top:12px;
+}
+.verdict-box h3{font-size:20px;margin-bottom:10px;color:#ff9a90}
+.top-btn{
+  position:fixed;right:22px;bottom:22px;z-index:50;
+  width:46px;height:46px;border-radius:50%;border:1px solid var(--border);
+  background:var(--panel2);color:var(--text);cursor:pointer;font-size:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+}
+.top-btn:hover{border-color:var(--accent)}
+.kpi{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);color:var(--dim);font-size:12px}
+@media (max-width:960px){
+  .sidebar{position:static;width:100%;border-right:none;border-bottom:1px solid var(--border)}
+  .layout{flex-direction:column}
+  .main{margin-left:0;padding:20px 16px 72px}
+  .cover-grid,.grid-2{grid-template-columns:1fr}
+  .nav{display:flex;flex-wrap:wrap;gap:4px}
+  .nav a{font-size:12px;padding:6px 10px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar" aria-label="Navegação do relatório">
+  <div class="brand">Studio Audit Desk</div>
+  <div class="brand-title">Tile Blast AAA</div>
+  <nav class="nav">
+    <a href="#capa">Capa</a>
+    <a href="#resumo">Resumo Executivo</a>
+    <a href="#notas">Notas por Categoria</a>
+    <a href="#produto">Produto</a>
+    <a href="#gameplay">Gameplay</a>
+    <a href="#ui">UI</a>
+    <a href="#ux">UX</a>
+    <a href="#feel">Game Feel</a>
+    <a href="#arte">Arte</a>
+    <a href="#audio">Áudio</a>
+    <a href="#arch">Arquitetura</a>
+    <a href="#html">HTML / CSS / JS</a>
+    <a href="#perf">Performance</a>
+    <a href="#resp">Responsividade</a>
+    <a href="#a11y">Acessibilidade</a>
+    <a href="#mono">Monetização</a>
+    <a href="#econ">Economia</a>
+    <a href="#ret">Retenção</a>
+    <a href="#scale">Escalabilidade</a>
+    <a href="#biz">Potencial Comercial</a>
+    <a href="#cmp">Comparação</a>
+    <a href="#erros">Erros Críticos</a>
+    <a href="#ops">Oportunidades</a>
+    <a href="#road">Roadmap</a>
+    <a href="#prio">Priorização</a>
+    <a href="#final">Nota Final</a>
+    <a href="#veredito">Veredito</a>
+  </nav>
+</aside>
+
+<main class="main">
+
+<!-- CAPA -->
+<section class="cover" id="capa">
+  <div class="cover-grid">
+    <div>
+      <div class="badge fail">● Reprovado — abaixo do padrão AAA</div>
+      <h1>Tile Blast</h1>
+      <p class="lead" style="margin:0">Auditoria profissional HTML5 / Capacitor Android — barra de comparação: Royal Match, Candy Crush Saga, Toon Blast, Toy Blast, Match Factory, Gardenscapes, Homescapes.</p>
+      <div class="meta">
+        <span>📅 Data: 11 Jul 2026</span>
+        <span>🏷️ Versão: 1.4.6 (versionCode 11)</span>
+        <span>📦 Pacote: com.tileblast.game</span>
+        <span>🧪 Escopo: código vivo + build Android</span>
+      </div>
+    </div>
+    <div class="score-hero">
+      <div class="num">40</div>
+      <div class="label">Nota geral ponderada / 100</div>
+      <div class="bar bad" style="margin-top:16px"><i style="--w:40%"></i></div>
+      <div class="kpi">Média simples: 40,2 · Classificação: REPROVADO</div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="section" id="resumo">
+  <h2>01 — Resumo Executivo</h2>
+  <p class="lead">Tile Blast é um clone funcional de Toy Blast/Toon Blast com casca F2P completa (vidas, loja, ads, battle pass, jardim, missões). Feature breadth ≫ craft depth. Contra o padrão AAA casual, o produto <strong>não está pronto para soft launch</strong> e <strong>não justifica investimento de escala</strong> no estado atual.</p>
+
+  <div class="cards">
+    <div class="card"><div class="k">Pontos fortes</div><div class="v" style="font-size:18px;color:var(--good)">Core loop</div><div class="d">Tap-to-blast 8×8 jogável; obstáculos ice/crate/collect/cover/chain; Capacitor + Billing bridge real; i18n PT/EN/ES.</div></div>
+    <div class="card"><div class="k">Defeitos centrais</div><div class="v" style="font-size:18px;color:var(--bad)">Craft zero</div><div class="d">~80 fases procedurais; arte emoji/SVG; áudio por oscilador; tutorial ensina thresholds errados (5/7/9 vs 4/6/8).</div></div>
+    <div class="card"><div class="k">Maiores riscos</div><div class="v" style="font-size:18px;color:var(--warn)">LTV morto</div><div class="d">AdMob ainda em IDs de teste Google; flash offer “Resgatar grátis (demo)”; economia hiperinflacionada.</div></div>
+    <div class="card"><div class="k">Potencial comercial</div><div class="v" style="font-size:18px">Baixo</div><div class="d">Sem diferenciação. Jogador de Royal Match não migra. ASO fraco sem arte produzida.</div></div>
+    <div class="card"><div class="k">Retenção estimada</div><div class="v" style="font-size:18px">D7 &lt; 12%</div><div class="d">Conteúdo acaba em ~80 níveis. Meta é checklist theater. Sem live-ops real.</div></div>
+    <div class="card"><div class="k">Publicação</div><div class="v" style="font-size:18px;color:var(--warn)">Técnica sim</div><div class="d">Pode subir na Play Store após trocar AdMob. Comercialmente: publicação ≠ sucesso.</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>Diagnóstico em uma frase:</strong> checklist de jogo F2P blast enrolado em um protótipo HTML de 5.326 linhas — não um produto AAA, não um soft-launch King/Dream Games, e ainda não um indie competitivo de verdade.
+  </div>
+
+  <h3>Radar de notas (categorias agregadas)</h3>
+  <div class="chart" aria-hidden="true">
+    <div class="col mid"><div class="stem" style="height:49%"></div><span>Produto<br>49</span></div>
+    <div class="col mid"><div class="stem" style="height:53%"></div><span>Gameplay<br>53</span></div>
+    <div class="col mid"><div class="stem" style="height:52%"></div><span>UI<br>52</span></div>
+    <div class="col mid"><div class="stem" style="height:55%"></div><span>UX<br>55</span></div>
+    <div class="col low"><div class="stem" style="height:42%"></div><span>Feel<br>42</span></div>
+    <div class="col low"><div class="stem" style="height:35%"></div><span>Arte<br>35</span></div>
+    <div class="col low"><div class="stem" style="height:22%"></div><span>Áudio<br>22</span></div>
+    <div class="col low"><div class="stem" style="height:35%"></div><span>Arch<br>35</span></div>
+    <div class="col low"><div class="stem" style="height:30%"></div><span>Mono<br>30</span></div>
+    <div class="col low"><div class="stem" style="height:28%"></div><span>Econ<br>28</span></div>
+    <div class="col low"><div class="stem" style="height:42%"></div><span>Ret<br>42</span></div>
+    <div class="col low"><div class="stem" style="height:28%"></div><span>Biz<br>28</span></div>
+  </div>
+</section>
+
+<!-- NOTAS OVERVIEW -->
+<section class="section" id="notas">
+  <h2>02 — Painel de Notas</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Categoria</th><th>Nota</th><th>Barra</th><th>Veredito rápido</th></tr></thead>
+      <tbody>
+        <tr><td>Produto (agregado)</td><td class="score-cell" style="color:#ffc15a">49</td><td><div class="bar mid"><i style="--w:49%"></i></div></td><td>Loop ok, IP e craft falham</td></tr>
+        <tr><td>Gameplay</td><td class="score-cell" style="color:#ffc15a">53</td><td><div class="bar mid"><i style="--w:53%"></i></div></td><td>Jogável; teto de mastery baixo</td></tr>
+        <tr><td>UI</td><td class="score-cell" style="color:#ffc15a">52</td><td><div class="bar mid"><i style="--w:52%"></i></div></td><td>Coeso, emoji-heavy, não AAA</td></tr>
+        <tr><td>UX</td><td class="score-cell" style="color:#ffc15a">55</td><td><div class="bar mid"><i style="--w:55%"></i></div></td><td>Fluxo ok; FTUE quebrado</td></tr>
+        <tr><td>Game Feel</td><td class="score-cell" style="color:#ff7a70">42</td><td><div class="bar bad"><i style="--w:42%"></i></div></td><td>Juice HTML amador</td></tr>
+        <tr><td>Arte</td><td class="score-cell" style="color:#ff7a70">35</td><td><div class="bar bad"><i style="--w:35%"></i></div></td><td>SVG + emoji ≠ produção</td></tr>
+        <tr><td>Áudio</td><td class="score-cell" style="color:#ff7a70">22</td><td><div class="bar bad"><i style="--w:22%"></i></div></td><td>Zero assets; oscillators</td></tr>
+        <tr><td>Arquitetura</td><td class="score-cell" style="color:#ff7a70">35</td><td><div class="bar bad"><i style="--w:35%"></i></div></td><td>God-file 275 KB / 5.3k LOC</td></tr>
+        <tr><td>HTML</td><td class="score-cell" style="color:#ff7a70">40</td><td><div class="bar bad"><i style="--w:40%"></i></div></td><td>Monólito; semântica fraca</td></tr>
+        <tr><td>CSS</td><td class="score-cell" style="color:#ff7a70">42</td><td><div class="bar bad"><i style="--w:42%"></i></div></td><td>Tokens ok; duplicação e inline soup</td></tr>
+        <tr><td>JavaScript</td><td class="score-cell" style="color:#ff7a70">38</td><td><div class="bar bad"><i style="--w:38%"></i></div></td><td>~4.5k LOC inline + globals</td></tr>
+        <tr><td>Performance</td><td class="score-cell" style="color:#ff7a70">48</td><td><div class="bar bad"><i style="--w:48%"></i></div></td><td>Aceitável 8×8; payload ruim</td></tr>
+        <tr><td>Responsividade</td><td class="score-cell" style="color:#ff7a70">45</td><td><div class="bar bad"><i style="--w:45%"></i></div></td><td>Phone-only; tablet fraco</td></tr>
+        <tr><td>Acessibilidade</td><td class="score-cell" style="color:#ff7a70">48</td><td><div class="bar bad"><i style="--w:48%"></i></div></td><td>Base boa; loja inacessível</td></tr>
+        <tr><td>Monetização</td><td class="score-cell" style="color:#ff7a70">30</td><td><div class="bar bad"><i style="--w:30%"></i></div></td><td>Shell sem cobrança real</td></tr>
+        <tr><td>Economia</td><td class="score-cell" style="color:#ff7a70">28</td><td><div class="bar bad"><i style="--w:28%"></i></div></td><td>Faucets ≫ sinks</td></tr>
+        <tr><td>Retenção</td><td class="score-cell" style="color:#ff7a70">42</td><td><div class="bar bad"><i style="--w:42%"></i></div></td><td>Sistemas sem profundidade</td></tr>
+        <tr><td>Escalabilidade</td><td class="score-cell" style="color:#ff7a70">32</td><td><div class="bar bad"><i style="--w:32%"></i></div></td><td>Conteúdo hardcoded no HTML</td></tr>
+        <tr><td>Potencial Comercial</td><td class="score-cell" style="color:#ff7a70">28</td><td><div class="bar bad"><i style="--w:28%"></i></div></td><td>Sem razão de migração</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- PRODUTO -->
+<section class="section" id="produto">
+  <h2>03 — Produto</h2>
+
+  <h3>Conceito — 55/100</h3>
+  <div class="bar mid"><i style="--w:55%"></i></div>
+  <p><strong>Justificativa:</strong> Mecânica correta do gênero tap-to-blast (grupo 2+, gravidade, especiais bomba/foguete/arco-íris, objetivos por fase). Conceito validado pelo mercado — e exatamente por isso saturado. Não há proposta única.</p>
+  <ul>
+    <li><strong>Positivos:</strong> Regras claras; 6 cores; especiais encadeáveis; mundos temáticos com curva de introdução de obstáculos.</li>
+    <li><strong>Problemas:</strong> Zero gancho emocional ou mecânico que Royal Match / Toy Blast não cubram melhor.</li>
+    <li><strong>Melhorar:</strong> Um pilar proprietário (ex.: personagem com skill, board physics distinta, meta narrativo real) — ou abandonar pretensão AAA e aceitar nicho micro-casual.</li>
+  </ul>
+
+  <h3>Originalidade — 25/100</h3>
+  <div class="bar bad"><i style="--w:25%"></i></div>
+  <p><strong>Justificativa:</strong> Clone direto da linhagem Toy Blast/Toon Blast. Nome genérico “Tile Blast”. Remova o título da splash e o jogo é indistinguível de dezenas de clones da Play Store.</p>
+  <ul>
+    <li><strong>Positivos:</strong> Nenhum relevante em originalidade.</li>
+    <li><strong>Problemas:</strong> Sem IP; mascote Blasty é um quadrado SVG; “jardim” é cópia rasa de Homescapes sem restauração real.</li>
+    <li><strong>Melhorar:</strong> Direção de arte + fantasy única obrigatória antes de qualquer spend de UA.</li>
+  </ul>
+
+  <h3>Diversão — 58/100</h3>
+  <div class="bar mid"><i style="--w:58%"></i></div>
+  <p><strong>Justificativa:</strong> Os primeiros 15–20 minutos divertem. Combos e especiais dão feedback. Depois a repetição procedural aparece. Sem “momentos de marca” (board clear cinematográfico, boss levels autorados).</p>
+
+  <h3>Clareza — 62/100</h3>
+  <div class="bar mid"><i style="--w:62%"></i></div>
+  <p><strong>Justificativa:</strong> HUD de objetivos e mapa legíveis. Contaminado por tutorial com números errados e excesso de emoji como semântica.</p>
+
+  <h3>Curva de aprendizado — 45/100</h3>
+  <div class="bar bad"><i style="--w:45%"></i></div>
+  <p><strong>Justificativa:</strong> <code>showTutorial</code> ensina 5+/7+/9+ enquanto <code>BOMB_T=4, ROCKET_T=6, RAINBOW_T=8</code>. Introduções de gelo/caixa/coleta são toasts, não FTUE guiado. Em AAA isso é falha de funnel.</p>
+
+  <h3>Progressão — 48/100</h3>
+  <div class="bar bad"><i style="--w:48%"></i></div>
+  <p><strong>Justificativa:</strong> 70 níveis em <code>LEVELS</code> + 10 master ≈ 80. Manifest ainda vende “60 fases”. Comentário no HTML ainda diz “50 base”. Conteúdo acaba; AAA opera em milhares de layouts hand-crafted com pipeline contínuo.</p>
+</section>
+
+<!-- GAMEPLAY -->
+<section class="section" id="gameplay">
+  <h2>04 — Gameplay</h2>
+
+  <h3>Mecânicas — 55/100</h3>
+  <div class="bar mid"><i style="--w:55%"></i></div>
+  <p><strong>Justificativa:</strong> Core correto. Especiais existem e encadeiam. Faltam tools mid-level (hammer/hand), boosters pré-fase, e linguagem de combo AAA (Dream Games).</p>
+  <ul>
+    <li><strong>Positivos:</strong> Flood-fill, gravidade, refill, ice HP, crate, collect-to-bottom, cover, chain.</li>
+    <li><strong>Problemas:</strong> Boards gerados por padrões (<code>band/wall/top/lake/scatter</code>), não desenhados. Sem pré-boosters.</li>
+    <li><strong>Melhorar:</strong> Editor de níveis + 300 fases autoradas mínimas antes de soft launch.</li>
+  </ul>
+
+  <h3>Controles — 70/100</h3>
+  <div class="bar mid"><i style="--w:70%"></i></div>
+  <p><strong>Justificativa:</strong> Tap é o controle certo. Canvas com teclado/ARIA ajuda. Hover BFS ok em 8×8. Melhor nota técnica do núcleo.</p>
+
+  <h3>Objetivos — 58/100</h3>
+  <div class="bar mid"><i style="--w:58%"></i></div>
+  <p><strong>Justificativa:</strong> score, color, ice, crate, collect, cover, chain — variedade suficiente para protótipo. Falta variedade de puzzle (timers, blockers móveis, dual-grid, etc.).</p>
+
+  <h3>Ritmo — 55/100</h3>
+  <div class="bar mid"><i style="--w:55%"></i></div>
+  <p><strong>Justificativa:</strong> Partidas curtas ok. Intersticial a cada 5 wins e continue pós-derrota existem. Sem pacing de live-ops / capítulos narrativos.</p>
+
+  <h3>Dificuldade — 50/100</h3>
+  <div class="bar mid"><i style="--w:50%"></i></div>
+  <p><strong>Justificativa:</strong> Moves e targets são knobs. RNG de refill + layouts procedurais impedem curva calibrada por métricas (fail rate 30–40% mid/late) como King/Dream Games.</p>
+
+  <h3>Balanceamento — 42/100</h3>
+  <div class="bar bad"><i style="--w:42%"></i></div>
+  <p><strong>Justificativa:</strong> Sem evidência de telemetria de balance. Mercy refill existe; economia de continue/PU desalinhada com faucets generosos.</p>
+
+  <h3>Recompensas — 40/100</h3>
+  <div class="bar bad"><i style="--w:40%"></i></div>
+  <p><strong>Justificativa:</strong> Moedas por estrela, missões, baús, BP, ads +30 — generosidade sem desejo. Recompensa sem escassez = barulho.</p>
+</section>
+
+<!-- UI -->
+<section class="section" id="ui">
+  <h2>05 — UI</h2>
+  <div class="grid-2">
+    <div class="card"><div class="k">Organização</div><div class="v">58</div><div class="bar mid"><i style="--w:58%"></i></div><div class="d">Mapa / jogo / loja claros. Dock inferior lotado (missões, loja, skins, perfil, jardim).</div></div>
+    <div class="card"><div class="k">Hierarquia visual</div><div class="v">52</div><div class="bar mid"><i style="--w:52%"></i></div><div class="d">Accent dourado ajuda; banners de BP/piggy/flash competem com CTA de jogar.</div></div>
+    <div class="card"><div class="k">Espaçamento</div><div class="v">55</div><div class="bar mid"><i style="--w:55%"></i></div><div class="d">Touch targets ≥44px em pontos-chave. Mapa denso em phones pequenos.</div></div>
+    <div class="card"><div class="k">Tipografia</div><div class="v">48</div><div class="bar bad"><i style="--w:48%"></i></div><div class="d">Google Fonts + texto 9–11px dim. Não é tipografia de marca AAA.</div></div>
+    <div class="card"><div class="k">Cores</div><div class="v">60</div><div class="bar mid"><i style="--w:60%"></i></div><div class="d">Paleta dark casual coerente. Não substitui art direction.</div></div>
+    <div class="card"><div class="k">Botões</div><div class="v">55</div><div class="bar mid"><i style="--w:55%"></i></div><div class="d">Primários ok. Loja usa divs clicáveis — anti-padrão.</div></div>
+    <div class="card"><div class="k">Ícones</div><div class="v">28</div><div class="bar bad"><i style="--w:28%"></i></div><div class="d">Emoji como sistema de ícones. Inaceitável para soft launch pago.</div></div>
+    <div class="card"><div class="k">Clareza UI</div><div class="v">58</div><div class="bar mid"><i style="--w:58%"></i></div><div class="d">Legível para viciados em casual. Parece template, não produto.</div></div>
+  </div>
+  <p style="margin-top:14px"><strong>Melhorar:</strong> Icon set próprio, reduzir chrome do mapa, um CTA dominante por tela, eliminar emoji como asset primário.</p>
+</section>
+
+<!-- UX -->
+<section class="section" id="ux">
+  <h2>06 — UX</h2>
+  <div class="grid-2">
+    <div class="card"><div class="k">Fluxo</div><div class="v">55</div><div class="bar mid"><i style="--w:55%"></i></div><div class="d">Splash → mapa → partida → resultado. Funcional.</div></div>
+    <div class="card"><div class="k">Navegação</div><div class="v">58</div><div class="bar mid"><i style="--w:58%"></i></div><div class="d">Dock e modais previsíveis. Excesso de superfícies secundárias.</div></div>
+    <div class="card"><div class="k">Tutorial</div><div class="v">35</div><div class="bar bad"><i style="--w:35%"></i></div><div class="d">Erro factual de thresholds. Sem gated FTUE por obstáculo.</div></div>
+    <div class="card"><div class="k">Feedback</div><div class="v">55</div><div class="bar mid"><i style="--w:55%"></i></div><div class="d">Toasts, combo tiers, near-miss, haptics. Ainda prototype-tier.</div></div>
+    <div class="card"><div class="k">Tempo até partida</div><div class="v">65</div><div class="bar mid"><i style="--w:65%"></i></div><div class="d">Rápido o suficiente. Bom.</div></div>
+    <div class="card"><div class="k">Facilidade de uso</div><div class="v">60</div><div class="bar mid"><i style="--w:60%"></i></div><div class="d">Casual-friendly. Complexidade de meta atrapalha mais do que ajuda.</div></div>
+  </div>
+  <div class="callout">
+    Tutorial mentiroso é inaceitável. Corrigir <code>showTutorial</code> / strings i18n para 4 / 6 / 8 imediatamente — isso é bug de produto, não polish.
+  </div>
+</section>
+
+<!-- GAME FEEL -->
+<section class="section" id="feel">
+  <h2>07 — Game Feel — 42/100</h2>
+  <div class="bar bad"><i style="--w:42%"></i></div>
+  <p class="lead">Há partículas, floaters, shake, confetti, cascade de board-clear, glow de perigo. Isso não é “juice AAA”. É juice de jam game bem-intencionado.</p>
+  <ul>
+    <li><strong>Explosões / partículas:</strong> Canvas primitives. Sem atlas, sem trails autorados, sem merge VFX de especiais.</li>
+    <li><strong>Shake:</strong> Existe (<code>triggerShake</code>). Intensidade genérica.</li>
+    <li><strong>Feedback sonoro:</strong> Oscillators Web Audio. Comentário no código admite “zero assets”. Impacto emocional ≈ 0.</li>
+    <li><strong>Satisfação ao destruir:</strong> Mediana. Sem “candy pop” de Candy Crush nem weight de Royal Match.</li>
+    <li><strong>Problema central:</strong> Game feel sem arte/áudio produzidos é cosmético. O jogador sente HTML, não um brinquedo.</li>
+  </ul>
+  <p><strong>Melhorar:</strong> Pacote SFX/music licenciado ou produzido; tile sprites; VFX de especiais; camera punch; anticipação de 2–3 frames antes do pop.</p>
+</section>
+
+<!-- ARTE -->
+<section class="section" id="arte">
+  <h2>08 — Arte — 35/100</h2>
+  <div class="bar bad"><i style="--w:35%"></i></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>Nota</th><th>Evidência</th></tr></thead>
+      <tbody>
+        <tr><td>Paleta</td><td>55</td><td>Dark casual coerente</td></tr>
+        <tr><td>Mascote</td><td>30</td><td><code>mascot.svg</code> ~1.8 KB — quadrado cute</td></tr>
+        <tr><td>Cenários</td><td>20</td><td>Jardim = grid de emoji; mundos = labels</td></tr>
+        <tr><td>HUD</td><td>52</td><td>Funcional, sem craft</td></tr>
+        <tr><td>Estilo</td><td>28</td><td>Sem direção artística proprietária</td></tr>
+        <tr><td>Coerência</td><td>50</td><td>Internamente ok; vs mercado, genérico</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Skins = CSS <code>filter</code> no mesmo SVG. Collection sem arte. Brand test falha.</p>
+</section>
+
+<!-- AUDIO -->
+<section class="section" id="audio">
+  <h2>09 — Áudio — 22/100</h2>
+  <div class="bar bad"><i style="--w:22%"></i></div>
+  <p><strong>Justificativa:</strong> Nenhum arquivo <code>.mp3/.ogg/.wav</code> no projeto. SFX sintéticos (pop, iceBreak, crateBreak, coin, boardClear, ducking). Melhor que silêncio total — ainda assim protótipo. Variedade baixa. Impacto comercial negativo em reviews e retenção de sessão.</p>
+  <ul>
+    <li><strong>Positivos:</strong> Sistema de som existe; mute; reduced-motion parcial.</li>
+    <li><strong>Problemas:</strong> Sem music bed de produção; sem VO; sem layering AAA.</li>
+    <li><strong>Melhorar:</strong> Biblioteca mínima 40–60 SFX + 3 loops musicais antes de soft launch.</li>
+  </ul>
+</section>
+
+<!-- ARCH -->
+<section class="section" id="arch">
+  <h2>10 — Arquitetura — 35/100</h2>
+  <div class="bar bad"><i style="--w:35%"></i></div>
+  <p class="lead"><code>tile_blast.html</code>: 5.326 linhas / ~275 KB — CSS + markup + ~4.568 linhas de JS inline. Módulos <code>tb-*.js</code> são satélites IIFE acoplados a um god-config <code>C</code>.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Módulo</th><th>~LOC</th><th>Papel real</th></tr></thead>
+      <tbody>
+        <tr><td>tile_blast.html (inline)</td><td>4568</td><td>Quase todo o produto</td></tr>
+        <tr><td>tb-roadmap.js</td><td>1220</td><td>BP, piggy, flash, ads, daily login, master levels</td></tr>
+        <tr><td>tb-features.js</td><td>320</td><td>Weekly/a11y/share — nome enganoso</td></tr>
+        <tr><td>tb-global.js</td><td>268</td><td>Daily puzzle / PWA</td></tr>
+        <tr><td>tb-meta.js</td><td>202</td><td>Jardim</td></tr>
+        <tr><td>tb-game-logic.js</td><td>182</td><td>Único pedaço “limpo”</td></tr>
+        <tr><td>Demais</td><td>&lt;150</td><td>Firebase/push/remote thin wrappers</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul>
+    <li><strong>Organização / modularização:</strong> Ruim. Script-tag order é a arquitetura.</li>
+    <li><strong>Escalabilidade / manutenção:</strong> Adicionar temporada de níveis exige PR no monólito.</li>
+    <li><strong>Drift:</strong> HTML 70 níveis; testes/fixtures ainda pensam 50; manifest “60 fases”; comment “50 base”.</li>
+  </ul>
+</section>
+
+<!-- HTML CSS JS -->
+<section class="section" id="html">
+  <h2>11 — HTML / CSS / JavaScript</h2>
+
+  <h3>HTML — 40/100</h3>
+  <div class="bar bad"><i style="--w:40%"></i></div>
+  <ul>
+    <li>~48 <code>onclick</code>; shop items como <code>div</code> sem role/keyboard.</li>
+    <li><code>showGlobalModal</code> via <code>innerHTML</code> — superfície XSS + a11y frágil.</li>
+    <li>Poucos headings; screens como divs.</li>
+    <li>Safe-area e skip-link existem (crédito).</li>
+  </ul>
+
+  <h3>CSS — 42/100</h3>
+  <div class="bar bad"><i style="--w:42%"></i></div>
+  <ul>
+    <li>Variáveis <code>:root</code> e safe-area: bom.</li>
+    <li>Tudo inline no HTML; segundo bloco style órfão do jardim; regra <code>.lc-play-tag</code> duplicada.</li>
+    <li>Só breakpoints de phone (<code>max-width:359px</code>, <code>max-height:640px</code>). <code>#app{max-width:460px}</code>.</li>
+    <li>Inline styles gerados em JS destroem theming.</li>
+  </ul>
+
+  <h3>JavaScript — 38/100</h3>
+  <div class="bar bad"><i style="--w:38%"></i></div>
+  <ul>
+    <li>Globals <code>TB*</code> + centenas de funções free no HTML.</li>
+    <li>Sem bundler ESM no path de jogo; minify ignora HTML e omite <code>tb-meta.js</code>.</li>
+    <li>Performance local ok no 8×8; <code>renderMap()</code> reconstrói DOM inteiro.</li>
+    <li>Testes cobrem núcleo puro; UI/monetização/canvas quase sem cobertura; fixtures desatualizados.</li>
+  </ul>
+</section>
+
+<!-- PERF -->
+<section class="section" id="perf">
+  <h2>12 — Performance — 48/100</h2>
+  <div class="bar bad"><i style="--w:48%"></i></div>
+  <ul>
+    <li>Payload HTML ~275 KB sem minify do shell.</li>
+    <li>Google Fonts via rede (latência + privacidade).</li>
+    <li>rAF gated — positivo. Animações CSS infinitas em low-end — risco.</li>
+    <li><code>android:largeHeap="true"</code> — cheiro de pressão de memória no WebView.</li>
+    <li>SW cache-first agressivo (<code>skipWaiting</code> + <code>clients.claim</code>).</li>
+  </ul>
+</section>
+
+<!-- RESP -->
+<section class="section" id="resp">
+  <h2>13 — Responsividade — 45/100</h2>
+  <div class="bar bad"><i style="--w:45%"></i></div>
+  <ul>
+    <li><strong>Notch / safe areas:</strong> Bem tratado (<code>viewport-fit=cover</code>, env insets).</li>
+    <li><strong>Celulares pequenos:</strong> Parcial — UI aperta, mapa crowded.</li>
+    <li><strong>Tablets / telas grandes:</strong> Coluna 460px no vazio. Portrait lock. Não é produto tablet.</li>
+    <li><strong>Foldables / desktop PWA:</strong> Mesmo shell de phone.</li>
+  </ul>
+</section>
+
+<!-- A11Y -->
+<section class="section" id="a11y">
+  <h2>14 — Acessibilidade — 48/100</h2>
+  <div class="bar bad"><i style="--w:48%"></i></div>
+  <ul>
+    <li><strong>Crédito:</strong> skip-link, sr-only, aria-live, canvas keyboard, focus trap em modal, colorblind toggle, reduced-motion.</li>
+    <li><strong>Falha:</strong> loja/IAP não keyboard-operable; coach sem <code>aria-modal</code>; emoji-UI; <code>user-select:none</code> no body; sem axe/pa11y nos testes.</li>
+  </ul>
+</section>
+
+<!-- MONETIZATION -->
+<section class="section" id="mono">
+  <h2>15 — Monetização — 30/100</h2>
+  <div class="bar bad"><i style="--w:30%"></i></div>
+  <p class="lead"><strong>O jogador sente vontade de gastar dinheiro?</strong> Não. Escassez artificial inexistente, soft currency abundante, oferta flash gratuita, ads em IDs de teste.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Sistema</th><th>Status</th><th>Problema</th></tr></thead>
+      <tbody>
+        <tr><td>Rewarded Ads</td><td>Código + simulação 5s web</td><td>AdMob <code>ca-app-pub-3940256099942544/...</code> (teste Google)</td></tr>
+        <tr><td>Interstitial</td><td>Caps a cada 5 / daily 5</td><td>Mesmos test IDs; receita = 0 em release atual</td></tr>
+        <tr><td>IAP packs</td><td>starter / coins / noads / BP</td><td>Web auto-grant; preços BRL hardcoded</td></tr>
+        <tr><td>Subs no-ads</td><td>UI + bridge</td><td>Produtos Console podem estar incompletos</td></tr>
+        <tr><td>Battle Pass</td><td>30 tiers locais</td><td>UI mostra amostra; season = floor(now/30d)</td></tr>
+        <tr><td>Flash offer</td><td>“Resgatar grátis (demo)”</td><td><code>claimFlash()</code> dá 800 coins de graça</td></tr>
+        <tr><td>Piggy</td><td>5% earnings</td><td>Quebrar com coins = pagar coins por coins</td></tr>
+        <tr><td>Dynamic offers</td><td>Ativo</td><td>Ex.: 120 coins → 200 coins (imprime dinheiro)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Por que não gasta:</strong> (1) moedas fáceis via missões/ads/daily/flash; (2) PUs baratos e pouco desejáveis vs continue; (3) sem pre-level booster economy — o principal alavanca F2P do gênero; (4) meta garden/skins sem valor aspiracional; (5) confiança zero se flash é “demo grátis”.</p>
+</section>
+
+<!-- ECONOMY -->
+<section class="section" id="econ">
+  <h2>16 — Economia — 28/100</h2>
+  <div class="bar bad"><i style="--w:28%"></i></div>
+  <ul>
+    <li><strong>Moedas:</strong> win stars [0,10,20,30] + missões (centenas/dia possíveis) + baús + BP + ads +30 + flash 800.</li>
+    <li><strong>Vidas:</strong> max 5, regen 30 min — padrão correto, minado por ads/compra barata.</li>
+    <li><strong>Sinks:</strong> shuffle 40, bomb 60, rainbow 80, moves 100, continue 100 — fracos vs faucets.</li>
+    <li><strong>Inflação:</strong> Estrutural. Soft currency não vende.</li>
+    <li><strong>Equilíbrio:</strong> Ausente. Remote config fino demais para experiments sérios.</li>
+  </ul>
+</section>
+
+<!-- RETENTION -->
+<section class="section" id="ret">
+  <h2>17 — Retenção — 42/100</h2>
+  <div class="bar bad"><i style="--w:42%"></i></div>
+  <div class="cards">
+    <div class="card"><div class="k">D1 estimado</div><div class="v" style="font-size:22px">28–35%</div><div class="d">Core loop segura curiosos. Barra AAA casual ~40–50%+.</div></div>
+    <div class="card"><div class="k">D7 estimado</div><div class="v" style="font-size:22px">8–12%</div><div class="d">Conteúdo curto + meta rasa. Barra ~18–25%+.</div></div>
+    <div class="card"><div class="k">D30 estimado</div><div class="v" style="font-size:22px">2–4%</div><div class="d">Sem live-ops calendar. Barra ~8–12%+.</div></div>
+  </div>
+  <p>Sistemas presentes: daily login, missões D/W, daily puzzle, weekly episodes, BP, baús, collection/skins, garden 16 tasks, win streak, achievements, push parcial, infinito.</p>
+  <p><strong>Problema:</strong> quantidade de sistemas ≠ retenção. Gardenscapes retém porque a casa importa emocionalmente. Aqui o jardim é emoji. Leaderboard sem Firebase real vira fake social.</p>
+</section>
+
+<!-- SCALE -->
+<section class="section" id="scale">
+  <h2>18 — Escalabilidade — 32/100</h2>
+  <div class="bar bad"><i style="--w:32%"></i></div>
+  <ul>
+    <li>Novos mundos/fases: hardcoded no HTML — difícil.</li>
+    <li>Eventos: weekly multipliers locais — raso.</li>
+    <li>Personagens: filters CSS — toy-scale.</li>
+    <li>Power-ups: array simples — ok tecnicamente, sem live economy.</li>
+    <li>Remote config: ~11 linhas — não escala live-ops.</li>
+  </ul>
+  <p>O jogo <strong>não consegue crescer</strong> como serviço sem reescrever pipeline de conteúdo e quebrar o monólito.</p>
+</section>
+
+<!-- BIZ -->
+<section class="section" id="biz">
+  <h2>19 — Potencial Comercial — 28/100</h2>
+  <div class="bar bad"><i style="--w:28%"></i></div>
+  <ul>
+    <li><strong>Chance de sucesso orgânico Top 100:</strong> próxima de zero no estado atual.</li>
+    <li><strong>Competitividade:</strong> clone sem craft numa categoria dominada por incumbents com milhares de níveis e UA de 8 dígitos.</li>
+    <li><strong>Diferenciação:</strong> inexistente.</li>
+    <li><strong>Faturamento:</strong> com test ads + flash grátis + economia inflada, LTV ≈ residual.</li>
+    <li><strong>Risco de fracasso:</strong> alto se houver spend de UA prematuro.</li>
+  </ul>
+</section>
+
+<!-- COMPARISON -->
+<section class="section" id="cmp">
+  <h2>20 — Comparação com líderes</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Dimensão</th><th>Tile Blast</th><th>Royal Match</th><th>Candy Crush</th><th>Toy/Toon Blast</th><th>Garden/Homescapes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Core loop</td><td>Tap-blast ok</td><td>Match-3 + meta casa</td><td>Match-3 referência</td><td>Referência do gênero</td><td>Match-3 + restauração</td></tr>
+        <tr><td>Níveis</td><td>~80 procedurais</td><td>Milhares hand-craft</td><td>Milhares+</td><td>Milhares</td><td>Milhares</td></tr>
+        <tr><td>Arte/IP</td><td>SVG/emoji</td><td>Produção AAA</td><td>Produção AAA</td><td>Produção AAA</td><td>Produção AAA</td></tr>
+        <tr><td>Áudio</td><td>Oscillator</td><td>Produzido</td><td>Produzido</td><td>Produzido</td><td>Produzido</td></tr>
+        <tr><td>Live-ops</td><td>Hacks locais</td><td>Calendário denso</td><td>Calendário denso</td><td>Calendário denso</td><td>Eventos + meta</td></tr>
+        <tr><td>Monetização</td><td>Shell / demo</td><td>LTV otimizado</td><td>LTV otimizado</td><td>LTV otimizado</td><td>LTV + meta desire</td></tr>
+        <tr><td>Social</td><td>Local/opcional</td><td>Times/corridas</td><td>Friends/episodes</td><td>Eventos</td><td>Clubes/social light</td></tr>
+        <tr><td>Motivo de migrar</td><td>—</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td></tr>
+        <tr><td>Nota relativa</td><td>28–40</td><td>92–96</td><td>93–97</td><td>90–94</td><td>90–95</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Não há dimensão em que Tile Blast vença ou empate os líderes. Empate parcial só em “controles de tap existem”.</p>
+</section>
+
+<!-- ERRORS -->
+<section class="section" id="erros">
+  <h2>21 — Erros Críticos</h2>
+
+  <h3 class="sev">🔴 Crítico</h3>
+  <ul>
+    <li>AdMob App/Ad Unit IDs de teste no Manifest e <code>TileBlastBridge.java</code> — receita zero / risco de rejeição política de ads.</li>
+    <li>Flash offer: botão “Resgatar grátis (demo)” concede 800 moedas — monetização sabotada.</li>
+    <li>Tutorial ensina thresholds 5/7/9; código usa 4/6/8 — jogador aprende regra falsa.</li>
+    <li>Economia hiperinflacionada (faucets ≫ sinks) — IAP de soft currency inviável.</li>
+    <li>Zero arte/áudio produzidos — soft launch e ASO condenados.</li>
+    <li>Sem pipeline de níveis hand-crafted — conteúdo não escala nem compete.</li>
+  </ul>
+
+  <h3 class="sev">🟠 Alto</h3>
+  <ul>
+    <li>Monólito HTML 5.3k LOC / 275 KB — dívida estrutural.</li>
+    <li>Drift de contagem de fases (70+10 vs “60” no manifest vs “50” em comments/tests).</li>
+    <li>IAP web auto-grant; preços não vêm do Billing.</li>
+    <li>Oferta dinâmica que troca 120 coins por 200.</li>
+    <li>Piggy que exige gastar coins para obter coins.</li>
+    <li>Sem pre-level boosters (alavanca F2P do gênero).</li>
+    <li>Battle Pass UI incompleta (tiers amostrados).</li>
+    <li><code>android:allowBackup="true"</code> com save de economia/IAP.</li>
+    <li>Shop DOM inacessível (divs onclick).</li>
+  </ul>
+
+  <h3 class="sev">🟡 Médio</h3>
+  <ul>
+    <li>Minify não processa HTML nem <code>tb-meta.js</code>.</li>
+    <li><code>renderMap</code> full rebuild.</li>
+    <li>Google Fonts externos.</li>
+    <li>SW agressivo / dual sync www.</li>
+    <li>Testes desatualizados vs produção.</li>
+    <li>Push/CRM incompleto vs live-ops.</li>
+    <li>Remote config anêmico.</li>
+    <li>Responsividade tablet/desktop ausente.</li>
+    <li>CSS duplicado / inline soup.</li>
+  </ul>
+
+  <h3 class="sev">🟢 Baixo</h3>
+  <ul>
+    <li>Títulos Play Store curtos em PT/EN (desperdício de keywords) — se ainda não corrigidos.</li>
+    <li>Emoji-only mute visual em alguns chips.</li>
+    <li>Gradient text com potencial issue em forced-colors.</li>
+    <li>Comentários de código mentindo sobre contagem de níveis.</li>
+  </ul>
+</section>
+
+<!-- OPPORTUNITIES -->
+<section class="section" id="ops">
+  <h2>22 — Oportunidades</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="k">Retenção</div>
+      <ul>
+        <li>Calendário de eventos semanais reais</li>
+        <li>Corridas/times com leaderboard cloud</li>
+        <li>Saga map com capítulos narrativos</li>
+        <li>FTUE gated por obstáculo</li>
+        <li>Push lifecycle (vidas cheias, daily, retorno D1/D3/D7)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="k">Diversão</div>
+      <ul>
+        <li>300+ boards hand-authored</li>
+        <li>Boss levels / dual objectives criativos</li>
+        <li>Combo language visual proprietária</li>
+        <li>Modo cooperativa async leve</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="k">Receita</div>
+      <ul>
+        <li>Pre-level booster shop</li>
+        <li>Hard currency + soft scarcity</li>
+        <li>Offers segmentadas por fail-rate</li>
+        <li>Battle pass com track completo e FOMO real</li>
+        <li>Remover flash demo; Billing prices</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="k">Viralização / tempo</div>
+      <ul>
+        <li>Challenges compartilháveis com seed</li>
+        <li>Clip de replay de board-clear</li>
+        <li>Skins com arte real (UGC light)</li>
+        <li>Daily puzzle global com prêmios</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="section" id="road">
+  <h2>23 — Roadmap</h2>
+  <div class="roadmap">
+    <div class="phase">
+      <h4>Antes do Soft Launch</h4>
+      <ol>
+        <li>Trocar AdMob para IDs de produção; validar UMP/consent.</li>
+        <li>Matar flash demo; ligar IAP só via Play Billing; remover auto-grant web em builds store.</li>
+        <li>Corrigir tutorial 4/6/8; FTUE de cada obstáculo.</li>
+        <li>Rebalancear economia (cortar faucets 60–70%, criar sinks desejáveis, pre-level boosters).</li>
+        <li>Arte mínima de tiles/obstáculos + pacote SFX/música.</li>
+        <li>≥200 níveis hand-crafted com fail-rate instrumentado.</li>
+        <li>Extrair LEVELS para JSON versionado; alinhar manifest/tests.</li>
+        <li>Analytics de funnel (install→D1→pay→ad_view).</li>
+        <li>allowBackup policy + self-audit gate no CI.</li>
+      </ol>
+    </div>
+    <div class="phase">
+      <h4>Antes do Lançamento Mundial</h4>
+      <ol>
+        <li>Soft launch 2–3 países; matar ou pivotar se D7 &lt; 15% ou CPI/LTV invertido.</li>
+        <li>Live-ops calendar 8 semanas; BP seasons reais.</li>
+        <li>Quebrar monólito HTML (CSS/JS bundler, map virtualizado).</li>
+        <li>ASO: screenshots reais, feature graphic, títulos com keywords.</li>
+        <li>Social mínimo viável (weekly race cloud).</li>
+        <li>Meta desire real (jardim com progressão visual, não emoji grid).</li>
+      </ol>
+    </div>
+    <div class="phase">
+      <h4>Após o Lançamento</h4>
+      <ol>
+        <li>Pipeline semanal de 15–30 níveis.</li>
+        <li>Experimentos remotos de economy/offers.</li>
+        <li>UA só após LTV&gt;CPI estável 2 semanas.</li>
+        <li>Nova vertical de conteúdo (personagem skill / season pass cosmetics).</li>
+        <li>CRM push + re-engagement cohorts.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- PRIORIZATION -->
+<section class="section" id="prio">
+  <h2>24 — Priorização</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Problema</th><th>Impacto</th><th>Esforço</th><th>Prioridade</th></tr></thead>
+      <tbody>
+        <tr><td>AdMob test IDs → produção</td><td>Crítico (receita)</td><td>Baixo</td><td><span class="tag p0">P0</span></td></tr>
+        <tr><td>Remover flash demo / IAP fake</td><td>Crítico (LTV/confiança)</td><td>Baixo</td><td><span class="tag p0">P0</span></td></tr>
+        <tr><td>Corrigir tutorial 4/6/8</td><td>Alto (FTUE)</td><td>Baixo</td><td><span class="tag p0">P0</span></td></tr>
+        <tr><td>Rebalance economia + sinks</td><td>Crítico (IAP)</td><td>Médio</td><td><span class="tag p0">P0</span></td></tr>
+        <tr><td>Pre-level boosters</td><td>Alto (receita gênero)</td><td>Médio</td><td><span class="tag p1">P1</span></td></tr>
+        <tr><td>200+ níveis hand-craft</td><td>Crítico (retenção)</td><td>Alto</td><td><span class="tag p1">P1</span></td></tr>
+        <tr><td>Arte tiles + SFX/música</td><td>Crítico (qualidade/ASO)</td><td>Alto</td><td><span class="tag p1">P1</span></td></tr>
+        <tr><td>Analytics funnel</td><td>Alto (decisão)</td><td>Médio</td><td><span class="tag p1">P1</span></td></tr>
+        <tr><td>Extrair LEVELS JSON + testes</td><td>Alto (escala)</td><td>Médio</td><td><span class="tag p1">P1</span></td></tr>
+        <tr><td>Shop a11y + buttons reais</td><td>Médio</td><td>Baixo</td><td><span class="tag p2">P2</span></td></tr>
+        <tr><td>Split monólito / bundler</td><td>Alto (vel. time)</td><td>Alto</td><td><span class="tag p2">P2</span></td></tr>
+        <tr><td>Meta jardim com arte real</td><td>Médio-Alto (retenção)</td><td>Alto</td><td><span class="tag p2">P2</span></td></tr>
+        <tr><td>Tablet layout</td><td>Baixo-Médio</td><td>Médio</td><td><span class="tag p3">P3</span></td></tr>
+        <tr><td>Minify HTML + tb-meta</td><td>Baixo</td><td>Baixo</td><td><span class="tag p3">P3</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FINAL SCORE -->
+<section class="section" id="final">
+  <h2>25 — Nota Final</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="k">Média simples</div>
+      <div class="v" style="color:var(--bad)">40,2</div>
+      <div class="bar bad"><i style="--w:40%"></i></div>
+      <div class="d">Média aritmética das 19 categorias agregadas do painel.</div>
+    </div>
+    <div class="card">
+      <div class="k">Média ponderada</div>
+      <div class="v" style="color:var(--bad)">40</div>
+      <div class="bar bad"><i style="--w:40%"></i></div>
+      <div class="d">Pesos de soft-launch comercial: gameplay, monetização, economia, retenção e biz &gt; HTML/CSS cosmético.</div>
+    </div>
+  </div>
+  <p><strong>Por que diferem (e neste caso quase coincidem):</strong> a média simples trata Acessibilidade e Potencial Comercial com o mesmo peso. A ponderada privilegia eixos que matam LTV e retenção. Como arte/áudio/monetização/economia já estão no fundo da tabela, a ponderada não “salva” o produto — confirma o reprovado. Em builds anteriores com UI inflada e craft zero, a simples costuma ficar artificialmente mais alta; aqui o colapso é sistêmico.</p>
+  <div class="callout warn">
+    Classificação oficial: <strong>REPROVADO (&lt; 60)</strong>. Distância estimada até qualidade AAA (95): ~<strong>58%</strong> de trabalho de produto/craft ainda faltando — não 58% de bugfix.
+  </div>
+</section>
+
+<!-- VERDICT -->
+<section class="section" id="veredito">
+  <h2>26 — Veredito</h2>
+  <div class="verdict-box">
+    <h3>Não invista em escala. Publique só se o objetivo for aprendizado — não Top 100.</h3>
+    <p style="margin-bottom:12px"><strong>Vale investir neste projeto?</strong> Investimento de capital/UA: <strong>não</strong>, até P0/P1 do roadmap. Investimento de tempo do autor solo para portfolio / soft launch micro-país: <strong>condicional</strong>, se aceitar 6–12 meses de craft (níveis, arte, áudio, economia) e não confundir checklist F2P com produto.</p>
+    <p style="margin-bottom:12px"><strong>Vale publicar?</strong> Tecnicamente, após AdMob real e remoção de demos: <strong>sim, como v1 orgânica</strong>. Comercialmente, publicação sem craft é só poluição de store.</p>
+    <p style="margin-bottom:12px"><strong>Potencial Top 100 Play Store?</strong> <strong>Não no estado atual.</strong> Sem diferenciação, sem milhares de níveis, sem LTV, sem UA sustentável — Top 100 é fantasia.</p>
+    <p style="margin-bottom:12px"><strong>O que impede hoje:</strong> (1) ausência de craft de conteúdo, (2) ausência de identidade audiovisual, (3) monetização que não cobra e economia que não cria desejo, (4) arquitetura que impede live-ops, (5) zero razão para o jogador abandonar Royal Match / Candy Crush / Toy Blast.</p>
+    <p><strong>Gap para AAA:</strong> ~55–60%. O núcleo jogável (~25% do caminho) existe. Faltam produção, conteúdo, economia, live-ops e marca — a parte cara.</p>
+  </div>
+
+  <div class="callout ok" style="margin-top:18px">
+    <strong>Único elogio permitido neste relatório:</strong> o core tap-to-blast funciona, há scaffolding Android/Billing real, e alguém claramente iterou sistemas F2P. Isso prova capacidade de execução de features — não de produto AAA. Features sem craft são inventário, não jogo.
+  </div>
+</section>
+
+<footer class="footer">
+  Relatório gerado para Tile Blast v1.4.6 · Auditoria AAA crítica · 11 Jul 2026 · Documento executivo — barra: King / Dream Games / Peak / Playrix / Supercell / Store Review.<br>
+  Evidência principal: <code>tile_blast.html</code>, <code>tb-roadmap.js</code>, <code>TileBlastBridge.java</code>, <code>AndroidManifest.xml</code>, módulos <code>tb-*.js</code>, testes e remote-config.
+</footer>
+
+</main>
+</div>
+
+<button class="top-btn" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Voltar ao topo">↑</button>
+<script>
+(function(){
+  const links=[...document.querySelectorAll('.nav a')];
+  const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const io=new IntersectionObserver((ents)=>{
+    ents.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const id='#'+e.target.id;
+      links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')===id));
+    });
+  },{rootMargin:'-20% 0px -70% 0px',threshold:0});
+  sections.forEach(s=>io.observe(s));
+})();
+</script>
+</body>
+</html>

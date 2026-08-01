@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoria Tile Blast — pós-refatoração</title>
+<style>
+  :root{
+    --bg:#0e1117;--panel:#161b22;--panel2:#1c2230;--line:#2a3140;
+    --txt:#e6edf3;--muted:#9aa7b4;--accent:#6ea8fe;
+    --red:#f4636e;--orange:#f59e42;--amber:#e9c449;--green:#4fd18b;--teal:#3fd6c6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+  header{background:linear-gradient(135deg,#152a1f,#1b3320 55%,#14342c);
+    border:1px solid var(--line);border-radius:20px;padding:34px 32px;margin-bottom:26px;
+    display:flex;gap:32px;align-items:center;flex-wrap:wrap}
+  h1{margin:0 0 6px;font-size:26px;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:14px}
+  .gauge .lbl{fill:var(--txt);font-size:30px;font-weight:700}
+  .gauge .lbl2{fill:var(--muted);font-size:11px}
+  .verdict{flex:1;min-width:260px}
+  .badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;
+    background:rgba(79,209,139,.15);color:var(--green);border:1px solid rgba(79,209,139,.35)}
+  .delta-big{font-size:13px;color:var(--green);font-weight:700;margin-left:8px}
+  h2{font-size:18px;margin:34px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  p.lead{color:#cdd6e0;font-size:15px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .metric{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .metric .n{font-size:22px;font-weight:700}
+  .metric .k{font-size:12px;color:var(--muted);margin-top:2px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .card .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .card .name{font-weight:600;font-size:15px}
+  .card .score{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+  .card .w{font-size:11px;color:var(--muted)}
+  .card .delta{font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px;
+    background:rgba(79,209,139,.14);color:var(--green);margin-left:6px}
+  .card .delta.flat{background:rgba(154,167,180,.14);color:var(--muted)}
+  .bar{height:8px;border-radius:6px;background:#0c1017;margin:10px 0 8px;overflow:hidden;position:relative}
+  .bar > .prev{position:absolute;top:0;height:100%;width:2px;background:var(--muted);opacity:.7}
+  .bar > span{display:block;height:100%;border-radius:6px}
+  .card .desc{font-size:13px;color:var(--muted)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.two{grid-template-columns:1fr}}
+  .list{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 8px}
+  .list h3{margin:10px 12px;font-size:14px}
+  .list ul{margin:0;padding:0 10px 8px;list-style:none}
+  .list li{padding:8px 10px;border-radius:8px;font-size:13.5px;color:#d4dce6}
+  .list li:nth-child(odd){background:var(--panel2)}
+  .list li b{color:var(--txt)}
+  .note{background:rgba(110,168,254,.08);border:1px solid rgba(110,168,254,.3);border-radius:10px;padding:12px 14px;font-size:13px;color:#c6d4e6;margin:14px 0}
+  footer{margin-top:40px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="gauge">
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        <circle cx="75" cy="75" r="62" fill="none" stroke="#232a36" stroke-width="14"/>
+        <circle cx="75" cy="75" r="62" fill="none" stroke="#4fd18b" stroke-width="14"
+          stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="116.9"
+          transform="rotate(-90 75 75)"/>
+        <text x="75" y="72" text-anchor="middle" class="lbl">70</text>
+        <text x="75" y="94" text-anchor="middle" class="lbl2">/ 100 · GLOBAL</text>
+      </svg>
+    </div>
+    <div class="verdict">
+      <h1>Auditoria Técnica — Tile Blast <span class="delta-big">▲ +11</span></h1>
+      <div class="sub">Pós-refatoração · v1.4.6 · 12 de julho de 2026 · reauditoria (era 59/100)</div>
+      <p style="margin:14px 0 8px;">
+        <span class="badge">EVOLUIU — de "meio do caminho" para "sólido, quase pronto"</span>
+      </p>
+      <div class="sub">Sessão de refatoração fechou lacunas reais em segurança, i18n, acessibilidade,
+      legibilidade, testes e o contrato de arquitetura — tudo validado por 122 testes verdes.
+      O teto restante é o redesenho visual e a migração <code>src/</code>, que exigem QA em navegador.</div>
+    </div>
+  </header>
+
+  <p class="lead">Desde a auditoria de mais cedo (59/100), a base subiu de forma <b>mensurável e testada</b>:
+  o núcleo virou código legível (Prettier), o save ganhou anti-cheat com efeito real, os sinks de XSS com
+  dado de usuário foram fechados, o i18n (3 idiomas) ganhou auto-detecção, a acessibilidade ficou consistente,
+  e o contrato de módulos — antes implícito — agora é <b>documentado e garantido por CI</b>. A nota global vai
+  a <b>70/100</b>. O que ainda segura: dois arquivos grandes não divididos, globais vs. ES modules, e o
+  redesenho premium de UI.</p>
+
+  <div class="metrics">
+    <div class="metric"><div class="n">122 ✓</div><div class="k">testes verdes <span style="color:#4fd18b">(era 109)</span></div></div>
+    <div class="metric"><div class="n">70</div><div class="k">nota global <span style="color:#4fd18b">(+11)</span></div></div>
+    <div class="metric"><div class="n">3</div><div class="k">idiomas completos + auto-detecção</div></div>
+    <div class="metric"><div class="n">18→1</div><div class="k">requisições (bundle pronto e testado)</div></div>
+    <div class="metric"><div class="n">−37%</div><div class="k">release minificado (build corrigido)</div></div>
+    <div class="metric"><div class="n">6</div><div class="k">novos suites de teste (contrato/segurança/i18n)</div></div>
+  </div>
+
+  <h2>Notas por dimensão — agora vs. auditoria anterior</h2>
+  <div class="grid" id="dims"></div>
+
+  <h2>O que mudou nesta sessão</h2>
+  <div class="two">
+    <div class="list">
+      <h3 style="color:var(--green)">✓ Entregue e validado por teste</h3>
+      <ul>
+        <li><b>Segurança:</b> XSS fechado nos sinks de nome (ranking/input/evento); anti-cheat bloqueia score de save adulterado; Firebase no .gitignore.</li>
+        <li><b>i18n:</b> 3 idiomas com paridade (teste), auto-detecção de idioma, bug do toast PT corrigido.</li>
+        <li><b>Acessibilidade:</b> reduce-motion agora afeta CSS, foco visível universal, modo daltônico reforça a UI, alto contraste.</li>
+        <li><b>Legibilidade:</b> Prettier + configs; tb-main 4.820→6.949 linhas legíveis; build minifica o release.</li>
+        <li><b>Arquitetura:</b> manifesto único, bundler, contrato de módulos validado por teste, ARCHITECTURE.md; dependência invertida (TBAnalytics) corrigida.</li>
+        <li><b>Bugs latentes corrigidos:</b> cache do SW (vdev→v146), release não minificava tb-main.</li>
+      </ul>
+    </div>
+    <div class="list">
+      <h3 style="color:var(--amber)">◐ Pendente (exige QA em navegador / backend)</h3>
+      <ul>
+        <li><b>Migração src/ + ES modules + DI</b> e split dos god-files (tb-main 6.9k, tb-roadmap 2k).</li>
+        <li><b>Trocar 18 tags por 1 bundle</b> no index publicado (bundle já pronto e testado).</li>
+        <li><b>Redesenho UI premium</b> (hierarquia, espaçamento, grading) — não fazer às cegas.</li>
+        <li><b>Adoção do TBRuntime</b> nos 65 timers / 77 listeners (fundação pronta).</li>
+        <li><b>Validação server-side</b> de scores e compras (billing verify), Play Integrity.</li>
+        <li><b>Renomear identificadores curtos</b> (ld, sv, C) — após a migração src/.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Metodologia & honestidade.</b> As notas combinam métricas objetivas (122 testes verdes, LOC,
+    contagem de sinks/idiomas, artefatos de build) com julgamento de engenharia. Três dimensões da auditoria
+    anterior estavam <b>subestimadas</b> por informação incompleta — ao inspecionar o código, i18n e
+    acessibilidade já eram melhores do que 30/55 sugeriam, e as notas agora refletem tanto o estado real quanto
+    as melhorias feitas. <b>UI/UX</b> segue com nota conservadora: não foi possível abrir o jogo no navegador
+    nesta sessão para validação visual. A marca cinza em cada barra indica a nota anterior.
+  </div>
+
+  <footer>
+    Tile Blast · Reauditoria 12/07/2026 · Escala 0–100 (bandas: &lt;40 crítico · 40–59 fraco · 60–74 regular · 75–89 bom · 90+ excelente).
+    Global 70/100 = média ponderada das 14 dimensões (era 59). Relatório autocontido.
+  </footer>
+</div>
+
+<script>
+  // [nome, agora, peso, antes, descricao]
+  var DIMS=[
+    ["Arquitetura",66,12,52,"Bundler + manifesto único + contrato de módulos validado por teste + ARCHITECTURE.md. Ainda: 2 arquivos grandes e globais vs ES modules."],
+    ["Legibilidade / Clean Code",68,8,45,"Prettier + configs; núcleo formatado e legível; build minifica o release. Ainda: nomes curtos e arquivos grandes."],
+    ["Performance",66,10,62,"Canvas+rAF; build minifica (−37%); fundação TBRuntime pronta. Ainda: 65 timers/77 listeners não migrados."],
+    ["Segurança / Anti-cheat",72,10,55,"XSS fechado nos sinks de dado do usuário; anti-cheat bloqueia score adulterado; Firebase gitignored. Ainda: sem validação server-side."],
+    ["Testes / QA",82,8,72,"122 testes verdes; novos suites de contrato, bundle, segurança e i18n; format:check. Falta cobertura formal medida."],
+    ["Manutenibilidade",64,8,50,"Tooling, docs, contrato de dependências, DRY do manifesto. Ainda: god-files não divididos."],
+    ["Escalabilidade de conteúdo",68,7,65,"Bundler + conteúdo data-driven. Lógica consumidora ainda no monólito."],
+    ["UI / UX",66,10,60,"A11y consistente + design tokens. Redesenho premium não validado visualmente."],
+    ["Monetização",68,8,68,"Sem mudança nesta sessão (rewarded/battle pass/piggy/ofertas). Falta verificação server-side."],
+    ["Retenção",70,7,70,"Sem mudança nesta sessão (missões/eventos/conquistas/ranking/coleção)."],
+    ["Acessibilidade",74,4,55,"reduce-motion afeta CSS, foco visível universal, daltônico reforça UI, alto contraste. Falta navegação por teclado completa."],
+    ["Google Play readiness",74,4,72,"Cache do SW corrigido, build correto, Firebase gitignored. Falta Play Integrity server-side."],
+    ["Organização do repositório",88,2,78,"Docs em /docs, Prettier/EditorConfig, ARCHITECTURE.md, manifesto único, gitignore. Falta git nesta pasta; www é artefato."],
+    ["Internacionalização (i18n)",80,2,30,"3 idiomas com paridade (teste), auto-detecção, bug de toast corrigido. Falta catálogo externo e mais idiomas."]
+  ];
+  function band(s){return s<40?'var(--red)':s<60?'var(--orange)':s<75?'var(--amber)':s<90?'var(--green)':'var(--teal)';}
+  var html=DIMS.map(function(d){
+    var c=band(d[1]);var diff=d[1]-d[3];
+    var dtag=diff>0?'<span class="delta">+'+diff+'</span>':'<span class="delta flat">=</span>';
+    return '<div class="card"><div class="top"><span class="name">'+d[0]+'</span>'+
+      '<span class="score" style="color:'+c+'">'+d[1]+dtag+'</span></div>'+
+      '<div class="w">peso '+d[2]+'% · antes '+d[3]+'</div>'+
+      '<div class="bar"><span style="width:'+d[1]+'%;background:'+c+'"></span>'+
+      '<i class="prev" style="left:'+d[3]+'%"></i></div>'+
+      '<div class="desc">'+d[4]+'</div></div>';
+  }).join('');
+  document.getElementById('dims').innerHTML=html;
+</script>
+</body>
+</html>

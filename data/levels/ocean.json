@@ -1,0 +1,229 @@
+{
+  "worldId": "ocean",
+  "levels": [
+    {
+      "id": "ocean-01",
+      "worldId": "ocean",
+      "order": 1,
+      "index": 30,
+      "name": "Primeira Coleta",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 4
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "ocean-02",
+      "worldId": "ocean",
+      "order": 2,
+      "index": 31,
+      "name": "Profundeza",
+      "moves": 18,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 1950
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "ocean-03",
+      "worldId": "ocean",
+      "order": 3,
+      "index": 32,
+      "name": "Correnteza",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 6
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "ocean-04",
+      "worldId": "ocean",
+      "order": 4,
+      "index": 33,
+      "name": "Maré de Cor",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 1,
+          "target": 40
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "ocean-05",
+      "worldId": "ocean",
+      "order": 5,
+      "index": 34,
+      "name": "Tesouro do Fundo",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 8
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "ocean-06",
+      "worldId": "ocean",
+      "order": 6,
+      "index": 35,
+      "name": "Abismo",
+      "moves": 16,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 2400
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "ocean-07",
+      "worldId": "ocean",
+      "order": 7,
+      "index": 36,
+      "name": "Coleta Gelada",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 6
+        },
+        {
+          "type": "ice",
+          "target": 6
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "ocean-08",
+      "worldId": "ocean",
+      "order": 8,
+      "index": 37,
+      "name": "Seis Cores",
+      "moves": 28,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 0,
+          "target": 18
+        },
+        {
+          "type": "color",
+          "color": 2,
+          "target": 18
+        },
+        {
+          "type": "color",
+          "color": 5,
+          "target": 18
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "ocean-09",
+      "worldId": "ocean",
+      "order": 9,
+      "index": 38,
+      "name": "Correntes Profundas",
+      "moves": 26,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 8
+        },
+        {
+          "type": "crate",
+          "target": 6
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "ocean-10",
+      "worldId": "ocean",
+      "order": 10,
+      "index": 39,
+      "name": "Kraken",
+      "moves": 26,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 8
+        },
+        {
+          "type": "score",
+          "target": 3000
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "worlds": [
+    {
+      "id": "garden",
+      "label": "Jardim Encantado",
+      "icon": "🌱",
+      "theme": "garden",
+      "musicKey": "garden",
+      "skinId": "av_w_garden",
+      "color": "#4ecb71",
+      "cssClass": "world-jardim",
+      "unlockAtLevel": 0,
+      "levelCount": 15,
+      "completionReward": {
+        "coins": 150,
+        "bomb": 2
+      },
+      "description": "Explore 15 fases no jardim encantado."
+    },
+    {
+      "id": "forest",
+      "label": "Floresta Mística",
+      "icon": "🌲",
+      "theme": "forest",
+      "musicKey": "forest",
+      "skinId": "av_w_forest",
+      "color": "#3aa6e0",
+      "cssClass": "world-floresta",
+      "unlockAtLevel": 15,
+      "levelCount": 10,
+      "completionReward": {
+        "coins": 200,
+        "rainbow": 1
+      },
+      "description": "Explore 10 fases temáticas."
+    },
+    {
+      "id": "mountain",
+      "label": "Montanha Gelada",
+      "icon": "⛰",
+      "theme": "mountain",
+      "musicKey": "mountain",
+      "skinId": "av_w_mountain",
+      "color": "#b46fe0",
+      "cssClass": "world-montanha",
+      "unlockAtLevel": 25,
+      "levelCount": 10,
+      "completionReward": {
+        "coins": 250,
+        "shuffle": 3
+      },
+      "description": "Explore 10 fases temáticas."
+    },
+    {
+      "id": "ocean",
+      "label": "Oceano",
+      "icon": "🌊",
+      "theme": "ocean",
+      "musicKey": "ocean",
+      "skinId": "av_w_ocean",
+      "color": "#44c8ff",
+      "cssClass": "world-oceano",
+      "unlockAtLevel": 35,
+      "levelCount": 10,
+      "completionReward": {
+        "coins": 300,
+        "moves": 2
+      },
+      "description": "Explore 10 fases no oceano."
+    },
+    {
+      "id": "inferno",
+      "label": "Reino de Fogo",
+      "icon": "🔥",
+      "theme": "inferno",
+      "musicKey": "inferno",
+      "skinId": "av_w_inferno",
+      "color": "#ef4b5f",
+      "cssClass": "world-inferno",
+      "unlockAtLevel": 45,
+      "levelCount": 10,
+      "completionReward": {
+        "coins": 350,
+        "bomb": 3
+      },
+      "description": "Explore 10 fases temáticas."
+    },
+    {
+      "id": "crystal",
+      "label": "Caverna de Cristal",
+      "icon": "💎",
+      "theme": "crystal",
+      "musicKey": "crystal",
+      "skinId": "av_w_crystal",
+      "color": "#7fe3ff",
+      "cssClass": "world-cristal",
+      "unlockAtLevel": 55,
+      "levelCount": 20,
+      "completionReward": {
+        "coins": 500,
+        "rainbow": 2
+      },
+      "description": "Explore 20 fases temáticas."
+    },
+    {
+      "id": "legendary",
+      "label": "Reino Lendário",
+      "icon": "👑",
+      "theme": "legendary",
+      "musicKey": "legendary",
+      "skinId": "av_w_legend",
+      "color": "#ffdd44",
+      "cssClass": "world-lendario",
+      "unlockAtLevel": 75,
+      "levelCount": 10,
+      "completionReward": {
+        "coins": 1000,
+        "bomb": 5,
+        "rainbow": 3
+      },
+      "description": "Explore 10 fases lendárias."
+    }
+  ]
+}

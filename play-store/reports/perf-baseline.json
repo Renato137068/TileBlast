@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-07-27T10:40:15.719Z",
+  "runs": 3,
+  "network": "4G-emulated",
+  "cpu_throttle": 4,
+  "lab": {
+    "boot_ready_ms": {
+      "p50": 232,
+      "p95": 258,
+      "samples": 3,
+      "higher_is_better": false
+    },
+    "dom_content_loaded_ms": {
+      "p50": 11482,
+      "p95": 11568,
+      "samples": 3,
+      "higher_is_better": false
+    },
+    "fps_min": {
+      "p50": 60,
+      "p95": 60,
+      "samples": 3,
+      "higher_is_better": true
+    }
+  },
+  "samples": [
+    {
+      "dom_content_loaded_ms": 11568,
+      "boot_ready_ms": 222,
+      "fps_min": 60,
+      "deferred_loaded": [
+        "tb-push.js"
+      ]
+    },
+    {
+      "dom_content_loaded_ms": 11189,
+      "boot_ready_ms": 258,
+      "fps_min": 60,
+      "deferred_loaded": [
+        "tb-push.js"
+      ]
+    },
+    {
+      "dom_content_loaded_ms": 11482,
+      "boot_ready_ms": 232,
+      "fps_min": 60,
+      "deferred_loaded": [
+        "tb-push.js"
+      ]
+    }
+  ]
+}

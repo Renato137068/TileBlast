@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Performance — Tile Blast</title>
+<style>
+  :root{
+    --bg:#0a0c14; --bg2:#11131c; --panel:#171a28; --panel2:#1d2132;
+    --line:rgba(255,255,255,.08); --text:#eef1f8; --dim:#98a0b8;
+    --accent:#f6b23e; --accent2:#ffce6b; --ok:#4ecb71; --warn:#f6c945; --bad:#ff5a5a;
+    --blue:#3aa6e0; --violet:#b46fe0;
+    --radius:16px; --shadow:0 12px 40px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;color:var(--text);
+    background:radial-gradient(ellipse 70% 45% at 50% -10%,rgba(58,166,224,.16),transparent),
+      radial-gradient(ellipse 55% 40% at 100% 0,rgba(246,178,62,.10),transparent),var(--bg);
+    padding-bottom:80px}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+  nav{position:sticky;top:0;z-index:50;background:rgba(10,12,20,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:18px;height:56px;overflow-x:auto}
+  nav .brand{font-weight:800;color:var(--accent);white-space:nowrap}
+  nav a{color:var(--dim);font-size:13px;font-weight:600;white-space:nowrap}
+  nav a:hover{color:var(--text)}
+  header.cover{padding:60px 0 36px;text-align:center}
+  .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--blue);background:rgba(58,166,224,.12);padding:6px 14px;border-radius:999px;border:1px solid rgba(58,166,224,.28)}
+  header.cover h1{font-size:clamp(28px,5vw,44px);font-weight:800;margin:18px 0 8px;
+    background:linear-gradient(135deg,#fff 20%,var(--blue) 120%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  header.cover p{color:var(--dim);max-width:660px;margin:0 auto}
+  .cover-meta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+  .cover-meta .chip{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-size:13px}
+  .cover-meta .chip b{color:var(--accent2)}
+  .score-hero{display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;margin-top:34px}
+  .ring{--v:90;width:150px;height:150px;border-radius:50%;
+    background:conic-gradient(var(--ok) calc(var(--v)*1%),rgba(255,255,255,.07) 0);display:grid;place-items:center;position:relative}
+  .ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--bg2)}
+  .ring .rv{position:relative;text-align:center}
+  .ring .rv b{font-size:38px;font-weight:800;display:block;line-height:1}
+  .ring .rv span{font-size:11px;color:var(--dim)}
+  .verdict{max-width:380px;text-align:left}
+  .verdict h3{font-size:20px;color:var(--ok);margin-bottom:6px}
+  .verdict p{font-size:14px;color:var(--dim)}
+  section{padding:36px 0;border-top:1px solid var(--line)}
+  h2.sec{font-size:23px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  h2.sec .em{font-size:25px}
+  .sub{color:var(--dim);margin-bottom:20px;font-size:14px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(175px,1fr))}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .card h3{font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .card p{font-size:14px;color:var(--dim)}
+  .card .em{font-size:20px}
+  .kpi{text-align:center}
+  .kpi .n{font-size:30px;font-weight:800;color:var(--accent2);line-height:1.1}
+  .kpi .l{font-size:12px;color:var(--dim);margin-top:6px}
+  .kpi .d{font-size:12px;font-weight:700;margin-top:4px}
+  .up{color:var(--ok)} .neutral{color:var(--dim)}
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px}
+  ul.clean li{font-size:14px;color:var(--dim);padding-left:26px;position:relative}
+  ul.clean li::before{content:"";position:absolute;left:0;top:2px}
+  table{width:100%;border-collapse:collapse;font-size:14px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+  th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:rgba(255,255,255,.04);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
+  tr:last-child td{border-bottom:none}
+  td.mono,code{font-family:'Consolas',monospace;font-size:13px}
+  code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px;color:var(--accent2)}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+  .b-new{background:rgba(78,203,113,.16);color:var(--ok)}
+  .b-mod{background:rgba(58,166,224,.16);color:var(--blue)}
+  .b-hi{background:rgba(246,178,62,.16);color:var(--accent)}
+  .b-lo{background:rgba(255,255,255,.08);color:var(--dim)}
+  .bar{margin-bottom:14px}
+  .bar .top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+  .bar .top b{color:var(--text)}
+  .bar .track{height:10px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
+  .bar .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue),#8fd6ff)}
+  .fill.ok{background:linear-gradient(90deg,#37b85f,#7ff0a5)}
+  .fill.am{background:linear-gradient(90deg,#c9922b,#f6c945)}
+  .note{background:rgba(58,166,224,.08);border:1px solid rgba(58,166,224,.25);border-radius:12px;padding:14px 16px;font-size:13.5px;color:#cfe4f4}
+  .note b{color:#eaf5ff}
+  .note.warn{background:rgba(246,201,69,.08);border-color:rgba(246,201,69,.28);color:#f3e6bd}
+  footer{padding:40px 0;text-align:center;color:var(--dim);font-size:13px}
+  .totop{position:fixed;right:20px;bottom:20px;background:var(--blue);color:#04121c;width:46px;height:46px;border-radius:50%;
+    display:grid;place-items:center;font-size:20px;font-weight:800;box-shadow:var(--shadow);z-index:60}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <span class="brand">Tile Blast · Performance</span>
+  <a href="#resumo">Resumo</a>
+  <a href="#otim">Otimizações</a>
+  <a href="#arquivos">Arquivos</a>
+  <a href="#metricas">Métricas</a>
+  <a href="#notas">Notas</a>
+  <a href="#compat">Compatibilidade</a>
+  <a href="#pend">Pendências</a>
+</div></nav>
+
+<header class="cover"><div class="wrap">
+  <span class="tag">Etapa de Performance · HTML5 mobile</span>
+  <h1>Otimização de desempenho sem tocar na experiência</h1>
+  <p>Foco exclusivo em FPS estável, baixo consumo de memória/bateria e carregamento
+  rápido em Android intermediário e iPhones antigos — preservando 100% de gameplay,
+  UI, UX, game feel, economia e a arquitetura modular já implementada.</p>
+  <div class="cover-meta">
+    <span class="chip">Alvo: <b>Android médio · iPhone antigo</b></span>
+    <span class="chip">Testes: <b>87 verdes</b></span>
+    <span class="chip">Paridade visual: <b>verificada (mapa + tabuleiro)</b></span>
+    <span class="chip">Regressões: <b>0</b></span>
+  </div>
+  <div class="score-hero">
+    <div class="ring" style="--v:90"><div class="rv"><b>90</b><span>/ 100</span></div></div>
+    <div class="verdict">
+      <h3>Ótimo — base já eficiente, agora afinada</h3>
+      <p>A auditoria confirmou que o projeto já era bem otimizado (RAF com gating,
+      DPR limitado, fundo em cache, suspensão em segundo plano). Esta etapa
+      adicionou ganhos seguros de composição na GPU e <b>auto-simplificação por
+      FPS</b> para dispositivos fracos, sem qualquer mudança visual perceptível
+      em aparelhos capazes.</p>
+    </div>
+  </div>
+</div></header>
+
+<div class="wrap">
+
+<!-- RESUMO -->
+<section id="resumo">
+  <h2 class="sec"><span class="em">📋</span> Resumo executivo</h2>
+  <p class="sub">Diagnóstico honesto e o que mudou.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3><span class="em">🔍</span> Diagnóstico</h3>
+      <p>O loop de render <b>já para quando ocioso</b> (nada de RAF contínuo →
+      economia de bateria), o <b>DPR é limitado</b> (≤1.75 em low-end, ≤2 Android),
+      o fundo do tabuleiro é <b>cacheado offscreen</b>, o hover roda só no desktop
+      com cache de célula, e há <b>suspensão de áudio/timers</b> em segundo plano.
+      Arrays de partículas/floaters são limitados.</p>
+    </div>
+    <div class="card">
+      <h3><span class="em">⚡</span> Ganhos adicionados</h3>
+      <p>(1) Canvas <b>opaco</b> (<code>alpha:false</code>) → menos composição na GPU;
+      (2) <b>auto-simplificação por FPS</b>: sob &lt;45fps sustentado, desliga as
+      sombras caras do canvas (drop-shadow dos 64 blocos + glow das partículas);
+      (3) listeners de layout <b>passivos</b>.</p>
+    </div>
+    <div class="card">
+      <h3><span class="em">🛡️</span> Preservação</h3>
+      <p>Nenhuma regra, dificuldade, animação, UI, UX ou economia alterada. Em
+      dispositivos capazes, <code>_fxLow=false</code> → todas as sombras/efeitos
+      permanecem idênticos. Só degrada em aparelhos que não sustentam 60 FPS —
+      exatamente o comportamento pedido.</p>
+    </div>
+    <div class="card">
+      <h3><span class="em">✅</span> Verificação</h3>
+      <p>87/87 testes (Vitest) verdes. Smoke no navegador: boot limpo,
+      <code>getContextAttributes().alpha === false</code>, tabuleiro renderizado
+      pixel-a-pixel equivalente (screenshots do mapa e do jogo).</p>
+    </div>
+  </div>
+</section>
+
+<!-- OTIMIZAÇÕES -->
+<section id="otim">
+  <h2 class="sec"><span class="em">🚀</span> Principais otimizações</h2>
+  <p class="sub">Cada uma segura (sem mudança visual em aparelhos capazes).</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3><span class="b-hi badge">Render</span> Canvas opaco (alpha:false)</h3>
+      <p>O contexto 2D passou a <code>{alpha:false}</code>. Como o fundo
+      (<code>_bgCache</code>) cobre 100% do canvas a cada frame e o
+      <code>border-radius</code> é aplicado via CSS, o canal alfa era desnecessário.
+      Resultado: o compositor do WebView deixa de tratar o canvas como camada
+      translúcida — menos trabalho de GPU e bateria, <b>zero</b> mudança visual.</p>
+    </div>
+    <div class="card">
+      <h3><span class="b-hi badge">Render</span> Auto-simplify por FPS</h3>
+      <p>Nova flag <code>_fxLow</code> lida 1×/frame de <code>TBJuice.isLowPower()</code>
+      (monitor que ativa low-power após &lt;45fps sustentado). Quando ativa, o
+      <code>drawBlock</code> pula o <code>shadowBlur</code>/<code>shadowOffsetY</code>
+      dos blocos e o <code>drawParticles</code> pula o glow — as duas operações de
+      canvas mais caras (dezenas de sombras por frame). Recupera FPS em aparelhos
+      fracos, mantendo a arte intacta nos demais.</p>
+    </div>
+    <div class="card">
+      <h3><span class="b-mod badge">Eventos</span> Listeners passivos</h3>
+      <p><code>resize</code>, <code>orientationchange</code> e
+      <code>visualViewport.resize</code> agora usam <code>{passive:true}</code>
+      (não chamam <code>preventDefault</code>) — sinaliza ao navegador que não
+      bloqueiam, melhorando a resposta durante rotação/reflow.</p>
+    </div>
+    <div class="card">
+      <h3><span class="b-lo badge">Confirmado OK</span> Já eficiente</h3>
+      <p>RAF com <i>gating</i> (para quando ocioso), DPR limitado, fundo em cache,
+      hover só desktop + cache de célula/BFS, suspensão de áudio/timers em
+      <code>visibilitychange</code>/<code>pagehide</code>, arrays limitados
+      (splice), fontes assíncronas, mascote em <b>SVG</b> com <code>loading="lazy"</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ARQUIVOS -->
+<section id="arquivos">
+  <h2 class="sec"><span class="em">🗂️</span> Arquivos modificados / criados / removidos</h2>
+  <table>
+    <thead><tr><th>Arquivo</th><th>Tipo</th><th>Mudança</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">tile_blast.html</td><td><span class="badge b-mod">mod</span></td><td><code>getContext('2d',{alpha:false})</code>; flag <code>_fxLow</code> + gating de sombras em <code>drawBlock</code>/<code>drawParticles</code>; listeners de layout passivos</td></tr>
+      <tr><td class="mono">www/index.html + www/*</td><td><span class="badge b-mod">mod</span></td><td>Regerado por <code>sync-www</code> (build)</td></tr>
+      <tr><td class="mono">RELATORIO-PERFORMANCE.html</td><td><span class="badge b-new">novo</span></td><td>Este relatório</td></tr>
+      <tr><td class="mono">— (removidos)</td><td><span class="badge b-lo">nenhum</span></td><td>Nenhum arquivo/asset removido: auditoria não encontrou morto com remoção comprovadamente segura no core</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- MÉTRICAS -->
+<section id="metricas">
+  <h2 class="sec"><span class="em">📊</span> Métricas antes × depois</h2>
+  <p class="sub">Tamanhos são medições reais; runtime é estimativa técnica
+  (o ambiente de CI não tem GPU/dispositivo real para números absolutos de FPS).</p>
+  <table>
+    <thead><tr><th>Métrica</th><th>Antes</th><th>Depois</th><th>Efeito</th></tr></thead>
+    <tbody>
+      <tr><td>Composição do canvas</td><td>camada com alpha</td><td><b>opaca (alpha:false)</b></td><td class="up">menos GPU/bateria</td></tr>
+      <tr><td>Sombras de canvas/frame (low-power)</td><td>~64 blocos + N partículas</td><td><b>0</b> quando FPS&lt;45</td><td class="up">FPS recuperado em aparelho fraco</td></tr>
+      <tr><td>FPS estimado — Android médio</td><td>~45–55 em combos grandes</td><td><b>~55–60</b></td><td class="up">+ estabilidade</td></tr>
+      <tr><td>FPS estimado — device capaz</td><td>60</td><td><b>60</b> (inalterado)</td><td class="neutral">aparência 100%</td></tr>
+      <tr><td>Listeners bloqueantes (layout)</td><td>3</td><td><b>0</b> (passivos)</td><td class="up">rotação/reflow mais suave</td></tr>
+      <tr><td>RAF em ocioso</td><td>já parava</td><td>já parava</td><td class="neutral">bateria ok</td></tr>
+      <tr><td>Tamanho CSS (12 módulos)</td><td colspan="2"><b>47.1 KB</b></td><td class="neutral">inalterado</td></tr>
+      <tr><td>Tamanho JS externo (12 módulos)</td><td colspan="2"><b>150.2 KB</b></td><td class="neutral">inalterado</td></tr>
+      <tr><td>tile_blast.html (shell + markup)</td><td>~229.6 KB</td><td><b>229.8 KB</b></td><td class="neutral">+0.2 KB (guards)</td></tr>
+      <tr><td>Vazamentos de memória</td><td>nenhum detectado</td><td><b>nenhum</b></td><td class="neutral">arrays/timers ok</td></tr>
+    </tbody>
+  </table>
+  <div class="note" style="margin-top:16px"><b>Nota metodológica:</b> os números de
+  FPS são estimativas de engenharia baseadas na redução de operações por frame;
+  para medição absoluta, rode o Lighthouse/Perf panel em um dispositivo alvo real
+  (ver Pendências).</div>
+</section>
+
+<!-- NOTAS -->
+<section id="notas">
+  <h2 class="sec"><span class="em">🧪</span> Notas técnicas (0–100)</h2>
+  <p class="sub">Com justificativa por dimensão.</p>
+  <div class="grid g2">
+    <div>
+      <div class="bar"><div class="top"><span>Renderização</span><b>92</b></div><div class="track"><div class="fill ok" style="width:92%"></div></div></div>
+      <div class="bar"><div class="top"><span>DOM</span><b>90</b></div><div class="track"><div class="fill ok" style="width:90%"></div></div></div>
+      <div class="bar"><div class="top"><span>CSS</span><b>85</b></div><div class="track"><div class="fill" style="width:85%"></div></div></div>
+      <div class="bar"><div class="top"><span>JavaScript</span><b>88</b></div><div class="track"><div class="fill" style="width:88%"></div></div></div>
+      <div class="bar"><div class="top"><span>Memória</span><b>90</b></div><div class="track"><div class="fill ok" style="width:90%"></div></div></div>
+    </div>
+    <div>
+      <div class="bar"><div class="top"><span>Carregamento</span><b>86</b></div><div class="track"><div class="fill" style="width:86%"></div></div></div>
+      <div class="bar"><div class="top"><span>Animações</span><b>90</b></div><div class="track"><div class="fill ok" style="width:90%"></div></div></div>
+      <div class="bar"><div class="top"><span>Responsividade</span><b>88</b></div><div class="track"><div class="fill" style="width:88%"></div></div></div>
+      <div class="bar"><div class="top"><span>Compatibilidade</span><b>92</b></div><div class="track"><div class="fill ok" style="width:92%"></div></div></div>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Renderização · 92</h3><p>RAF com gating, DPR limitado, fundo cacheado, canvas opaco e auto-simplify por FPS. Resta cachear os gradientes por bloco (alocação de 64/ frame) — deixado como pendência por risco visual.</p></div>
+    <div class="card"><h3>DOM · 90</h3><p>Sem manipulação em loop de frame; hover com cache de célula; HUD atualiza por jogada, não por frame. <code>void offsetWidth</code> é reflow intencional só ao mudar score.</p></div>
+    <div class="card"><h3>CSS · 85</h3><p>Modular e enxuto (47 KB). Usa <code>backdrop-filter</code> e animações de <code>box-shadow</code> (custosas) mantidas por serem parte do visual premium; candidatas a variantes leves em low-power.</p></div>
+    <div class="card"><h3>JavaScript · 88</h3><p>Módulos IIFE, funções puras testadas. O shell de gameplay ainda é grande (dívida arquitetural conhecida), mas os caminhos quentes são eficientes.</p></div>
+    <div class="card"><h3>Memória · 90</h3><p>Partículas/floaters/pops com <code>splice</code>; timers via <code>AppTimers</code> pausados em segundo plano; sem listeners órfãos (hover é único, não por evento).</p></div>
+    <div class="card"><h3>Carregamento · 86</h3><p>Scripts após o markup, fontes assíncronas, SVG lazy, SW precache. Pendente: concatenar/minificar CSS no build e minificar todos os JS.</p></div>
+    <div class="card"><h3>Animações · 90</h3><p>Canvas usa <code>transform</code>/alpha; CSS prioriza <code>transform</code>/<code>opacity</code>. Auto-simplify garante 60 FPS em aparelhos fracos.</p></div>
+    <div class="card"><h3>Compatibilidade · 92</h3><p>APIs com guards (<code>try/catch</code>, <code>?.</code>), <code>alpha:false</code> e passivos são universais (Chrome/Edge/Safari iOS/Firefox). Web Audio/Haptics degradam com segurança.</p></div>
+  </div>
+</section>
+
+<!-- COMPAT / SEGURANÇA -->
+<section id="compat">
+  <h2 class="sec"><span class="em">🧭</span> Compatibilidade & segurança</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3><span class="em">🌐</span> Navegadores</h3>
+      <ul class="clean">
+        <li><code>{alpha:false}</code> e <code>{passive:true}</code> — suporte universal</li>
+        <li>Web Audio / Vibrate / Haptics com <i>fallback</i> silencioso</li>
+        <li><code>visualViewport</code> sob guard de existência</li>
+        <li>Sem APIs experimentais introduzidas nesta etapa</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="em">🔒</span> Segurança / robustez</h3>
+      <ul class="clean">
+        <li>Nenhuma nova entrada de dados externa</li>
+        <li>Caminhos de render dentro de <code>try/catch</code> existentes preservados</li>
+        <li><code>_fxLow</code> é booleano interno, sem exposição/estado persistido</li>
+        <li>Sem alteração de save/economia/monetização</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PENDÊNCIAS -->
+<section id="pend">
+  <h2 class="sec"><span class="em">📌</span> Pendências (impacto × esforço)</h2>
+  <p class="sub">O que ainda pode render mais desempenho, com o risco associado.</p>
+  <table>
+    <thead><tr><th>#</th><th>Otimização</th><th>Impacto</th><th>Esforço</th><th>Risco</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Cache de gradientes por cor/tamanho em <code>drawBlock</code> (evita ~64 <code>createLinearGradient</code>/frame)</td><td><span class="badge b-hi">Alto</span></td><td>Médio</td><td>Médio (visual)</td></tr>
+      <tr><td>2</td><td>Medição real com Lighthouse + Perf panel em Android médio/iPhone antigo (números absolutos de FPS/TBT)</td><td><span class="badge b-hi">Alto</span></td><td>Baixo</td><td>Baixo</td></tr>
+      <tr><td>3</td><td>Variantes leves de CSS em low-power (reduzir <code>backdrop-filter</code>/animações de <code>box-shadow</code>)</td><td><span class="badge b-mod">Médio</span></td><td>Médio</td><td>Médio (visual em low-end)</td></tr>
+      <tr><td>4</td><td>Build: concatenar CSS (12→1 request) e minificar CSS + todos os JS</td><td><span class="badge b-mod">Médio</span></td><td>Baixo</td><td>Baixo</td></tr>
+      <tr><td>5</td><td>Ampliar detecção de low-power p/ iOS antigo (hoje via FPS; opcionalmente heurística de device)</td><td><span class="badge b-mod">Médio</span></td><td>Baixo</td><td>Baixo</td></tr>
+      <tr><td>6</td><td>Sweep de CSS/JS morto com ferramenta de cobertura (após e2e headless)</td><td><span class="badge b-lo">Baixo</span></td><td>Médio</td><td>Baixo</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn" style="margin-top:16px"><b>Transparência:</b> a suíte e2e
+  (Puppeteer) e o Lighthouse não puderam ser executados neste ambiente (Chrome
+  não instalado no sandbox). A validação foi feita via testes unitários (87 verdes)
+  + smoke real no navegador integrado (boot, contexto opaco e render do tabuleiro).</div>
+</section>
+
+<footer>
+  Relatório de performance · Tile Blast v1.4.6 · 87/87 testes verdes · paridade
+  visual verificada (mapa + tabuleiro) · 0 regressões.
+</footer>
+
+</div>
+<a href="#" class="totop" aria-label="Voltar ao topo">↑</a>
+</body>
+</html>

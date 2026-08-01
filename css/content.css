@@ -1,0 +1,206 @@
+/* Tile Blast — seleção de mundos e modos de conteúdo */
+#screen-worlds {
+  display: none;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+}
+#screen-worlds.active {
+  display: flex;
+}
+
+.worlds-header {
+  padding: 16px 16px 8px;
+  text-align: center;
+  position: relative;
+}
+.worlds-header h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 8px 0 4px;
+}
+.worlds-header p {
+  font-size: 13px;
+  color: var(--dim);
+  margin: 0;
+}
+#worlds-back {
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.worlds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  padding: 12px 16px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.world-card {
+  border-radius: 18px;
+  padding: 16px 14px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.world-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background: var(--world-color, #4ecb71);
+  pointer-events: none;
+}
+.world-card:not(.locked):hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  border-color: var(--world-color, var(--accent));
+}
+.world-card.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+.world-card.current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(246, 178, 62, 0.3);
+}
+.world-card-icon {
+  font-size: 42px;
+  line-height: 1;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+.world-card-name {
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+.world-card-desc {
+  font-size: 11px;
+  color: var(--dim);
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+.world-card-prog {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+.world-card-prog i {
+  display: block;
+  height: 100%;
+  background: var(--world-color, var(--accent));
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.world-card-pct {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--world-color, var(--accent));
+  position: relative;
+  z-index: 1;
+}
+.world-card-lock {
+  font-size: 28px;
+  margin: 20px 0;
+}
+.world-card-reward {
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: auto;
+  padding-top: 8px;
+  position: relative;
+  z-index: 1;
+}
+.world-card-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(78, 203, 113, 0.2);
+  color: #4ecb71;
+  z-index: 2;
+}
+.world-card-badge.claimed {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--dim);
+}
+
+#map-worlds-btn {
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  background: linear-gradient(135deg, rgba(78, 203, 113, 0.2), rgba(58, 166, 224, 0.15));
+  border: 1px solid rgba(78, 203, 113, 0.35);
+}
+#map-world-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+#hud-timer {
+  display: none;
+  font-weight: 800;
+  color: #ff6b6b;
+  font-size: 14px;
+}
+#hud-timer.active {
+  display: inline;
+}
+
+.modes-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.mode-chip {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  text-align: center;
+}
+.mode-chip.locked {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.mode-chip:hover:not(.locked) {
+  border-color: var(--accent);
+}

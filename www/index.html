@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Tile Blast — quanto maior o grupo, maior o especial. 85 fases de puzzle com especiais.">
+<meta name="theme-color" content="#0d0f18">
+<!--
+  Content-Security-Policy — defesa em profundidade contra XSS via innerHTML
+  (~41 escritas no app; conteúdo dinâmico já passa por _escTB).
+
+  ESCOLHA (b) concluída p/ script-src: sem 'unsafe-inline'.
+  Manifest + fonte ativados em tb-config.js; cliques via data-action
+  (TBUI.bindActionDelegation). style-src ainda usa 'unsafe-inline'
+  (atributos style= / CSS dinâmico).
+
+  Domínios liberados (e por quê):
+  - fonts.googleapis.com / fonts.gstatic.com — família Baloo 2
+  - www.gstatic.com — SDK Firebase (app/auth/firestore compat), carregado
+    dinamicamente por tb-firebase.js quando FIREBASE_CONFIG é válido
+  - *.googleapis.com / *.firebaseio.com / *.firebaseapp.com — Auth,
+    Firestore, remote-config em nuvem e iframe auxiliar de Auth
+  - *.cloudfunctions.net / *.run.app — Callable Cloud Functions (economia)
+  - AdMob/gtag: NÃO liberados no web — ads nativos via AndroidBridge;
+    no PWA o rewarded é simulado localmente (sem frame/script de ads)
+-->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' https://www.gstatic.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com;
+  img-src 'self' data: blob:;
+  connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://*.cloudfunctions.net https://*.run.app;
+  frame-src https://*.firebaseapp.com https://accounts.google.com;
+  worker-src 'self';
+  manifest-src 'self';
+  media-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tile Blast">
+<title>Tile Blast</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preload" href="mascot.svg" as="image" type="image/svg+xml">
+<link rel="preload" href="tb-game-logic.js" as="script">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="tb-font-css" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet" media="print">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/map.css">
+<link rel="stylesheet" href="css/hud.css">
+<link rel="stylesheet" href="css/board.css">
+<link rel="stylesheet" href="css/dialogs.css">
+<link rel="stylesheet" href="css/mascot.css">
+<link rel="stylesheet" href="css/shop.css">
+<link rel="stylesheet" href="css/features.css">
+<link rel="stylesheet" href="css/effects.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/meta-garden.css">
+<link rel="stylesheet" href="css/content.css">
+<link rel="stylesheet" href="css/a11y.css">
+</head>
+<body>
+<div id="splash" aria-hidden="true">
+  <div class="splash-mascot mascot-wrap mascot-wrap--xl mascot-idle" aria-hidden="true">
+    <img class="mascot-img" src="mascot.svg" alt="">
+  </div>
+  <div class="splash-title">Tile Blast</div>
+  <div class="splash-sub" id="splash-sub">Quanto maior o grupo, maior o especial.</div>
+  <div class="splash-bar" aria-hidden="true"><div class="splash-bar-fill"></div></div>
+</div>
+<a href="#screen-map" id="skip-to-main" class="sr-only sr-only-focusable">Ir para o conteúdo principal</a>
+<div id="app">
+
+  <!-- MAP -->
+  <div id="screen-map" class="screen active" role="region" aria-labelledby="map-title">
+    <div class="map-top">
+      <h1 id="map-title">💥 Tile Blast</h1>
+      <p id="map-sub">Quanto maior o grupo, maior o especial — toque em <strong>2+ blocos</strong></p>
+      <div class="map-stats">
+        <div id="map-meta" class="map-meta">
+          <div class="map-meta-left">
+            <div class="map-mascot-row">
+              <div class="mascot-wrap mascot-wrap--sm mascot-idle" id="map-mascot-wrap">
+                <img id="map-mascot" class="mascot-img" src="mascot.svg" alt="Blasty, mascote do Tile Blast" loading="lazy">
+                <span id="map-avatar" class="map-avatar-badge" style="display:none" aria-hidden="true"></span>
+              </div>
+              <div class="map-meta-lives-wrap">
+                <div id="map-lives" aria-label="Vidas"></div>
+                <div id="map-regen" aria-live="polite" aria-atomic="true"></div>
+              </div>
+            </div>
+            <div id="map-mascot-bubble" class="mascot-bubble hide" role="status"></div>
+            <div id="map-player-title" class="map-player-title"></div>
+          </div>
+          <div class="map-meta-right">
+            <div id="map-coins" class="map-coins-pill">💰 0</div>
+            <div id="map-hs" class="map-hs">🏆 Recorde: 0</div>
+            <span id="win-streak-badge" aria-live="polite"></span>
+          </div>
+        </div>
+        <div id="xp-bar-wrap">
+          <span id="xp-label">⚡ XP</span>
+          <div id="xp-track"><div id="xp-fill" style="width:0%"></div></div>
+          <span id="xp-total">0</span>
+        </div>
+        <div id="world-prog-wrap">
+          <div id="world-prog-label"><span id="world-prog-name">Mundo 1</span><span id="world-prog-pct">0%</span></div>
+          <div id="world-prog-track"><div id="world-prog-fill" style="width:0%"></div></div>
+        </div>
+        <div id="chest-bar" aria-label="Baús"></div>
+        <div class="meta-banners">
+          <div id="bp-banner" class="meta-banner" style="display:none" role="button" tabindex="0" aria-label="Passe de batalha"></div>
+          <div id="piggy-banner" class="meta-banner" style="display:none" role="button" tabindex="0" aria-label="Cofrinho"></div>
+          <div id="flash-banner" class="meta-banner flash" style="display:none" role="button" tabindex="0" aria-label="Oferta relâmpago"></div>
+        </div>
+      </div>
+    </div>
+    <div id="map-scroll" class="map-scroll">
+      <div id="map-grid" role="group" aria-label="Mapa de fases"></div>
+    </div>
+    <div class="map-bottom">
+      <div id="map-hint" class="map-hint hide" role="note">
+        <span aria-hidden="true">👆</span>
+        <span id="map-hint-text">Toque em <strong>2 ou mais blocos</strong> da mesma cor para explodi-los e ganhar pontos.</span>
+      </div>
+      <div id="map-world-label" aria-live="polite"></div>
+      <button id="map-worlds-btn" class="btn btn-g map-worlds-btn" type="button">🌍 Escolher Mundo</button>
+      <div class="map-primary" role="group" aria-label="Ações principais">
+        <button id="map-play-btn" class="btn btn-p map-play-btn" type="button">▶ Jogar</button>
+        <div class="map-primary-row">
+          <button id="map-daily-puzzle-btn" class="btn-map btn-map-daily map-primary-cta" type="button">🌍 Diário <span id="daily-notif" class="notif-dot" style="display:none" aria-hidden="true"></span></button>
+          <div id="event-banner" class="map-primary-cta map-event-cta" role="button" tabindex="0" aria-label="Ver evento ativo"></div>
+        </div>
+      </div>
+      <div id="map-footer">
+        <button id="map-more-toggle" class="map-more-toggle" type="button" aria-expanded="false" aria-controls="map-more-panel">
+          <span class="map-more-label">⋯ Mais</span>
+          <span id="map-more-notif" class="notif-dot" style="display:none" aria-hidden="true"></span>
+        </button>
+        <div id="map-more-panel" class="map-more-panel" hidden>
+          <div class="map-quick-dock">
+            <button id="map-missions-btn" class="map-qbtn" type="button" data-action="openMissionsModal">
+              <span class="qicon">📋</span><span class="qlabel">Missões</span>
+              <span id="missions-notif" class="notif-dot" style="display:none;position:absolute;top:6px;right:10px" aria-hidden="true"></span>
+            </button>
+            <button id="map-shop-btn" class="map-qbtn" type="button">
+              <span class="qicon">🛒</span><span class="qlabel">Loja</span>
+              <span id="shop-notif" class="notif-dot" style="display:none;position:absolute;top:6px;right:10px" aria-hidden="true"></span>
+            </button>
+            <button id="map-coll-btn" class="map-qbtn" type="button">
+              <span class="qicon">🧡</span><span class="qlabel">Skins</span>
+            </button>
+            <button id="map-profile-btn" class="map-qbtn" type="button">
+              <span class="qicon">👤</span><span class="qlabel">Perfil</span>
+            </button>
+            <button id="map-garden-btn" class="map-qbtn" type="button" aria-label="Jardim de Blasty">
+              <span class="qicon">🌱</span><span class="qlabel">Jardim</span>
+              <span id="map-garden-hint" class="notif-dot" style="display:none;position:absolute;top:6px;right:10px" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="map-modes-row">
+            <button id="map-challenge-btn" class="btn-map btn-map-challenge" type="button">🏆 Desafio <span id="challenge-notif" class="notif-dot" style="display:none" aria-hidden="true"></span></button>
+            <button id="map-time-btn" class="btn-map btn-map-challenge" type="button">⏱ Time</button>
+            <button id="map-modes-btn" class="btn-map btn-map-inf" type="button">🎮 Modos</button>
+          </div>
+        </div>
+        <button id="map-settings-toggle" aria-expanded="false" aria-controls="map-settings-panel" type="button">⚙️ Configurações</button>
+        <div id="map-settings-panel">
+          <section class="set-sec">
+            <h3 class="set-sec-t" data-i18n="set_sec_audio">Áudio</h3>
+            <button id="map-music-toggle" class="btn btn-g btn-full" type="button">🎵 Música: Ligada</button>
+            <label class="vol-row btn-full"><span>🎵 Música</span><input id="vol-music" type="range" min="0" max="100" value="100" aria-label="Volume da música"></label>
+            <label class="vol-row btn-full"><span>🔊 Efeitos</span><input id="vol-sfx" type="range" min="0" max="100" value="100" aria-label="Volume dos efeitos"></label>
+          </section>
+          <section class="set-sec">
+            <h3 class="set-sec-t" data-i18n="set_sec_a11y">Acessibilidade</h3>
+            <button id="map-colorblind-toggle" class="btn btn-g btn-full" type="button">👁 Modo daltônico</button>
+            <button id="map-haptics-toggle" class="btn btn-g btn-full" type="button" aria-pressed="true">📳 Vibração: Ligada</button>
+            <button id="map-reducemotion-toggle" class="btn btn-g btn-full" type="button" aria-pressed="false">🎬 Reduzir animações</button>
+          </section>
+          <section class="set-sec">
+            <h3 class="set-sec-t" data-i18n="set_sec_progress">Progresso</h3>
+            <button id="map-ach-btn" class="btn btn-g btn-full" type="button">🏅 Conquistas</button>
+            <button id="map-bp-btn" class="btn btn-g btn-full" type="button">🎫 Passe de Batalha</button>
+            <button id="map-lb-btn" class="btn btn-g btn-full" type="button">🏆 Ranking</button>
+            <button id="map-weekly-rank-btn" class="btn btn-g btn-full" type="button">📅 Ranking semanal</button>
+            <button id="map-player-btn" class="btn btn-g btn-full" type="button">✏️ Nome no ranking</button>
+            <button id="map-delete-social-btn" class="btn btn-g btn-full" type="button">🗑 Apagar dados sociais</button>
+          </section>
+          <section class="set-sec">
+            <h3 class="set-sec-t" data-i18n="set_sec_account">Conta e dados</h3>
+            <button id="map-cloud-backup" class="btn btn-g btn-full" type="button">☁️ Sincronizar nuvem</button>
+            <button id="map-cloud-restore" class="btn btn-g btn-full" type="button">☁️ Restaurar nuvem</button>
+            <button id="map-export-btn" class="btn btn-g btn-full" type="button">☁️ Exportar save</button>
+            <button id="map-import-btn" class="btn btn-g btn-full" type="button">📥 Importar save</button>
+            <input type="file" id="import-file" accept=".json,application/json" hidden>
+            <button id="map-restore-btn" class="btn btn-g btn-full" type="button">💳 Restaurar compras</button>
+          </section>
+          <section class="set-sec">
+            <h3 class="set-sec-t" data-i18n="set_sec_app">Aplicativo</h3>
+            <button id="map-lang-btn" class="btn btn-g btn-full" type="button">🌐 Idioma</button>
+            <button id="map-notify-btn" class="btn btn-g btn-full" type="button">🔔 Notificações</button>
+            <button id="map-whatsnew-btn" class="btn btn-g btn-full" type="button">✨ Novidades</button>
+            <button id="map-privacy-btn" class="btn btn-g btn-full" type="button">🔒 Política de privacidade</button>
+            <button id="map-reset" class="btn" type="button">🗑 Resetar progresso</button>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME -->
+  <div id="screen-game" class="screen" role="region" aria-labelledby="hud-lv" aria-hidden="true">
+    <div id="hud">
+      <div id="hud-row1">
+        <button id="hud-back" class="btn btn-g" aria-label="Voltar ao mapa">↩</button>
+        <div id="hud-lv">Fase 1</div>
+        <button id="hud-mute" type="button" aria-label="Silenciar som">🔊</button>
+      </div>
+      <div id="hud-row2">
+        <span id="hud-score" aria-label="Pontuação">0</span>
+        <span id="hud-stars" class="hud-stars" aria-label="Estrelas previstas" title="Estrelas se vencer agora">☆☆☆</span>
+        <span class="hud-pill hud-pill--moves" aria-label="Movimentos restantes"><span class="hud-mv-lbl">MOV</span> <span id="hud-mv">20</span></span>
+        <span id="hud-timer" class="hud-pill hud-pill--moves" aria-label="Tempo restante">⏱ <span id="hud-timer-val">60</span>s</span>
+        <span class="hud-meta">
+          <span class="hud-pill hud-pill--meta" aria-label="Vidas">♥ <span id="hud-lives">5</span></span>
+          <span class="hud-pill hud-pill--meta" aria-label="Moedas">💰 <span id="hud-coins">0</span></span>
+        </span>
+      </div>
+      <div id="hud-obj" aria-live="polite" aria-atomic="true"></div>
+    </div>
+    <div id="prog-w" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progresso da fase"><div id="prog-b"></div></div>
+    <div id="combo" aria-live="polite" aria-atomic="true"></div>
+    <div id="pu-bar" role="toolbar" aria-label="Power-ups"></div>
+    <div id="board-w">
+      <div id="board-tutorial-ring" aria-hidden="true"></div>
+      <canvas id="board" tabindex="0" role="application" aria-label="Tabuleiro 8 por 8. Use as setas para navegar e Enter para selecionar blocos da mesma cor."></canvas>
+      <div id="board-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+      <div id="no-mv" role="status" aria-live="assertive">Sem jogadas!<br>Embaralhando...</div>
+      <div id="result" role="dialog" aria-modal="true" aria-labelledby="res-ti" aria-hidden="true" inert>
+        <div class="result-card">
+          <div id="res-em">🎉</div>
+          <div id="res-st" aria-label="Estrelas"></div>
+          <div id="res-ti"></div>
+          <div id="res-su"></div>
+          <div id="res-rewards" class="res-rewards"></div>
+          <div id="res-continues" style="width:100%;display:none;"></div>
+          <div class="res-bts">
+            <button id="res-challenge" class="btn btn-g" type="button" style="display:none">📤 Desafiar Amigo</button>
+            <button id="res-share" class="btn btn-g" type="button" style="display:none">📤 Compartilhar</button>
+            <button id="res-next" class="btn btn-p">Próxima Fase →</button>
+            <button id="res-retry" class="btn btn-g">Tentar Novamente</button>
+            <button id="res-map" class="btn btn-g">← Mapa</button>
+          </div>
+        </div>
+      </div>
+      <div id="cd" aria-hidden="true">
+        <div id="cd-ph"></div>
+        <div id="cd-n">3</div>
+        <div id="cd-info"></div>
+      </div>
+      <div id="coach-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="coach-title" inert>
+        <div class="coach-card">
+          <div class="coach-mascot mascot-wrap mascot-excited" aria-hidden="true">
+            <img class="mascot-img" src="mascot.svg" alt="" loading="lazy">
+          </div>
+          <div id="coach-title" style="font-size:15px;font-weight:800;">Blasty</div>
+          <p id="coach-text">Toque em <strong>2+ blocos</strong> da mesma cor. Grupos maiores = mais pontos!</p>
+          <button id="coach-dismiss" class="btn btn-p btn-full" type="button">OK ✓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOP -->
+  <div id="screen-shop" class="screen" role="region" aria-labelledby="shop-title" aria-hidden="true">
+    <div style="width:100%;display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <button id="shop-back" class="btn btn-g" style="font-size:13px;min-height:44px;padding:10px 16px;" data-i18n-aria="back_map" data-i18n="shop_back">← Voltar</button>
+      <div id="shop-title" style="flex:1;font-size:20px;font-weight:800;">🛒 Loja</div>
+    </div>
+    <div class="shop-coin-bar">
+      <div>
+        <div style="font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;" data-i18n="your_coins">Suas Moedas</div>
+        <div class="shop-coin-val">💰 <span id="shop-coin-count">0</span></div>
+      </div>
+      <div style="font-size:11px;color:var(--dim);text-align:right;" data-i18n-html="shop_earn_hint">Ganhe jogando<br>e assistindo anúncios</div>
+    </div>
+    <!-- AD REWARDS -->
+    <div class="shop-section">
+      <div class="shop-section-title"><span data-i18n="shop_sec_ad">📺 Grátis · Assistir Anúncio</span> <span id="shop-ad-count" style="font-weight:400;text-transform:none;letter-spacing:0"></span></div>
+      <div class="shop-grid">
+        <div class="shop-item-wrap">
+          <div class="shop-item ad-item" id="sh-ad-life" data-action="shopAdReward" data-arg="life" role="button" tabindex="0">
+            <div class="shop-item-icon">❤️</div>
+            <div class="shop-item-name" data-i18n="shop_ad_life">+1 Vida</div>
+            <div class="shop-item-desc" data-i18n-html="shop_ad_life_desc">Assista para<br>recarregar vida</div>
+            <div class="shop-item-price free">📺 Grátis</div>
+          </div>
+        </div>
+        <div class="shop-item-wrap">
+          <div class="shop-item ad-item" id="sh-ad-coins" data-action="shopAdReward" data-arg="coins" role="button" tabindex="0">
+            <div class="shop-item-icon">💰</div>
+            <div class="shop-item-name">+50 Moedas</div>
+            <div class="shop-item-desc" data-i18n-html="shop_ad_coins_desc">Assista para<br>ganhar moedas</div>
+            <div class="shop-item-price free">📺 Grátis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- OFERTAS ESPECIAIS (populado por refreshShopOffers) -->
+    <div class="shop-section" id="sh-offers-section" style="display:none">
+      <div class="shop-section-title" data-i18n="shop_sec_offers">🎁 Ofertas Especiais</div>
+      <div class="shop-grid" id="sh-offers-grid"></div>
+    </div>
+    <!-- COIN SHOP -->
+    <div class="shop-section">
+      <div class="shop-section-title" data-i18n="shop_sec_coins">💰 Power-ups · Moedas</div>
+      <div class="shop-grid">
+        <div class="shop-item-wrap">
+          <div class="shop-item" data-action="shopBuyCoin" data-arg="bomb" role="button" tabindex="0">
+            <div class="shop-item-icon">💣</div>
+            <div class="shop-item-name" data-i18n="sh_bomb_name">Bomba</div>
+            <div class="shop-item-desc" data-i18n="sh_bomb_desc">Explode área 3×3</div>
+            <div class="shop-item-price">💰 60</div>
+          </div>
+        </div>
+        <div class="shop-item-wrap">
+          <div class="shop-item" data-action="shopBuyCoin" data-arg="rainbow" role="button" tabindex="0">
+            <div class="shop-item-icon">🌈</div>
+            <div class="shop-item-name" data-i18n="sh_rainbow_name">Arco-íris</div>
+            <div class="shop-item-desc" data-i18n="sh_rainbow_desc">Remove cor mais comum</div>
+            <div class="shop-item-price">💰 80</div>
+          </div>
+        </div>
+        <div class="shop-item-wrap">
+          <div class="shop-item" data-action="shopBuyCoin" data-arg="moves" role="button" tabindex="0">
+            <div class="shop-item-icon">➕</div>
+            <div class="shop-item-name" data-i18n="sh_moves_name">+5 Movimentos</div>
+            <div class="shop-item-desc" data-i18n="sh_moves_desc">Mais 5 jogadas</div>
+            <div class="shop-item-price">💰 100</div>
+          </div>
+        </div>
+        <div class="shop-item-wrap">
+          <div class="shop-item" data-action="shopBuyCoin" data-arg="shuffle" role="button" tabindex="0">
+            <div class="shop-item-icon">🔀</div>
+            <div class="shop-item-name" data-i18n="sh_shuffle_name">Embaralhar</div>
+            <div class="shop-item-desc" data-i18n="sh_shuffle_desc">Reordena os blocos</div>
+            <div class="shop-item-price">💰 40</div>
+          </div>
+        </div>
+        <div class="shop-item-wrap" style="grid-column:1/-1">
+          <div class="shop-item" data-action="shopBuyCoin" data-arg="life" role="button" tabindex="0">
+            <div class="shop-item-icon">❤️</div>
+            <div class="shop-item-name" data-i18n="shop_ad_life">+1 Vida</div>
+            <div class="shop-item-desc" data-i18n="sh_life_desc">Recupere uma vida imediatamente</div>
+            <div class="shop-item-price">💰 80</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- IAP -->
+    <div class="shop-section">
+      <div class="shop-section-title" data-i18n="shop_sec_iap">💎 Compras · Reais</div>
+      <div class="shop-grid">
+        <div class="shop-item-wrap" style="grid-column:1/-1" id="sh-sub-wrap">
+          <div class="shop-item iap featured" data-action="purchaseSubscription" data-arg="no_ads_monthly" role="button" tabindex="0">
+            <div class="shop-item-icon">🚫📺</div>
+            <div class="shop-item-name" data-i18n="sh_noads_sub_name">Sem Anúncios</div>
+            <div class="shop-item-desc" data-i18n="sh_noads_sub_desc">Jogue sem interrupções · assinatura mensal</div>
+            <div class="shop-item-price real">…</div>
+          </div>
+          <span class="shop-badge" data-i18n="sh_badge_new">✨ NOVO</span>
+        </div>
+        <div class="shop-item-wrap" style="grid-column:1/-1" id="sh-starter-wrap">
+          <div class="shop-item iap featured" data-action="shopBuyIAP" data-arg="starter" role="button" tabindex="0">
+            <div class="shop-item-icon">🚀</div>
+            <div class="shop-item-name" data-i18n="sh_starter_name">Pacote Iniciante</div>
+            <div class="shop-item-desc" data-i18n-html="sh_starter_desc">650 💰 + 3 Bombas + 3 Arco-íris<br><strong style="color:var(--accent)">Uma vez por conta!</strong></div>
+            <div class="shop-item-price real">…</div>
+          </div>
+          <span class="shop-badge" data-i18n="sh_starter_badge">🔥 OFERTA</span>
+        </div>
+        <div class="shop-item-wrap">
+          <div class="shop-item iap" data-action="shopBuyIAP" data-arg="coins500" role="button" tabindex="0">
+            <div class="shop-item-icon">💰</div>
+            <div class="shop-item-name" data-i18n="sh_coins500_name">500 Moedas</div>
+            <div class="shop-item-desc" data-i18n="sh_coins500_desc">Pacote básico</div>
+            <div class="shop-item-price real">…</div>
+          </div>
+        </div>
+        <div class="shop-item-wrap">
+          <div class="shop-item iap featured" data-action="shopBuyIAP" data-arg="coins1500" role="button" tabindex="0">
+            <div class="shop-item-icon">💎</div>
+            <div class="shop-item-name" data-i18n="sh_coins1500_name">1.500 Moedas</div>
+            <div class="shop-item-desc" data-i18n="sh_coins1500_desc">Melhor valor!</div>
+            <div class="shop-item-price real">…</div>
+          </div>
+          <span class="shop-badge">⭐</span>
+        </div>
+        <div class="shop-item-wrap">
+          <div class="shop-item iap" data-action="shopBuyIAP" data-arg="coins4000" role="button" tabindex="0">
+            <div class="shop-item-icon">👑</div>
+            <div class="shop-item-name" data-i18n="sh_coins4000_name">4.000 Moedas</div>
+            <div class="shop-item-desc" data-i18n="sh_coins4000_desc">Pacote premium</div>
+            <div class="shop-item-price real">…</div>
+          </div>
+        </div>
+        <div class="shop-item-wrap" id="sh-bppremium-wrap">
+          <div class="shop-item iap featured" data-action="shopBuyIAP" data-arg="bppremium" role="button" tabindex="0">
+            <div class="shop-item-icon">👑</div>
+            <div class="shop-item-name" data-i18n="sh_bppremium_name">Passe Premium</div>
+            <div class="shop-item-desc" data-i18n-html="sh_bppremium_desc">Trilha extra no passe de batalha<br>Power-ups e moedas bônus</div>
+            <div class="shop-item-price real">…</div>
+          </div>
+          <span class="shop-badge">🎫</span>
+        </div>
+        <div class="shop-item-wrap" id="sh-noads-wrap">
+          <div class="shop-item iap" data-action="shopBuyIAP" data-arg="noads" role="button" tabindex="0">
+            <div class="shop-item-icon">🚫</div>
+            <div class="shop-item-name" data-i18n="sh_noads_sub_name">Sem Anúncios</div>
+            <div class="shop-item-desc" data-i18n="sh_noads_desc">Remove todos os anúncios para sempre</div>
+            <div class="shop-item-price real">…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORLD SELECT -->
+  <div id="screen-worlds" class="screen" role="region" aria-labelledby="worlds-title" aria-hidden="true">
+    <div class="worlds-header">
+      <button id="worlds-back" class="btn btn-g" type="button" aria-label="Voltar ao mapa">← Mapa</button>
+      <h2 id="worlds-title">🌍 Escolha um Mundo</h2>
+      <p id="worlds-desc">Complete fases, desbloqueie novos mundos e ganhe recompensas!</p>
+    </div>
+    <div id="worlds-grid" class="worlds-grid" role="list" aria-label="Lista de mundos"></div>
+  </div>
+
+  <!-- GAME COMPLETE -->
+  <div id="screen-complete" class="screen" role="region" aria-labelledby="complete-heading" aria-hidden="true">
+    <div class="complete-hero mascot-wrap mascot-wrap--xl mascot-excited" aria-hidden="true">
+      <img class="mascot-img" src="mascot.svg" alt="Blasty comemorando" loading="lazy">
+    </div>
+    <h2 id="complete-heading" class="complete-title">LENDÁRIO!</h2>
+    <div id="complete-body" style="font-size:14px;color:var(--dim);line-height:1.55;">
+      Você completou todas as <strong style="color:var(--text)">85 fases</strong> do Tile Blast.<br>Você é um verdadeiro mestre!
+    </div>
+    <div id="complete-score" style="font-size:22px;font-weight:800;color:var(--accent);"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;">
+      <button id="complete-replay" class="btn btn-p btn-full">Jogar Novamente 🔁</button>
+      <button id="complete-map" class="btn btn-g btn-full">← Ver Mapa</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- GLOBAL MODAL (daily reward, confirm, tutorial) -->
+<div id="global-modal" role="dialog" aria-modal="true" aria-labelledby="gm-title" aria-hidden="true">
+  <div id="gm-box"></div>
+</div>
+
+<!-- AD OVERLAY -->
+<div id="ad-overlay" role="dialog" aria-modal="true" aria-labelledby="ad-heading" aria-hidden="true">
+  <div id="ad-heading" style="font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;">Anúncio</div>
+  <div class="ad-spinner"></div>
+  <div style="color:var(--dim);font-size:13px;">Carregando anúncio...</div>
+  <div id="ad-skip-wrap" style="display:none;flex-direction:column;align-items:center;gap:4px;">
+    <div id="ad-timer" style="font-size:36px;font-weight:800;color:var(--accent)">5</div>
+    <div style="font-size:11px;color:var(--dim)">segundos restantes</div>
+  </div>
+</div>
+
+<!-- TOAST DE CONQUISTA -->
+<div id="ach-toast" role="status" aria-live="polite" aria-atomic="true">
+  <span id="ach-icon" style="font-size:22px"></span>
+  <div>
+    <div id="ach-title" style="font-size:13px;font-weight:800;color:var(--accent)"></div>
+    <div id="ach-sub" style="font-size:11px;color:var(--dim)"></div>
+  </div>
+</div>
+<div id="confetti-layer" aria-hidden="true"></div>
+<div id="levelup-overlay" role="dialog" aria-modal="true" aria-labelledby="levelup-title" aria-hidden="true">
+  <div class="levelup-card">
+    <div class="mascot-wrap mascot-wrap--md mascot-excited" style="margin:0 auto 8px" aria-hidden="true">
+      <img class="mascot-img" src="mascot.svg" alt="Blasty" loading="lazy">
+    </div>
+    <div id="levelup-title" class="sr-only">Subiu de nível</div>
+    <div class="levelup-num" id="levelup-num">Nv. 2</div>
+    <div class="levelup-label">Novo nível desbloqueado!</div>
+    <button id="levelup-ok" class="btn btn-p btn-full" type="button">Incrível! 🎉</button>
+  </div>
+</div>
+
+<script src="tb-config.js"></script>
+<script src="tb-state.js"></script>
+<script src="tb-economy.js"></script>
+<script src="tb-content.js"></script>
+<script src="tb-audio.js"></script>
+<script src="tb-analytics.js"></script>
+<script src="tb-ui.js"></script>
+<script src="tb-game-logic.js"></script>
+<script src="firebase-config.js"></script>
+<script src="tb-firebase.js"></script>
+<script src="tb-remote.js"></script>
+<script src="tb-i18n.js"></script>
+<script src="tb-achievements.js"></script>
+<script src="tb-offers.js"></script>
+<script src="tb-social.js"></script>
+<script src="tb-retention.js"></script>
+<script src="tb-roadmap.js"></script>
+<script src="tb-global.js"></script>
+<script src="tb-features.js"></script>
+<script src="tb-meta.js"></script>
+<script src="tb-juice.js"></script>
+<script src="tb-runtime.js"></script>
+<script src="tb-secure.js"></script>
+<script src="tb-save.js"></script>
+<script src="tb-shop.js"></script>
+<script src="tb-result.js"></script>
+<script src="tb-map.js"></script>
+<script src="tb-board.js"></script>
+<script src="tb-xp.js"></script>
+<script src="tb-collection.js"></script>
+<script src="tb-chests.js"></script>
+<script src="tb-missions.js"></script>
+<script src="tb-events.js"></script>
+<script src="tb-challenges.js"></script>
+<script src="tb-meta-ui.js"></script>
+<script src="tb-gameplay.js"></script>
+<script src="tb-music.js"></script>
+<script src="tb-ads.js"></script>
+<script src="tb-playbridge.js"></script>
+<script src="tb-dialogs.js"></script>
+<script src="tb-start.js"></script>
+<script src="tb-grid.js"></script>
+<script src="tb-modes.js"></script>
+<script src="tb-a11y.js"></script>
+<script src="tb-fx.js"></script>
+<script src="tb-input.js"></script>
+<script src="tb-main.js"></script>
+</body>
+</html>

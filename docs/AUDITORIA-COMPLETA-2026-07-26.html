@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auditoria completa — Tile Blast — 26/07/2026</title>
+  <style>
+    :root{--bg:#0d0f18;--panel:#171b2b;--panel2:#20263b;--text:#f4f6ff;--muted:#a9b0c9;--line:#303750;--brand:#f6c945;--good:#4ecb71;--warn:#f5933e;--bad:#ef4b5f;--blue:#3aa6e0;--shadow:0 18px 45px rgba(0,0,0,.25)}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 15% 0,#252d4b 0,#0d0f18 38%);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif} main{max-width:1180px;margin:auto;padding:32px 20px 72px} h1,h2,h3{line-height:1.15;margin:0 0 12px} h1{font-size:clamp(2.1rem,5vw,4.5rem);letter-spacing:-.04em} h2{font-size:1.7rem;margin-top:42px} h3{font-size:1.05rem} p{color:var(--muted)} a{color:var(--brand)} .eyebrow{color:var(--brand);font-weight:800;letter-spacing:.13em;text-transform:uppercase;font-size:.78rem}.hero{padding:36px 0 24px}.hero p{max-width:780px;font-size:1.12rem}.stamp{display:inline-flex;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#111525}.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}.score-card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}.score-card strong{display:block;font-size:3.5rem;line-height:1;color:var(--brand)}.score-card small{color:var(--muted)}.callout{border-left:4px solid var(--brand);background:rgba(246,201,69,.08);padding:16px 18px;border-radius:0 12px 12px 0;margin:20px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.panel{background:rgba(23,27,43,.9);border:1px solid var(--line);border-radius:16px;padding:20px}.panel ul{margin:8px 0 0;padding-left:22px}.panel li{margin:8px 0}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}table{width:100%;border-collapse:collapse;background:rgba(23,27,43,.9);border:1px solid var(--line);border-radius:14px;overflow:hidden}th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--brand);font-size:.82rem;text-transform:uppercase;letter-spacing:.06em}tr:last-child td{border-bottom:0}.bar{height:9px;background:#0b0d15;border-radius:99px;overflow:hidden;min-width:150px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--brand));border-radius:99px}.priority{display:inline-block;border-radius:6px;padding:2px 7px;font-size:.75rem;font-weight:800}.p0{background:rgba(239,75,95,.18);color:#ff9eaa}.p1{background:rgba(245,147,62,.18);color:#ffc58d}.p2{background:rgba(58,166,224,.18);color:#9bdcff}.metric{display:flex;align-items:center;gap:10px}.metric b{min-width:30px}.note{font-size:.9rem;color:var(--muted)}footer{margin-top:50px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:.88rem}@media(max-width:760px){main{padding:22px 14px 56px}.score-grid,.grid{grid-template-columns:1fr}.score-card strong{font-size:2.8rem}table{font-size:.9rem}th,td{padding:10px 9px}.bar{min-width:80px}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <div class="eyebrow">Auditoria independente do estado atual</div>
+    <h1>Tile Blast</h1>
+    <p>Diagnóstico do produto, código, experiência, operação e prontidão para escala global. A pergunta orientadora foi: “o que precisa ser verdade para este jogo disputar o topo mundial do tap-to-blast?”</p>
+    <div class="stamp"><span class="pill">26/07/2026</span><span class="pill">Versão observada: 1.4.8 / versionCode 13</span><span class="pill">Web/PWA + Android Capacitor</span></div>
+  </header>
+
+  <section class="score-grid" aria-label="Notas principais">
+    <article class="score-card"><small>Saúde atual do produto</small><strong>76</strong><span>/ 100</span><p>Base jogável, polida e testada; ainda não é uma operação global pronta.</p></article>
+    <article class="score-card"><small>Prontidão para escala mundial</small><strong>58</strong><span>/ 100</span><p>O limitador é produção, dados, diferenciação e live ops — não o loop central.</p></article>
+    <article class="score-card"><small>Prioridade imediata</small><strong>P0</strong><span>release trust</span><p>Remover placeholders e fechar a cadeia de build, configuração, métricas e lançamento.</p></article>
+  </section>
+
+  <div class="callout"><strong>Veredito:</strong> Tile Blast já é um produto tecnicamente sério para um jogo casual independente. Para ser número 1, precisa trocar “muitas features preparadas” por uma proposta memorável, um funil medido ponta a ponta, atualizações regulares e uma publicação realmente configurada para produção.</div>
+
+  <h2>Notas por dimensão</h2>
+  <table>
+    <thead><tr><th>Dimensão</th><th>Nota</th><th>Leitura executiva</th><th>Principal próximo salto</th></tr></thead>
+    <tbody>
+      <tr><td>Loop de jogo e game feel</td><td><div class="metric"><b>84</b><div class="bar"><span style="width:84%"></span></div></div></td><td>Tabuleiro 8×8, objetivos, movimentos, especiais, cascatas, feedback visual e HUD redesenhado funcionam juntos.</td><td>Construir uma assinatura de jogo que seja reconhecível em 5 segundos.</td></tr>
+      <tr><td>UX e ativação</td><td><div class="metric"><b>78</b><div class="bar"><span style="width:78%"></span></div></div></td><td>Onboarding acessível e claro, mas a primeira sessão tem modal de novidades + tutorial em camadas e a home é densa.</td><td>Levar o primeiro movimento a menos de 30 segundos e separar novato de jogador recorrente.</td></tr>
+      <tr><td>Conteúdo e game design</td><td><div class="metric"><b>76</b><div class="bar"><span style="width:76%"></span></div></div></td><td>85 fases, 7 mundos, modos, missões, desafios e validação automática de conteúdo.</td><td>Rebalancear picos de dificuldade e criar beats de novidade que não sejam apenas volume.</td></tr>
+      <tr><td>Retenção e live ops</td><td><div class="metric"><b>63</b><div class="bar"><span style="width:63%"></span></div></div></td><td>Há daily puzzle, streak, eventos, passe, push e remote config, mas o valor depende de configuração de nuvem e medição real.</td><td>Calendário de live ops + experimentos A/B + funil D1/D7/D30.</td></tr>
+      <tr><td>Monetização e economia</td><td><div class="metric"><b>69</b><div class="bar"><span style="width:69%"></span></div></div></td><td>Há rewarded, intersticial com limites, IAP, assinatura e validação server-side desenhada.</td><td>Preços vindos do Billing, produção sem IDs de teste e simulação de economia antes de escalar tráfego.</td></tr>
+      <tr><td>Qualidade técnica</td><td><div class="metric"><b>87</b><div class="bar"><span style="width:87%"></span></div></div></td><td>69 arquivos de teste, 461 testes unitários/integrados, e2e de fluxos-chave, lint e typecheck passam.</td><td>Elevar cobertura dos módulos de runtime e adicionar testes de Android, billing e sync real.</td></tr>
+      <tr><td>Acessibilidade e localização</td><td><div class="metric"><b>84</b><div class="bar"><span style="width:84%"></span></div></div></td><td>PT-BR, EN e ES; foco, ARIA, teclado, alt, daltonismo e reduzir animações estão presentes.</td><td>Auditoria automatizada de contraste/axe e QA nativo nas três línguas.</td></tr>
+      <tr><td>Performance e estabilidade</td><td><div class="metric"><b>74</b><div class="bar"><span style="width:74%"></span></div></div></td><td>Bundle de 656,8 KB para 386,1 KB (−41%) e canvas eficiente; ainda falta perfil em aparelhos Android low-end.</td><td>Budget de startup/FPS/memória e instrumentação de crash/performance.</td></tr>
+      <tr><td>Segurança, privacidade e release</td><td><div class="metric"><b>62</b><div class="bar"><span style="width:62%"></span></div></div></td><td>CSP, secure save, regras Firestore e desenho server-side são bons; ambiente ainda tem placeholders e IDs de teste.</td><td>Gate de release que falhe antes do AAB quando qualquer segredo/configuração de produção faltar.</td></tr>
+      <tr><td>Distribuição, ASO e operação</td><td><div class="metric"><b>58</b><div class="bar"><span style="width:58%"></span></div></div></td><td>Listings/assets/checklists e CI existem; publicação real, dados reais e operação de conteúdo ainda não estão comprovados.</td><td>Soft launch controlado, ASO por mercado e rotina semanal de decisão por dados.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Pontos fortes comprovados</h2>
+  <div class="grid">
+    <article class="panel"><h3 class="good">Produto jogável e polido</h3><ul><li>E2E validou smoke, gameplay, vitória, derrota, progresso e abertura pelo mapa.</li><li>O primeiro fluxo exibiu HUD, metas, board, power-ups, tutorial e feedback visual sem erro de console.</li><li>Identidade visual coesa: dark mode, mascote, efeitos, cabinet frame e feedback de blast.</li></ul></article>
+    <article class="panel"><h3 class="good">Fundação de conteúdo</h3><ul><li>85 fases em 7 mundos/packs, com validação automática.</li><li>Daily, challenge, modos, missões, coleção, jardim, baús, XP e passe formam uma base ampla de metagame.</li><li>Internacionalização estruturada em três idiomas.</li></ul></article>
+    <article class="panel"><h3 class="good">Engenharia disciplinada</h3><ul><li>461 testes passaram em 69 arquivos; e2e passou nos fluxos principais.</li><li>Lint global e typecheck JSDoc passaram.</li><li>CI já separa unit/boot e e2e smoke; arquitetura tem fonte de verdade de módulos.</li></ul></article>
+    <article class="panel"><h3 class="good">Acessibilidade e segurança por intenção</h3><ul><li>44 botões observados com nome acessível; zero IDs duplicados e zero imagens sem alt.</li><li>Canvas focável com instrução de teclado; skip link, status live e controles de acessibilidade presentes.</li><li>CSP, base-uri, form-action, object-src none e política offline bem pensados.</li></ul></article>
+  </div>
+
+  <h2>Pontos fracos e riscos</h2>
+  <div class="grid">
+    <article class="panel"><h3 class="bad">Bloqueio de produção</h3><ul><li><span class="priority p0">P0</span> <code>firebase-config.js</code> ainda é placeholder; ranking, cloud save e callables ficam inativos.</li><li><span class="priority p0">P0</span> AndroidManifest ainda usa App ID de teste do AdMob.</li><li><span class="priority p0">P0</span> Self-audit alerta ausência de <code>IDS-PRODUCAO.env</code> e possível <code>www</code> desatualizado.</li><li>Keystore e <code>google-services.json</code> não foram comprovados como configurados neste ambiente.</li></ul></article>
+    <article class="panel"><h3 class="warn">Ativação com atrito</h3><ul><li>Usuário novo passa por novidades e tutorial antes do primeiro movimento.</li><li>A home concentra mapa, progresso, banners, modos, loja, skins, perfil, jardim e configurações.</li><li>Falta uma distinção explícita entre onboarding, retorno diário e exploração avançada.</li></ul></article>
+    <article class="panel"><h3 class="warn">Dados de negócio insuficientes</h3><ul><li>Existe telemetria, mas não foi comprovado um painel operacional de funil, coortes, receita, crashes e experimentos.</li><li>Sem dados reais, decisões de dificuldade, anúncios e economia ficam no feeling.</li><li>A cobertura global de privacidade, consentimento, exclusão de dados e suporte precisa ser operacionalizada.</li></ul></article>
+    <article class="panel"><h3 class="warn">Dívida de entrega</h3><ul><li><code>npm run format:check</code> falha em 51 arquivos.</li><li>Cobertura agregada é 65,59%; módulos críticos como board, gameplay, modes e offers têm áreas relevantes sem cobertura.</li><li>Testes nativos Android, Billing Play, push FCM real, Firebase real e perfil em aparelhos físicos não foram executados.</li></ul></article>
+  </div>
+
+  <h2>Decisões que podem levar ao topo</h2>
+  <ol>
+    <li><strong>Definir a tese de diferenciação:</strong> o motivo específico para escolher Tile Blast diante de milhares de block puzzles. Ex.: puzzle premium de “microdecisões + mascote + eventos sociais”, mas a tese precisa ser testada com jogadores.</li>
+    <li><strong>Operar por funil, não por volume de features:</strong> medir instalação → primeiro movimento → primeira vitória → D1 → D7 → compra → retorno semanal.</li>
+    <li><strong>Fazer do daily/social o hábito:</strong> desafio compartilhável, ranking com proteção, eventos semanais e recompensas que valorizem domínio, não apenas grind.</li>
+    <li><strong>Manter monetização justa:</strong> recompensas opt-in, intersticiais previsíveis, assinatura clara e preços localizados; confiança é uma vantagem competitiva.</li>
+  </ol>
+
+  <h2>Critérios de “pronto para soft launch”</h2>
+  <table><thead><tr><th>Gate</th><th>Critério</th><th>Estado</th></tr></thead><tbody>
+    <tr><td>Build</td><td>lint, typecheck, unit + e2e, bundle e versionamento no CI</td><td class="good">Parcialmente atendido</td></tr>
+    <tr><td>Produção</td><td>Firebase, AdMob, Billing, push, keystore e config sem placeholders</td><td class="bad">Não atendido</td></tr>
+    <tr><td>Produto</td><td>primeiro movimento &lt;30s; tutorial skip/retorno; eventos medidos</td><td class="warn">Precisa validar</td></tr>
+    <tr><td>Dados</td><td>dashboard de funil, coortes, receita, crashes e alertas</td><td class="bad">Não comprovado</td></tr>
+    <tr><td>Qualidade</td><td>Android físico low-end, rotação/retorno, compra, restore, offline/online</td><td class="warn">Não executado</td></tr>
+  </tbody></table>
+
+  <h2>Plano de ataque</h2>
+  <p>O roadmap executável, em formato pronto para enviar ao Cursor, está em <a href="CURSOR-ROADMAP-2026-07-26.md">docs/CURSOR-ROADMAP-2026-07-26.md</a>. Ele organiza as entregas por P0–P4, arquivos prováveis, critérios de aceite e comandos de verificação.</p>
+
+  <footer><strong>Base da auditoria:</strong> inspeção do repositório e dos artefatos gerados; execução de lint, typecheck, testes (69/461), cobertura, e2e e validação de conteúdo/Play Store; inspeção do fluxo visual no navegador local. Limitações: não houve soft launch, pesquisa com usuários, perfil em aparelhos físicos nem validação de contas/serviços de produção.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-07-26T21:39:27.603Z",
+  "skipTests": true,
+  "version": "1.4.8",
+  "errors": [],
+  "warnings": [
+    "AdMob ainda usa IDs de TESTE — npm run play:admob após IDS-PRODUCAO.env",
+    "IDS-PRODUCAO.env ausente (copie de IDS-PRODUCAO.env.example)",
+    "Firebase não configurado — cloud save/ranking callables inativos"
+  ],
+  "gate": {
+    "generatedAt": "2026-07-26T21:39:27.334Z",
+    "mode": "dev",
+    "version": "1.4.8",
+    "versionCode": 13,
+    "artifactHint": "play-store/release/*.aab (após play:bundle)",
+    "services": {
+      "firebase": false,
+      "admobProduction": false,
+      "billing": true,
+      "push": true
+    },
+    "checklist": [
+      {
+        "id": "versions",
+        "ok": true,
+        "detail": "APP_VERSION=1.4.8 versionName=1.4.8 code=13"
+      },
+      {
+        "id": "www_parity",
+        "ok": true,
+        "detail": "6 arquivos checados, 0 divergentes"
+      },
+      {
+        "id": "firebase",
+        "ok": false,
+        "detail": "placeholder"
+      },
+      {
+        "id": "admob_ids_file",
+        "ok": false,
+        "detail": "IDS-PRODUCAO.env ausente"
+      },
+      {
+        "id": "keystore",
+        "ok": true,
+        "detail": "presente"
+      }
+    ],
+    "www": {
+      "checked": 6,
+      "mismatched": []
+    },
+    "playStore": {
+      "mode": "dev",
+      "campaignLevels": 85,
+      "admobTestIds": true,
+      "screenshotCount": 4
+    },
+    "blockers": [],
+    "warnings": [
+      "AdMob ainda usa IDs de TESTE — npm run play:admob após IDS-PRODUCAO.env",
+      "IDS-PRODUCAO.env ausente (copie de IDS-PRODUCAO.env.example)",
+      "Firebase não configurado — cloud save/ranking callables inativos"
+    ],
+    "ok": true
+  },
+  "ok": true
+}

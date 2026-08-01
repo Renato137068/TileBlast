@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoria Tile Blast — 13/07/2026</title>
+<style>
+  :root{--bg:#0e1117;--panel:#161b22;--panel2:#1c2230;--line:#2a3140;--txt:#e6edf3;--muted:#9aa7b4;--accent:#6ea8fe;
+    --red:#f4636e;--orange:#f59e42;--amber:#e9c449;--green:#4fd18b;--teal:#3fd6c6;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+  header{background:linear-gradient(135deg,#14243a,#1b3320 55%,#123433);border:1px solid var(--line);border-radius:20px;padding:34px 32px;margin-bottom:26px;display:flex;gap:32px;align-items:center;flex-wrap:wrap}
+  h1{margin:0 0 6px;font-size:26px}
+  .sub{color:var(--muted);font-size:14px}
+  .gauge .lbl{fill:var(--txt);font-size:30px;font-weight:700}
+  .gauge .lbl2{fill:var(--muted);font-size:11px}
+  .verdict{flex:1;min-width:260px}
+  .badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(79,209,139,.15);color:var(--green);border:1px solid rgba(79,209,139,.35)}
+  .delta-big{font-size:13px;color:var(--green);font-weight:700;margin-left:8px}
+  h2{font-size:18px;margin:34px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  p.lead{color:#cdd6e0;font-size:15px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+  .metric{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .metric .n{font-size:22px;font-weight:700}
+  .metric .k{font-size:12px;color:var(--muted);margin-top:2px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .card .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .card .name{font-weight:600;font-size:15px}
+  .card .score{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+  .card .w{font-size:11px;color:var(--muted)}
+  .card .delta{font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px;background:rgba(79,209,139,.14);color:var(--green);margin-left:6px}
+  .card .delta.flat{background:rgba(154,167,180,.14);color:var(--muted)}
+  .bar{height:8px;border-radius:6px;background:#0c1017;margin:10px 0 8px;overflow:hidden;position:relative}
+  .bar > .prev{position:absolute;top:0;height:100%;width:2px;background:var(--muted);opacity:.7}
+  .bar > span{display:block;height:100%;border-radius:6px}
+  .card .desc{font-size:13px;color:var(--muted)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.two{grid-template-columns:1fr}}
+  .list{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 8px}
+  .list h3{margin:10px 12px;font-size:14px}
+  .list ul{margin:0;padding:0 10px 8px;list-style:none}
+  .list li{padding:8px 10px;border-radius:8px;font-size:13.5px;color:#d4dce6}
+  .list li:nth-child(odd){background:var(--panel2)}
+  .list li b{color:var(--txt)}
+  .note{background:rgba(110,168,254,.08);border:1px solid rgba(110,168,254,.3);border-radius:10px;padding:12px 14px;font-size:13px;color:#c6d4e6;margin:14px 0}
+  footer{margin-top:40px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="gauge">
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        <circle cx="75" cy="75" r="62" fill="none" stroke="#232a36" stroke-width="14"/>
+        <circle cx="75" cy="75" r="62" fill="none" stroke="#4fd18b" stroke-width="14" stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="105.2" transform="rotate(-90 75 75)"/>
+        <text x="75" y="72" text-anchor="middle" class="lbl">73</text>
+        <text x="75" y="94" text-anchor="middle" class="lbl2">/ 100 · GLOBAL</text>
+      </svg>
+    </div>
+    <div class="verdict">
+      <h1>Auditoria Técnica — Tile Blast <span class="delta-big">▲ +3</span></h1>
+      <div class="sub">v1.4.6 · 13 de julho de 2026 · 3ª auditoria (59 → 70 → <b>73</b>)</div>
+      <p style="margin:14px 0 8px;"><span class="badge">SÓLIDO — quase pronto para escala comercial</span></p>
+      <div class="sub">Desde a auditoria de 70, o jogo ganhou um <b>porteiro contra crashes de runtime</b> (no-undef),
+      dois bugs reais corrigidos (mapa não renderizava), exploit de economia fechado, bônus de retenção reais e
+      prontidão de Play verificada por teste. <b>143 testes verdes.</b></div>
+    </div>
+  </header>
+
+  <p class="lead">Esta rodada priorizou <b>robustez de runtime</b>: o print do jogo rodando revelou crashes que os
+  testes não pegavam (<code>WORLD_CLS is not defined</code> sumia o mapa), e a resposta foi corrigir os bugs <b>e</b>
+  criar um <code>npm run lint</code> que blinda a classe inteira. Somado às melhorias de monetização, retenção e Play
+  readiness, a nota global vai a <b>73/100</b>. O teto continua sendo a migração <code>src/</code> e o redesenho visual
+  premium — ambos dependentes de git + navegador no seu ambiente.</p>
+
+  <div class="metrics">
+    <div class="metric"><div class="n">143 ✓</div><div class="k">testes verdes <span style="color:#4fd18b">(era 122)</span></div></div>
+    <div class="metric"><div class="n">73</div><div class="k">nota global <span style="color:#4fd18b">(+3)</span></div></div>
+    <div class="metric"><div class="n">0</div><div class="k">referências indefinidas (lint no-undef)</div></div>
+    <div class="metric"><div class="n">2</div><div class="k">crashes de runtime corrigidos (mapa)</div></div>
+    <div class="metric"><div class="n">1</div><div class="k">exploit de economia fechado (restore)</div></div>
+    <div class="metric"><div class="n">27</div><div class="k">suítes de teste (gates de CI)</div></div>
+  </div>
+
+  <h2>Notas por dimensão — agora vs. auditoria anterior (70)</h2>
+  <div class="grid" id="dims"></div>
+
+  <h2>O que mudou desde a auditoria de 70</h2>
+  <div class="two">
+    <div class="list">
+      <h3 style="color:var(--green)">✓ Entregue e validado por teste</h3>
+      <ul>
+        <li><b>Robustez:</b> gate <code>no-undef</code> (`npm run lint`) blinda a classe do crash <code>WORLD_CLS</code>; 8 fallbacks frágeis <code>global</code>→<code>globalThis</code>.</li>
+        <li><b>2 crashes reais corrigidos:</b> <code>WORLD_CLS</code> (mapa vazio) e <code>remoteConfig</code> lendo null.</li>
+        <li><b>Monetização:</b> exploit de farm de moedas via "restaurar compras" fechado; ledger de recibos.</li>
+        <li><b>Retenção:</b> congelamento de streak (1 dia) + bônus semanal de login agora real (marco ×2).</li>
+        <li><b>Play readiness:</b> teste de bloqueadores de upload (versões, targetSdk, manifest, ícones, cache SW).</li>
+        <li><b>UI/UX:</b> feedback de toque (press-down) + harness de screenshots (`npm run ui:shots`).</li>
+      </ul>
+    </div>
+    <div class="list">
+      <h3 style="color:var(--amber)">◐ Pendente (git + QA de navegador / backend)</h3>
+      <ul>
+        <li><b>Migração src/ + ES modules + DI</b> e split dos god-files (tb-main 6.9k, tb-roadmap 2k).</li>
+        <li><b>Trocar 18 tags por 1 bundle</b> no index publicado (pronto e testado por equivalência).</li>
+        <li><b>Redesenho UI premium</b> — rode o harness de screenshots e me mande as imagens.</li>
+        <li><b>Adoção do TBRuntime</b> nos 65 timers / 77 listeners; corrigir avisos <code>aria-hidden</code>.</li>
+        <li><b>Validação server-side</b> de scores/compras (billing) + Play Integrity.</li>
+        <li><b>Unificar fronteiras de dia</b> (UTC×local) — decisão de produto com migração de save.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>Metodologia & honestidade.</b> Notas combinam métricas objetivas (143 testes, gate no-undef limpo,
+  LOC, contagens) com julgamento de engenharia. <b>UI/UX</b> e <b>Performance</b> seguem conservadoras: o download do
+  Chromium é bloqueado no ambiente de trabalho, então não há validação visual/perfil de runtime aqui — o harness de
+  screenshots foi entregue para você rodar localmente. A marca cinza em cada barra é a nota anterior.</div>
+
+  <footer>Tile Blast · 3ª auditoria 13/07/2026 · Escala 0–100 (bandas: &lt;40 crítico · 40–59 fraco · 60–74 regular · 75–89 bom · 90+ excelente). Global 73/100 = média ponderada das 14 dimensões (era 70).</footer>
+</div>
+<script>
+  var DIMS=[
+    ["Arquitetura",68,12,66,"Contrato de módulos validado + gate no-undef + consistência globalThis. Ainda: 2 arquivos grandes e globais vs ES modules."],
+    ["Legibilidade / Clean Code",70,8,68,"Prettier + gate de lint; núcleo formatado. Ainda: nomes curtos e arquivos grandes."],
+    ["Performance",66,10,66,"Canvas+rAF; build minifica. TBRuntime pronto mas não adotado (65 timers/77 listeners). Sem perfil de runtime no ambiente."],
+    ["Segurança / Anti-cheat",74,10,72,"XSS fechado; anti-cheat no ranking; exploit de economia (restore) fechado + ledger de recibos. Falta server-side."],
+    ["Testes / QA",86,8,82,"143 testes; novos gates: no-undef, play-readiness, monetização, retenção, robustez, contrato, bundle."],
+    ["Manutenibilidade",72,8,64,"Gate no-undef pega crash-class de bug; 8 fixes de robustez; docs de arquitetura. Ainda: god-files."],
+    ["Escalabilidade de conteúdo",68,7,68,"Conteúdo data-driven + bundler. Lógica consumidora ainda no monólito."],
+    ["UI / UX",70,10,66,"Feedback de toque + harness de screenshots. Redesenho premium ainda não validado visualmente."],
+    ["Monetização",76,8,68,"Exploit de farm via restore fechado; classificação consumível testada; ledger de recibos. Falta verificação server-side."],
+    ["Retenção",76,7,70,"Congelamento de streak + bônus semanal real (marco ×2), testados. Missões/claim sem exploit."],
+    ["Acessibilidade",74,4,74,"reduce-motion, foco visível, daltônico, contraste. Falta corrigir avisos aria-hidden + navegação por teclado completa."],
+    ["Google Play readiness",80,4,74,"Bloqueadores de upload testados (versões/targetSdk/manifest/ícones/cache SW). Falta Play Integrity server-side."],
+    ["Organização do repositório",90,2,88,"Docs, Prettier/EditorConfig/ESLint, manifesto único, ARCHITECTURE.md. Falta git nesta pasta."],
+    ["Internacionalização (i18n)",80,2,80,"3 idiomas com paridade + auto-detecção. Falta catálogo externo e mais idiomas."]
+  ];
+  function band(s){return s<40?'var(--red)':s<60?'var(--orange)':s<75?'var(--amber)':s<90?'var(--green)':'var(--teal)';}
+  document.getElementById('dims').innerHTML=DIMS.map(function(d){
+    var c=band(d[1]);var diff=d[1]-d[3];
+    var dtag=diff>0?'<span class="delta">+'+diff+'</span>':'<span class="delta flat">=</span>';
+    return '<div class="card"><div class="top"><span class="name">'+d[0]+'</span><span class="score" style="color:'+c+'">'+d[1]+dtag+'</span></div>'+
+      '<div class="w">peso '+d[2]+'% · antes '+d[3]+'</div>'+
+      '<div class="bar"><span style="width:'+d[1]+'%;background:'+c+'"></span><i class="prev" style="left:'+d[3]+'%"></i></div>'+
+      '<div class="desc">'+d[4]+'</div></div>';
+  }).join('');
+</script>
+</body>
+</html>

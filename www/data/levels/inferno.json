@@ -1,0 +1,237 @@
+{
+  "worldId": "inferno",
+  "levels": [
+    {
+      "id": "inferno-01",
+      "worldId": "inferno",
+      "order": 1,
+      "index": 40,
+      "name": "Chão de Lava",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "cover",
+          "target": 12
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "cover",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "inferno-02",
+      "worldId": "inferno",
+      "order": 2,
+      "index": 41,
+      "name": "Chamas",
+      "moves": 16,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 2250
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "inferno-03",
+      "worldId": "inferno",
+      "order": 3,
+      "index": 42,
+      "name": "Cobertura Total",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "cover",
+          "target": 20
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "cover",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "inferno-04",
+      "worldId": "inferno",
+      "order": 4,
+      "index": 43,
+      "name": "Lava e Gelo",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "cover",
+          "target": 12
+        },
+        {
+          "type": "ice",
+          "target": 8
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "cover",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "inferno-05",
+      "worldId": "inferno",
+      "order": 5,
+      "index": 44,
+      "name": "Apocalipse",
+      "moves": 26,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 0,
+          "target": 25
+        },
+        {
+          "type": "color",
+          "color": 1,
+          "target": 25
+        },
+        {
+          "type": "color",
+          "color": 5,
+          "target": 25
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "inferno-06",
+      "worldId": "inferno",
+      "order": 6,
+      "index": 45,
+      "name": "Piso Infernal",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "cover",
+          "target": 24
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "cover",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "inferno-07",
+      "worldId": "inferno",
+      "order": 7,
+      "index": 46,
+      "name": "Coleta em Chamas",
+      "moves": 26,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 8
+        },
+        {
+          "type": "cover",
+          "target": 12
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "inferno-08",
+      "worldId": "inferno",
+      "order": 8,
+      "index": 47,
+      "name": "Inferno III",
+      "moves": 12,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 3800
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "inferno-09",
+      "worldId": "inferno",
+      "order": 9,
+      "index": 48,
+      "name": "Demônio",
+      "moves": 26,
+      "objectives": [
+        {
+          "type": "cover",
+          "target": 18
+        },
+        {
+          "type": "crate",
+          "target": 10
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "cover",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "inferno-10",
+      "worldId": "inferno",
+      "order": 10,
+      "index": 49,
+      "name": "O FIM 👑",
+      "moves": 28,
+      "objectives": [
+        {
+          "type": "cover",
+          "target": 20
+        },
+        {
+          "type": "color",
+          "color": 0,
+          "target": 25
+        },
+        {
+          "type": "score",
+          "target": 4500
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "cover",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    }
+  ]
+}

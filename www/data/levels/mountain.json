@@ -1,0 +1,230 @@
+{
+  "worldId": "mountain",
+  "levels": [
+    {
+      "id": "mountain-01",
+      "worldId": "mountain",
+      "order": 1,
+      "index": 20,
+      "name": "Primeira Caixa",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "crate",
+          "target": 6
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "crate",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "mountain-02",
+      "worldId": "mountain",
+      "order": 2,
+      "index": 21,
+      "name": "Altitude",
+      "moves": 18,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 1650
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "mountain-03",
+      "worldId": "mountain",
+      "order": 3,
+      "index": 22,
+      "name": "Caixas de Pedra",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "crate",
+          "target": 10
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "crate",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "mountain-04",
+      "worldId": "mountain",
+      "order": 4,
+      "index": 23,
+      "name": "Tricolor",
+      "moves": 26,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 0,
+          "target": 20
+        },
+        {
+          "type": "color",
+          "color": 2,
+          "target": 20
+        },
+        {
+          "type": "color",
+          "color": 4,
+          "target": 20
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "mountain-05",
+      "worldId": "mountain",
+      "order": 5,
+      "index": 24,
+      "name": "Muro de Caixas",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "crate",
+          "target": 12
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "crate",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "mountain-06",
+      "worldId": "mountain",
+      "order": 6,
+      "index": 25,
+      "name": "Velocidade",
+      "moves": 14,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 2400
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "mountain-07",
+      "worldId": "mountain",
+      "order": 7,
+      "index": 26,
+      "name": "Caixa e Gelo",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "crate",
+          "target": 8
+        },
+        {
+          "type": "ice",
+          "target": 6
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "crate",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "mountain-08",
+      "worldId": "mountain",
+      "order": 8,
+      "index": 27,
+      "name": "Chuva Roxa",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 4,
+          "target": 40
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "mountain-09",
+      "worldId": "mountain",
+      "order": 9,
+      "index": 28,
+      "name": "Fortaleza",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "crate",
+          "target": 14
+        },
+        {
+          "type": "score",
+          "target": 2000
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "crate",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "mountain-10",
+      "worldId": "mountain",
+      "order": 10,
+      "index": 29,
+      "name": "Cume",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "crate",
+          "target": 10
+        },
+        {
+          "type": "color",
+          "color": 5,
+          "target": 25
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "crate",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    }
+  ]
+}

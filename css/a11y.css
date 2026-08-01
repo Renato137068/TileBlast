@@ -1,0 +1,140 @@
+/* ============================================================
+   Acessibilidade — camada carregada por ÚLTIMO (só reforça).
+   Fecha lacunas concretas encontradas na auditoria:
+   1) Foco de teclado visível e consistente em TODOS os controles.
+   2) Toggle "Reduzir animações" do jogo passa a valer para o CSS
+      (antes só a preferência do SO parava animações CSS).
+   3) Modo daltônico reforça a UI colorida com pistas NÃO cromáticas.
+   4) Suporte a prefers-contrast: more.
+   Regras 2–4 são opt-in (classe/preferência) → não alteram o visual
+   padrão de quem não ativou.
+   ============================================================ */
+
+/* 1) FOCO VISÍVEL (só aparece na navegação por teclado) ------ */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role='button']:focus-visible,
+[tabindex]:focus-visible,
+.btn:focus-visible,
+.map-qbtn:focus-visible,
+.btn-map:focus-visible,
+.lc:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+/* evita anel duplicado ao clicar com o mouse */
+button:focus:not(:focus-visible),
+.btn:focus:not(:focus-visible),
+.map-qbtn:focus:not(:focus-visible),
+.btn-map:focus:not(:focus-visible),
+[role='button']:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 2) REDUZIR ANIMAÇÕES via toggle do jogo (html.reduce-motion)
+   Espelha o bloco @media (prefers-reduced-motion) do responsive.css. */
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+html.reduce-motion .screen.active,
+html.reduce-motion #screen-complete.active,
+html.reduce-motion .trophy-anim,
+html.reduce-motion .lc.cur,
+html.reduce-motion .notif-dot,
+html.reduce-motion .ad-spinner,
+html.reduce-motion #hud-mv.danger,
+html.reduce-motion #hud-mv.critical,
+html.reduce-motion #no-mv.show,
+html.reduce-motion #res-retry.res-retry--pulse,
+html.reduce-motion .coach-finger,
+html.reduce-motion .confetti-piece,
+html.reduce-motion .map-play-btn,
+html.reduce-motion .pu-btn.targeting,
+html.reduce-motion #prog-w::after,
+html.reduce-motion .mascot-idle,
+html.reduce-motion .mascot-excited,
+html.reduce-motion .mascot-think,
+html.reduce-motion .complete-hero {
+  animation: none !important;
+}
+
+/* 3) MODO DALTÔNICO — reforço não cromático da UI (opt-in).
+   O tabuleiro já desenha uma FORMA distinta por tipo (canvas);
+   aqui reforçamos os elementos de UI que dependiam só de cor. */
+html.colorblind-mode .notif-dot {
+  /* alerta = anel de alto contraste */
+  box-shadow:
+    0 0 0 2px #000,
+    0 0 0 4px #fff;
+}
+html.colorblind-mode #hud-mv.danger {
+  /* poucos movimentos = cor + sublinhado + peso */
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 900;
+}
+html.colorblind-mode .btn-p,                /* botões primários ganham contorno */
+html.colorblind-mode .map-play-btn {
+  outline: 2px solid rgba(255, 255, 255, 0.55);
+  outline-offset: -4px;
+}
+html.colorblind-mode .pu-desc {
+  font-weight: 800;
+} /* mantém regra pré-existente */
+
+/* 4) ALTO CONTRASTE (preferência do SO) --------------------- */
+@media (prefers-contrast: more) {
+  :root {
+    --dim: #c6ccda; /* texto secundário mais legível */
+    --glass-border: rgba(255, 255, 255, 0.28);
+  }
+  button,
+  .btn,
+  .map-qbtn,
+  .btn-map {
+    border-width: 2px;
+  }
+  :focus-visible {
+    outline-width: 4px;
+  }
+}
+
+/* Utilitário: conteúdo só para leitor de tela ---------------- */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Microinteracao premium: feedback de toque (press-down) ──
+   Botoes afundam levemente ao toque — sensacao tatil de app AAA.
+   So transform (barato p/ GPU); nao aplica em botoes desabilitados. */
+.btn:not(:disabled):active,
+.map-qbtn:not(:disabled):active,
+.btn-map:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+/* ── Estado desabilitado consistente ──
+   Botoes gerais nao comunicavam indisponibilidade (so o .pu-btn tinha).
+   Opacidade + cursor deixam claro que a acao esta bloqueada. */
+.btn:disabled,
+.map-qbtn:disabled,
+.btn-map:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

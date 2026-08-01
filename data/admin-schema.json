@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "description": "Schema para painel admin LiveOps — Firestore / remote config",
+  "contentVersion": 2,
+  "collections": {
+    "content/worlds": "Override de worlds.json (recompensas, unlockAtLevel)",
+    "content/levels/{worldId}": "Pack JSON por mundo",
+    "content/events/active": "{ eventId, startISO, endISO, enabled, overrides }",
+    "content/events/schedule": "Array de campanhas futuras",
+    "content/missions": "Override de missions.json",
+    "content/modes": "Override de modes.json",
+    "leaderboards/event_{eventId}_{week}": "Ranking por evento competitivo"
+  },
+  "remoteConfigKeys": [
+    "contentVersion",
+    "activeEventId",
+    "activeEventStart",
+    "activeEventEnd",
+    "disabledEvents",
+    "preloadWorldCount"
+  ],
+  "metrics": [
+    "levels_completed_per_world",
+    "event_participation_rate",
+    "event_ranking_submissions",
+    "lazy_pack_load_ms",
+    "mission_claim_rate"
+  ]
+}

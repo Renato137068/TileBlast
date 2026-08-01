@@ -1,0 +1,456 @@
+{
+  "worldId": "crystal",
+  "levels": [
+    {
+      "id": "crystal-01",
+      "worldId": "crystal",
+      "order": 1,
+      "index": 50,
+      "name": "Cristal Bruto",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 12
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-02",
+      "worldId": "crystal",
+      "order": 2,
+      "index": 51,
+      "name": "Veia de Prata",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "crate",
+          "target": 12
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "crate",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-03",
+      "worldId": "crystal",
+      "order": 3,
+      "index": 52,
+      "name": "Reflexo",
+      "moves": 20,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 4,
+          "target": 40
+        }
+      ],
+      "difficulty": "easy",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 40
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-04",
+      "worldId": "crystal",
+      "order": 4,
+      "index": 53,
+      "name": "Coleta Cristalina",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 8
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-05",
+      "worldId": "crystal",
+      "order": 5,
+      "index": 54,
+      "name": "Caverna Coberta",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "cover",
+          "target": 20
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "cover",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-06",
+      "worldId": "crystal",
+      "order": 6,
+      "index": 55,
+      "name": "Primeira Corrente",
+      "moves": 22,
+      "objectives": [
+        {
+          "type": "chain",
+          "target": 10
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "chain",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-07",
+      "worldId": "crystal",
+      "order": 7,
+      "index": 56,
+      "name": "Gelo e Prata",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 10
+        },
+        {
+          "type": "crate",
+          "target": 10
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-08",
+      "worldId": "crystal",
+      "order": 8,
+      "index": 57,
+      "name": "Pressao de Cristal",
+      "moves": 15,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 3600
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-09",
+      "worldId": "crystal",
+      "order": 9,
+      "index": 58,
+      "name": "Prisma Duplo",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 6
+        },
+        {
+          "type": "cover",
+          "target": 8
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-10",
+      "worldId": "crystal",
+      "order": 10,
+      "index": 59,
+      "name": "Nucleo",
+      "moves": 14,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 4200
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-11",
+      "worldId": "crystal",
+      "order": 11,
+      "index": 60,
+      "name": "Trono de Gelo",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 12
+        }
+      ],
+      "setup": {
+        "iceHp": 2
+      },
+      "difficulty": "medium",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-12",
+      "worldId": "crystal",
+      "order": 12,
+      "index": 61,
+      "name": "Muralha",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "crate",
+          "target": 14
+        }
+      ],
+      "difficulty": "medium",
+      "objectiveType": "crate",
+      "reward": {
+        "coins": 55
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-13",
+      "worldId": "crystal",
+      "order": 13,
+      "index": 62,
+      "name": "Correntes Duplas",
+      "moves": 24,
+      "objectives": [
+        {
+          "type": "chain",
+          "target": 14
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "chain",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-14",
+      "worldId": "crystal",
+      "order": 14,
+      "index": 63,
+      "name": "Cinco Elementos",
+      "moves": 28,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 8
+        },
+        {
+          "type": "crate",
+          "target": 8
+        },
+        {
+          "type": "collect",
+          "target": 6
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-15",
+      "worldId": "crystal",
+      "order": 15,
+      "index": 64,
+      "name": "Relampago Cristalino",
+      "moves": 13,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 4500
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-16",
+      "worldId": "crystal",
+      "order": 16,
+      "index": 65,
+      "name": "Lago Congelado",
+      "moves": 26,
+      "objectives": [
+        {
+          "type": "cover",
+          "target": 18
+        },
+        {
+          "type": "ice",
+          "target": 10
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "cover",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-17",
+      "worldId": "crystal",
+      "order": 17,
+      "index": 66,
+      "name": "Tempestade de Prisma",
+      "moves": 28,
+      "objectives": [
+        {
+          "type": "color",
+          "color": 0,
+          "target": 22
+        },
+        {
+          "type": "color",
+          "color": 2,
+          "target": 22
+        },
+        {
+          "type": "color",
+          "color": 5,
+          "target": 22
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "color",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-18",
+      "worldId": "crystal",
+      "order": 18,
+      "index": 67,
+      "name": "Coleta Suprema",
+      "moves": 28,
+      "objectives": [
+        {
+          "type": "collect",
+          "target": 10
+        },
+        {
+          "type": "chain",
+          "target": 8
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "collect",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-19",
+      "worldId": "crystal",
+      "order": 19,
+      "index": 68,
+      "name": "Fenda",
+      "moves": 14,
+      "objectives": [
+        {
+          "type": "score",
+          "target": 5000
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "score",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    },
+    {
+      "id": "crystal-20",
+      "worldId": "crystal",
+      "order": 20,
+      "index": 69,
+      "name": "CORACAO DE CRISTAL 👑",
+      "moves": 30,
+      "objectives": [
+        {
+          "type": "ice",
+          "target": 12
+        },
+        {
+          "type": "crate",
+          "target": 12
+        },
+        {
+          "type": "collect",
+          "target": 8
+        },
+        {
+          "type": "score",
+          "target": 5000
+        }
+      ],
+      "difficulty": "hard",
+      "objectiveType": "ice",
+      "reward": {
+        "coins": 70
+      },
+      "mode": "classic_blast"
+    }
+  ]
+}
