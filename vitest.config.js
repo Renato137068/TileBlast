@@ -16,14 +16,17 @@ export default defineConfig({
       include: ['tb-*.js'],
       exclude: ['www/**', 'tests/**', 'scripts/**', 'android/**', 'functions/**', 'coverage/**'],
       // Floor com ~3pp de folga sobre o valor atual: pega regressão real sem
-      // quebrar por ruído. Suba junto com a cobertura (~67% lines / ~63% funcs).
-      // Meta escalonada: 75% linhas — maiores alavancas ainda descobertas são
-      // tb-main.js (0%, boot), tb-board.js e tb-gameplay.js.
+      // quebrar por ruído. Meta de 75% linhas ATINGIDA (~76%) após o teste de
+      // boot completo (tests/integration/boot-main.test.js) exercitar tb-main.
+      // functions caiu de ~63% para ~54% porque o boot passou a CONTAR as ~130
+      // funções de tb-main (antes o arquivo nunca era carregado) — medição do
+      // app inteiro, não regressão. Próximo alvo: acionar gameplay para cobrir
+      // os handlers win/loss/data-action de tb-main.
       thresholds: {
-        lines: 64,
-        statements: 64,
-        functions: 60,
-        branches: 60,
+        lines: 73,
+        statements: 73,
+        functions: 50,
+        branches: 62,
       },
     },
   },
