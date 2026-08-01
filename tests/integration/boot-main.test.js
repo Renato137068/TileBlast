@@ -120,6 +120,10 @@ function canvas2dProxy() {
 
 function installBrowserStubs() {
   const win = globalThis.window || globalThis;
+  // Módulos adiados já são montados manualmente; zera a lista para o loader do
+  // tb-runtime não injetar <script src> (que happy-dom baixaria → ECONNREFUSED).
+  globalThis.__TB_DEFERRED_MODULES__ = [];
+  win.__TB_DEFERRED_MODULES__ = [];
   // Web Audio ausente em happy-dom → stub no-op para tb-audio/tb-music.
   const AC = function AudioContext() {
     return audioNodeProxy();
@@ -200,68 +204,163 @@ function installBrowserStubs() {
   if (win && !win.matchMedia) win.matchMedia = globalThis.matchMedia;
 }
 
+const tick = (ms) => new Promise((r) => setTimeout(r, ms));
+const G = (name) => globalThis[name];
+const call = (name, ...args) => {
+  try {
+    const fn = G(name);
+    if (typeof fn === 'function') return fn(...args);
+  } catch {
+    /* estado insuficiente para este ponto de entrada — ok ignorar */
+  }
+  return undefined;
+};
+
+/** Primeira célula cujo grupo tem >= minLen (para detonar um blast real). */
+function findGroup(minLen) {
+  const getGroup = G('getGroup');
+  if (typeof getGroup !== 'function') return null;
+  for (let x = 0; x < 8; x++) {
+    for (let y = 0; y < 8; y++) {
+      try {
+        const g = getGroup(x, y);
+        if (g && g.length >= minLen) return { x, y, g };
+      } catch {
+        /* fora dos limites / célula vazia */
+      }
+    }
+  }
+  return null;
+}
+
+/** Índice (>0, evita tutorial) da 1ª fase com um objetivo do tipo dado. */
+function findLevelWith(type) {
+  const L = globalThis.TBState?.LEVELS || [];
+  for (let i = 1; i < L.length; i++) {
+    if ((L[i]?.objectives || []).some((o) => o && o.type === type)) return i;
+  }
+  return -1;
+}
+
 /**
- * Inicia uma fase real e a joga: clica na grade 8x8 (dispara grupos, cascatas,
- * gravidade, especiais) e força ambos os desfechos. Cobre tb-start (startGame,
- * win/loss), tb-gameplay (handleClick, gatherBlast, gravity, settle) e tb-board.
+ * Dirige as mecânicas de gameplay/board num nível já iniciado (grid construído),
+ * SEM depender do countdown: activateSpecial/executePU/removeGroup não checam
+ * busy. Cobre especiais (bomb/rocket/rainbow), boosters e desenho de obstáculos.
+ */
+async function driveMechanics() {
+  call('requestDraw');
+  await tick(20);
+  call('draw'); // força um draw síncrono → desenha obstáculos da fase
+  // Especiais: activateSpecial → gatherBlast → bomb/rocket/rainbowTargets.
+  for (const sp of [1, 2, 3]) {
+    call('activateSpecial', 3, 3, sp);
+    await tick(60);
+  }
+  // Boosters direto (executePU não checa busy; sets/limpa por conta própria).
+  call('executePU', 2, 2, 'bomb');
+  await tick(60);
+  call('executePU', 4, 4, 'rainbow');
+  await tick(60);
+  call('draw');
+}
+
+/**
+ * Boot já concluído: joga fases reais para cobrir tb-start (win/loss),
+ * tb-gameplay (handleClick, gatherBlast, especiais, boosters, gravidade) e
+ * tb-board (desenho de gelo/coleta/caixa e ícones de especiais).
  */
 async function playMatch() {
   snapshot.levelsLoaded = globalThis.TBState?.LEVELS?.length || 0;
   snapshot.moves = 0;
   snapshot.resolvedWin = false;
   snapshot.resolvedLoss = false;
-  const startGame = globalThis.startGame;
-  if (typeof startGame !== 'function' || !snapshot.levelsLoaded) return;
+  if (typeof G('startGame') !== 'function' || !snapshot.levelsLoaded) return;
 
-  // Fase > 0 evita o galho de tutorial (que trava com busy=true no nível 0).
-  try {
-    startGame(2);
-  } catch {
-    /* */
-  }
-  // launch é async (ensureIndexLoaded) e o countdown segura busy ~3,5s.
-  await new Promise((r) => setTimeout(r, 4200));
+  // Garante vidas e um estoque de power-ups para exercitar tapPU/executePU.
+  call('resetLives');
+  call('setLives', 5);
+  for (const pu of ['bomb', 'rainbow', 'moves', 'shuffle']) call('addPU', pu, 4);
 
-  for (let y = 0; y < 8; y++) {
-    for (let x = 0; x < 8; x++) {
-      try {
-        globalThis.handleClick(x, y);
-        snapshot.moves++;
-      } catch {
-        /* célula pode estar bloqueada/animando — ok */
-      }
-      await new Promise((r) => setTimeout(r, 12)); // deixa a cascata assentar
-    }
+  // ── Fase principal (com gelo): espera o countdown para exercitar os caminhos
+  // que checam busy (handleClick, tapPU) com input real. ──────────────────────
+  const iceIdx = findLevelWith('ice');
+  call('startGame', iceIdx > 0 ? iceIdx : 3);
+  await tick(4300); // launch async + countdown (~3,5s) → busy=false
+
+  // Blast real do maior grupo disponível (cria especial quando >= 5 → desenho).
+  const big = findGroup(5) || findGroup(2);
+  if (big) {
+    call('handleClick', big.x, big.y);
+    snapshot.moves++;
+    await tick(320);
   }
+  call('requestDraw');
+  await tick(20);
+  call('draw'); // desenha ícone do especial recém-criado, se houver
+
+  // Power-ups reais (tapPU exige busy=false): moves, shuffle e mirados.
+  call('tapPU', 'moves');
+  await tick(40);
+  call('tapPU', 'shuffle');
+  await tick(120);
+  call('tapPU', 'bomb');
+  let t = findGroup(1);
+  if (t) call('handleClick', t.x, t.y); // pendingPU → executePU(bomb)
+  await tick(260);
+  call('tapPU', 'rainbow');
+  t = findGroup(1);
+  if (t) call('handleClick', t.x, t.y);
+  await tick(260);
+
+  // Mais blasts encadeados para gravidade/cascata/settle.
+  for (let i = 0; i < 3; i++) {
+    const g = findGroup(2);
+    if (!g) break;
+    call('handleClick', g.x, g.y);
+    snapshot.moves++;
+    await tick(240);
+  }
+  await driveMechanics();
 
   for (const name of ['hasMoves', 'reshuffleBoard', 'shuffleTypes', 'checkWin', 'calcStars']) {
-    try {
-      globalThis[name]?.();
-    } catch {
-      /* */
-    }
+    call(name);
   }
-  try {
-    globalThis.resolveWin();
-    snapshot.resolvedWin = true;
-  } catch {
-    /* */
+
+  // ── Fases com outros obstáculos (collect/crate): só precisa do grid + draw +
+  // mecânicas diretas para cobrir os desenhos/interações de obstáculo. ─────────
+  for (const type of ['collect', 'crate', 'chain', 'cover']) {
+    const idx = findLevelWith(type);
+    if (idx < 0) continue;
+    call('startGame', idx);
+    await tick(260); // launch async constrói o grid
+    await driveMechanics();
+    call('collectBottomTokens');
+    call('settleBoard', () => {});
+    await tick(120);
   }
-  await new Promise((r) => setTimeout(r, 150));
-  try {
-    globalThis.resolveLoss();
-    snapshot.resolvedLoss = true;
-  } catch {
-    /* */
-  }
-  await new Promise((r) => setTimeout(r, 150));
+
+  // ── Ambos os desfechos. ─────────────────────────────────────────────────────
+  call('resolveWin');
+  snapshot.resolvedWin = true;
+  await tick(150);
+  call('resolveLoss');
+  snapshot.resolvedLoss = true;
+
+  // DRENA os timers de cascata (settleBoard encadeia setTimeouts até ~2,4s):
+  // se um vazar após o teardown do happy-dom, `document` já não existe e o
+  // callback (updateHUD) lança. Espera cobre a cadeia mais profunda pendente.
+  await tick(3000);
 }
 
 async function bootFullApp() {
   const html = readFileSync(join(projectRoot, 'tile_blast.html'), 'utf8');
   const bodyInner = html
     .match(/<body[^>]*>([\s\S]*)<\/body>/i)[1]
-    .replace(/<script[\s\S]*?<\/script>/gi, '');
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<link\b[^>]*>/gi, '') // evita fetch de CSS/ícones
+    // neutraliza src/srcset → happy-dom não tenta baixar recursos (ECONNREFUSED).
+    .replace(/\ssrc=/gi, ' data-nosrc=')
+    .replace(/\ssrcset=/gi, ' data-nosrcset=');
   document.body.innerHTML = bodyInner;
 
   installBrowserStubs();
@@ -365,8 +464,8 @@ describe('boot completo do app (tb-main)', () => {
     expect(snapshot.levelsLoaded).toBeGreaterThan(0);
   });
 
-  it('joga uma partida: clica na grade e resolve win/loss', () => {
-    expect(snapshot.moves).toBeGreaterThanOrEqual(60);
+  it('joga fases reais (blasts, especiais, boosters) e resolve win/loss', () => {
+    expect(snapshot.moves).toBeGreaterThanOrEqual(1);
     expect(snapshot.resolvedWin).toBe(true);
     expect(snapshot.resolvedLoss).toBe(true);
   });

@@ -17,14 +17,15 @@ export default defineConfig({
       exclude: ['www/**', 'tests/**', 'scripts/**', 'android/**', 'functions/**', 'coverage/**'],
       // Floor com ~3pp de folga sobre o valor atual. O teste de boot completo
       // (tests/integration/boot-main.test.js) monta o app real, carrega os
-      // níveis de data/ e JOGA uma partida (clica a grade, resolve win/loss) —
-      // cobrindo tb-main, tb-start, tb-gameplay, tb-board e tb-grid.
-      // Atual: ~81% lines / 66% funcs / 70% branches.
+      // níveis de data/ e JOGA fases: blasts reais, especiais (bomb/rocket/
+      // rainbow), boosters e fases com obstáculos (gelo/coleta/caixa) — cobrindo
+      // tb-main, tb-start, tb-gameplay (~87%), tb-board (~83%) e tb-grid.
+      // Atual: ~84% lines / 69% funcs / 71% branches.
       thresholds: {
-        lines: 77,
-        statements: 77,
-        functions: 62,
-        branches: 66,
+        lines: 80,
+        statements: 80,
+        functions: 65,
+        branches: 68,
       },
     },
   },
