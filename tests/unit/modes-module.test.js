@@ -124,4 +124,64 @@ describe('tb-modes', () => {
     const html = cfg.showGlobalModal.mock.calls[0][0];
     expect(html).toMatch(/time_challenge|infinite|daily/i);
   });
+
+  it('startDailyPuzzleGame prepara a sessão diária e semeia o grid', () => {
+    const cfg = makeCfg();
+    Modes.init(cfg);
+    Modes.startDailyPuzzleGame();
+    expect(globalThis.TBState.isDailyPuzzleMode).toBe(true);
+    expect(globalThis.TBState.isInfiniteMode).toBe(false);
+    expect(cfg._dailyLv).toBeTruthy();
+    expect(cfg.movesLeft).toBe(18);
+    expect(cfg.setGameSeed).toHaveBeenCalled();
+    expect(cfg.buildGrid).toHaveBeenCalled();
+    expect(cfg.showCountdown).toHaveBeenCalled();
+  });
+
+  it('resolveDailyPuzzleEnd grava o melhor score do dia e progride a missão', () => {
+    const state = {};
+    const cfg = makeCfg({ ld: () => state, sv: vi.fn(), score: 500 });
+    Modes.init(cfg);
+    Modes.resolveDailyPuzzleEnd();
+    const day = Math.floor(Date.now() / 86400000);
+    expect(state.dailyPuzzle[day]).toBe(500);
+    expect(cfg.over).toBe(true);
+    expect(cfg.updateMissionProgress).toHaveBeenCalledWith('daily_puzzle', 1);
+    // Sem TBGlobal montado, cai no fallback goToMap.
+    expect(cfg.goToMap).toHaveBeenCalled();
+  });
+
+  it('resolveDailyPuzzleEnd não rebaixa um score melhor já registrado', () => {
+    const day = Math.floor(Date.now() / 86400000);
+    const state = { dailyPuzzle: { [day]: 900 } };
+    const cfg = makeCfg({ ld: () => state, sv: vi.fn(), score: 300 });
+    Modes.init(cfg);
+    Modes.resolveDailyPuzzleEnd();
+    expect(state.dailyPuzzle[day]).toBe(900);
+  });
+
+  it('_timeChallengeEnd aplica o multiplicador e grava o recorde', () => {
+    const state = {};
+    const cfg = makeCfg({
+      ld: () => state,
+      sv: vi.fn(),
+      score: 100,
+      _timeLv: { scoreMultiplier: 2 },
+    });
+    Modes.init(cfg);
+    Modes._timeChallengeEnd();
+    expect(cfg.over).toBe(true);
+    expect(state.modes.timeChallenge.best).toBe(200);
+    expect(cfg.showGlobalModal).toHaveBeenCalled();
+  });
+
+  it('_infGameOver encerra a sessão e mostra o resumo', () => {
+    const cfg = makeCfg({ ld: () => ({}), sv: vi.fn(), score: 1500 });
+    Modes.init(cfg);
+    Modes.startInfiniteMode();
+    Modes._infGameOver();
+    expect(cfg.over).toBe(true);
+    expect(cfg.busy).toBe(true);
+    expect(cfg.showGlobalModal).toHaveBeenCalled();
+  });
 });

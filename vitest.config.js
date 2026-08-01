@@ -16,11 +16,13 @@ export default defineConfig({
       include: ['tb-*.js'],
       exclude: ['www/**', 'tests/**', 'scripts/**', 'android/**', 'functions/**', 'coverage/**'],
       // Floor com ~3pp de folga sobre o valor atual: pega regressão real sem
-      // quebrar por ruído. Suba junto com a cobertura (~66% lines / ~61% funcs).
+      // quebrar por ruído. Suba junto com a cobertura (~67% lines / ~63% funcs).
+      // Meta escalonada: 75% linhas — maiores alavancas ainda descobertas são
+      // tb-main.js (0%, boot), tb-board.js e tb-gameplay.js.
       thresholds: {
-        lines: 62,
-        statements: 62,
-        functions: 57,
+        lines: 64,
+        statements: 64,
+        functions: 60,
         branches: 60,
       },
     },
