@@ -15,18 +15,16 @@ export default defineConfig({
       // tests/helpers/load-module.js (filename file:// absoluto — ver helper).
       include: ['tb-*.js'],
       exclude: ['www/**', 'tests/**', 'scripts/**', 'android/**', 'functions/**', 'coverage/**'],
-      // Floor com ~3pp de folga sobre o valor atual: pega regressão real sem
-      // quebrar por ruído. Meta de 75% linhas ATINGIDA (~76%) após o teste de
-      // boot completo (tests/integration/boot-main.test.js) exercitar tb-main.
-      // functions caiu de ~63% para ~54% porque o boot passou a CONTAR as ~130
-      // funções de tb-main (antes o arquivo nunca era carregado) — medição do
-      // app inteiro, não regressão. Próximo alvo: acionar gameplay para cobrir
-      // os handlers win/loss/data-action de tb-main.
+      // Floor com ~3pp de folga sobre o valor atual. O teste de boot completo
+      // (tests/integration/boot-main.test.js) monta o app real, carrega os
+      // níveis de data/ e JOGA uma partida (clica a grade, resolve win/loss) —
+      // cobrindo tb-main, tb-start, tb-gameplay, tb-board e tb-grid.
+      // Atual: ~81% lines / 66% funcs / 70% branches.
       thresholds: {
-        lines: 73,
-        statements: 73,
-        functions: 50,
-        branches: 62,
+        lines: 77,
+        statements: 77,
+        functions: 62,
+        branches: 66,
       },
     },
   },

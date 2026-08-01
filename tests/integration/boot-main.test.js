@@ -88,6 +88,36 @@ function audioNodeProxy() {
   });
 }
 
+/** Contexto 2D no-op: métodos desconhecidos viram funções vazias; setTransform e
+ * ellipse existem (a guarda do tb-board exige) e medidas devolvem valores seguros. */
+function canvas2dProxy() {
+  const grad = { addColorStop() {} };
+  return new Proxy(
+    { __canvas: null },
+    {
+      get(t, p) {
+        if (p === 'canvas') return t.__canvas;
+        if (p === 'measureText') return () => ({ width: 0 });
+        if (p === 'getImageData') return () => ({ data: new Uint8ClampedArray(4) });
+        if (
+          p === 'createLinearGradient' ||
+          p === 'createRadialGradient' ||
+          p === 'createConicGradient' ||
+          p === 'createPattern'
+        ) {
+          return () => grad;
+        }
+        if (p in t) return t[p];
+        return () => {};
+      },
+      set(t, p, v) {
+        t[p] = v;
+        return true;
+      },
+    }
+  );
+}
+
 function installBrowserStubs() {
   const win = globalThis.window || globalThis;
   // Web Audio ausente em happy-dom → stub no-op para tb-audio/tb-music.
@@ -97,15 +127,65 @@ function installBrowserStubs() {
   win.AudioContext = AC;
   win.webkitAudioContext = AC;
   globalThis.AudioContext = AC;
-  // fetch → 404 resolvido (sem sockets/ECONNREFUSED); callers tratam !ok.
-  const stubFetch = () =>
-    Promise.resolve({
-      ok: false,
-      status: 404,
-      json: () => Promise.resolve({}),
-      text: () => Promise.resolve(''),
-      headers: { get: () => null },
-    });
+
+  // Canvas 2D ausente/incompleto em happy-dom → contexto no-op para tb-board
+  // (draw usa clearRect/setTransform/… e lançaria em ctx nulo dentro do rAF).
+  const Canvas = globalThis.HTMLCanvasElement || win.HTMLCanvasElement;
+  if (Canvas) {
+    Canvas.prototype.getContext = function getContext(type) {
+      if (type !== '2d') return null;
+      const ctx = canvas2dProxy();
+      ctx.__canvas = this;
+      return ctx;
+    };
+  }
+
+  // Element.animate ausente em happy-dom → stub que dispara onfinish (deixa a
+  // finalização de vitória/animações sequenciadas prosseguir e cobrir os callbacks).
+  const El = globalThis.Element || win.Element;
+  if (El && !El.prototype.animate) {
+    El.prototype.animate = function animate() {
+      const a = {
+        cancel() {},
+        finish() {},
+        play() {},
+        pause() {},
+        addEventListener() {},
+        removeEventListener() {},
+      };
+      Object.defineProperty(a, 'onfinish', {
+        configurable: true,
+        get() {
+          return null;
+        },
+        set(fn) {
+          if (typeof fn === 'function') setTimeout(fn, 0);
+        },
+      });
+      return a;
+    };
+  }
+  // fetch → serve os arquivos reais de data/ do disco (sem sockets), para o
+  // conteúdo/níveis carregarem e o boot poder iniciar uma partida real.
+  const resp = (ok, status, text) => ({
+    ok,
+    status,
+    json: () => (ok ? Promise.resolve(JSON.parse(text)) : Promise.reject(new Error('404'))),
+    text: () => Promise.resolve(ok ? text : ''),
+    headers: { get: () => null },
+  });
+  const stubFetch = (url) => {
+    const m = String(url).match(/data\/(.+)$/);
+    if (m) {
+      try {
+        const file = join(projectRoot, 'data', m[1].split(/[?#]/)[0]);
+        return Promise.resolve(resp(true, 200, readFileSync(file, 'utf8')));
+      } catch {
+        /* arquivo inexistente → 404 abaixo */
+      }
+    }
+    return Promise.resolve(resp(false, 404, ''));
+  };
   globalThis.fetch = stubFetch;
   win.fetch = stubFetch;
   if (!globalThis.matchMedia) {
@@ -118,6 +198,63 @@ function installBrowserStubs() {
     });
   }
   if (win && !win.matchMedia) win.matchMedia = globalThis.matchMedia;
+}
+
+/**
+ * Inicia uma fase real e a joga: clica na grade 8x8 (dispara grupos, cascatas,
+ * gravidade, especiais) e força ambos os desfechos. Cobre tb-start (startGame,
+ * win/loss), tb-gameplay (handleClick, gatherBlast, gravity, settle) e tb-board.
+ */
+async function playMatch() {
+  snapshot.levelsLoaded = globalThis.TBState?.LEVELS?.length || 0;
+  snapshot.moves = 0;
+  snapshot.resolvedWin = false;
+  snapshot.resolvedLoss = false;
+  const startGame = globalThis.startGame;
+  if (typeof startGame !== 'function' || !snapshot.levelsLoaded) return;
+
+  // Fase > 0 evita o galho de tutorial (que trava com busy=true no nível 0).
+  try {
+    startGame(2);
+  } catch {
+    /* */
+  }
+  // launch é async (ensureIndexLoaded) e o countdown segura busy ~3,5s.
+  await new Promise((r) => setTimeout(r, 4200));
+
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) {
+      try {
+        globalThis.handleClick(x, y);
+        snapshot.moves++;
+      } catch {
+        /* célula pode estar bloqueada/animando — ok */
+      }
+      await new Promise((r) => setTimeout(r, 12)); // deixa a cascata assentar
+    }
+  }
+
+  for (const name of ['hasMoves', 'reshuffleBoard', 'shuffleTypes', 'checkWin', 'calcStars']) {
+    try {
+      globalThis[name]?.();
+    } catch {
+      /* */
+    }
+  }
+  try {
+    globalThis.resolveWin();
+    snapshot.resolvedWin = true;
+  } catch {
+    /* */
+  }
+  await new Promise((r) => setTimeout(r, 150));
+  try {
+    globalThis.resolveLoss();
+    snapshot.resolvedLoss = true;
+  } catch {
+    /* */
+  }
+  await new Promise((r) => setTimeout(r, 150));
 }
 
 async function bootFullApp() {
@@ -175,6 +312,8 @@ async function bootFullApp() {
     }
   }
 
+  await playMatch();
+
   // Snapshot ANTES do beforeEach global (tests/setup.js) reescrever os globais.
   snapshot.appVersion = globalThis.APP_VERSION;
   snapshot.hasBoard = !!globalThis.TBBoard;
@@ -220,5 +359,15 @@ describe('boot completo do app (tb-main)', () => {
 
   it('exercita os pontos de entrada de UI sem derrubar o app', () => {
     expect(snapshot.exercised).toBeGreaterThanOrEqual(8);
+  });
+
+  it('carrega os níveis reais de data/ no boot', () => {
+    expect(snapshot.levelsLoaded).toBeGreaterThan(0);
+  });
+
+  it('joga uma partida: clica na grade e resolve win/loss', () => {
+    expect(snapshot.moves).toBeGreaterThanOrEqual(60);
+    expect(snapshot.resolvedWin).toBe(true);
+    expect(snapshot.resolvedLoss).toBe(true);
   });
 });
