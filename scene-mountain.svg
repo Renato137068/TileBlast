@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 340" preserveAspectRatio="xMidYMax slice" role="img" aria-hidden="true">
+  <!-- Montanha gelada: picos nevados + flocos de neve. -->
+  <g fill="#9fb6e0" opacity=".24">
+    <path d="M-20 340 L80 170 L180 340Z"/>
+    <path d="M220 340 L320 155 L420 340Z"/>
+    <path d="M120 340 L210 200 L300 340Z"/>
+  </g>
+  <!-- neve nos topos -->
+  <g fill="#eaf3ff" opacity=".5">
+    <path d="M55 210 L80 170 L105 210 L88 200 L80 208 L72 200Z"/>
+    <path d="M296 196 L320 155 L344 196 L328 186 L320 194 L312 186Z"/>
+  </g>
+  <!-- flocos -->
+  <g fill="#eaf3ff">
+    <circle cx="150" cy="110" r="2.6" opacity=".6"/>
+    <circle cx="250" cy="90" r="2.2" opacity=".5"/>
+    <circle cx="45" cy="130" r="2.4" opacity=".55"/>
+    <circle cx="355" cy="120" r="2.6" opacity=".55"/>
+  </g>
+</svg>

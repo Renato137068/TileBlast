@@ -53,9 +53,12 @@ body {
 #screen-game.active {
   position: relative;
   overflow: hidden;
-  /* Atmosfera temática: glow do mundo em cima e embaixo (emoldura o tabuleiro
-     com luz ambiente) + vinheta para profundidade — tira o "vazio preto". */
+  /* Atmosfera temática: cena vetorial do mundo (--play-scene, ancorada no
+     rodapé) + glow do mundo em cima/embaixo + vinheta — tira o "vazio preto"
+     e dá LUGAR (jardim, oceano, ...) em vez de só cor. */
+  --play-scene: none;
   background:
+    var(--play-scene) center bottom / 100% auto no-repeat,
     radial-gradient(
       ellipse 90% 46% at 50% 96%,
       rgba(var(--play-world-rgb, 246, 178, 62), 0.16),
@@ -68,6 +71,28 @@ body {
     ),
     radial-gradient(135% 115% at 50% 42%, transparent 52%, rgba(0, 0, 0, 0.36)),
     radial-gradient(120% 140% at 50% -10%, #232740, var(--bg));
+}
+/* Cena pintada (vetorial) por mundo — ver scene-*.svg. */
+#screen-game.active.world-jardim {
+  --play-scene: url('../scene-garden.svg');
+}
+#screen-game.active.world-floresta {
+  --play-scene: url('../scene-forest.svg');
+}
+#screen-game.active.world-montanha {
+  --play-scene: url('../scene-mountain.svg');
+}
+#screen-game.active.world-oceano {
+  --play-scene: url('../scene-ocean.svg');
+}
+#screen-game.active.world-inferno {
+  --play-scene: url('../scene-inferno.svg');
+}
+#screen-game.active.world-cristal {
+  --play-scene: url('../scene-crystal.svg');
+}
+#screen-game.active.world-lendario {
+  --play-scene: url('../scene-legendary.svg');
 }
 .screen.screen-out {
   animation: screenOut 0.2s ease forwards;

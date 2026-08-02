@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 340" preserveAspectRatio="xMidYMax slice" role="img" aria-hidden="true">
+  <!-- Caverna de cristal: shards nas quinas + brilhos. -->
+  <g fill="#8fe6ff" opacity=".24">
+    <path d="M10 340 L40 200 L70 260 L58 340Z"/>
+    <path d="M50 340 L86 230 L110 300 L96 340Z"/>
+    <path d="M390 340 L360 195 L330 265 L344 340Z"/>
+    <path d="M340 340 L306 235 L284 305 L300 340Z"/>
+  </g>
+  <g fill="#d7f6ff" opacity=".4">
+    <path d="M40 200 L52 250 L40 240 L30 250Z"/>
+    <path d="M360 195 L372 245 L360 235 L348 245Z"/>
+  </g>
+  <!-- brilhos -->
+  <g fill="#eaffff">
+    <path d="M150 120 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3Z" opacity=".55"/>
+    <path d="M255 95 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4Z" opacity=".45"/>
+  </g>
+</svg>

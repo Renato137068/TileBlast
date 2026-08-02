@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 340" preserveAspectRatio="xMidYMax slice" role="img" aria-hidden="true">
+  <!-- Reino lendário: raios dourados + estrelas + coroa. -->
+  <defs>
+    <radialGradient id="lRay" cx="50%" cy="100%" r="80%">
+      <stop offset="0" stop-color="#ffe27a" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#ffe27a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="120" width="400" height="220" fill="url(#lRay)"/>
+  <!-- coroa (quinas inferiores, discreta) -->
+  <g fill="#ffd36a" opacity=".3">
+    <path d="M20 340 L28 300 L44 322 L60 296 L74 322 L88 300 L96 340Z"/>
+    <path d="M304 340 L312 300 L328 322 L344 296 L358 322 L372 300 L380 340Z"/>
+  </g>
+  <!-- estrelas -->
+  <g fill="#fff3c4">
+    <path d="M150 110 l3 9 9 3 -9 3 -3 9 -3 -9 -9 -3 9 -3Z" opacity=".6"/>
+    <path d="M255 85 l2.6 7 7 2.6 -7 2.6 -2.6 7 -2.6 -7 -7 -2.6 7 -2.6Z" opacity=".5"/>
+    <path d="M60 100 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2Z" opacity=".45"/>
+    <path d="M345 105 l2.4 7 7 2.4 -7 2.4 -2.4 7 -2.4 -7 -7 -2.4 7 -2.4Z" opacity=".5"/>
+  </g>
+</svg>

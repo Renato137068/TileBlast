@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 340" preserveAspectRatio="xMidYMax slice" role="img" aria-hidden="true">
+  <!-- Cena de jardim: canteiro/folhagem no rodapé + flores + vinhas suaves.
+       Tons verdes translúcidos para atmosfera, não competir com o tabuleiro. -->
+  <defs>
+    <linearGradient id="gGrass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5fe08a" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#2f9d55" stop-opacity=".30"/>
+    </linearGradient>
+  </defs>
+  <!-- moitas arredondadas -->
+  <g fill="url(#gGrass)">
+    <ellipse cx="30" cy="340" rx="120" ry="90"/>
+    <ellipse cx="370" cy="340" rx="120" ry="90"/>
+    <ellipse cx="200" cy="352" rx="180" ry="70"/>
+    <ellipse cx="120" cy="345" rx="80" ry="60"/>
+    <ellipse cx="290" cy="345" rx="80" ry="60"/>
+  </g>
+  <!-- vinha lateral esquerda -->
+  <g fill="#4ecb71" opacity=".16">
+    <path d="M8 120 q22 26 4 56 q26 -12 40 8 q-10 -26 8 -46 q-28 10 -52 -18Z"/>
+    <ellipse cx="18" cy="185" rx="16" ry="10" transform="rotate(-30 18 185)"/>
+    <ellipse cx="40" cy="220" rx="14" ry="9" transform="rotate(20 40 220)"/>
+  </g>
+  <!-- folhas flutuando -->
+  <g fill="#6fe0a0" opacity=".13">
+    <ellipse cx="360" cy="150" rx="20" ry="11" transform="rotate(35 360 150)"/>
+    <ellipse cx="330" cy="235" rx="16" ry="9" transform="rotate(-15 330 235)"/>
+  </g>
+  <!-- flores -->
+  <g opacity=".5">
+    <g transform="translate(70 300)">
+      <circle r="7" fill="#ff9ec4"/><circle r="7" fill="#ff9ec4" transform="translate(11 6)"/>
+      <circle r="7" fill="#ff9ec4" transform="translate(-11 6)"/><circle r="7" fill="#ff9ec4" transform="translate(6 -10)"/>
+      <circle r="7" fill="#ff9ec4" transform="translate(-6 -10)"/><circle r="5" fill="#ffe27a" transform="translate(0 -2)"/>
+    </g>
+    <g transform="translate(325 305) scale(.85)">
+      <circle r="7" fill="#ffd36a"/><circle r="7" fill="#ffd36a" transform="translate(11 6)"/>
+      <circle r="7" fill="#ffd36a" transform="translate(-11 6)"/><circle r="7" fill="#ffd36a" transform="translate(6 -10)"/>
+      <circle r="7" fill="#ffd36a" transform="translate(-6 -10)"/><circle r="5" fill="#fff3c4" transform="translate(0 -2)"/>
+    </g>
+  </g>
+</svg>
