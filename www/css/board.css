@@ -155,6 +155,11 @@
   z-index: 1;
   line-height: 1;
 }
+/* Vazio: badge verde com "+" (adquirir) em vez do "0" de placeholder. */
+.pu-cnt.pu-cnt--empty {
+  background: linear-gradient(180deg, #6fe08a, #35b45f);
+  color: #0c2417;
+}
 .pu-btn:active:not(:disabled) {
   transform: scale(0.93);
 }

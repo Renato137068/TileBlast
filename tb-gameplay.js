@@ -737,7 +737,12 @@
     C.PU_DEFS.forEach(({ id }) => {
       const c = C.getPUCount(id);
       const cnt = document.getElementById(`puc-${id}`);
-      if (cnt) cnt.textContent = String(c);
+      // "+" quando vazio (convida a adquirir, estilo Toy Blast) em vez de "0"
+      // de placeholder; o badge também muda de cor via classe pu-cnt--empty.
+      if (cnt) {
+        cnt.textContent = c > 0 ? String(c) : '+';
+        cnt.classList.toggle('pu-cnt--empty', c <= 0);
+      }
       const btn = document.getElementById(`pub-${id}`);
       if (btn) {
         /** @type {any} */ (btn).disabled = c <= 0;
