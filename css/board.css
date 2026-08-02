@@ -185,25 +185,45 @@
     opacity: 1;
   }
 }
-/* BOARD */
+/* BOARD — moldura tipo "cabinet": bezel 3D espesso que emoldura o palco.
+   O ::before desenha um recuo interno escuro (o tabuleiro "afunda" na moldura). */
 #board-w {
   position: relative;
   max-width: 100%;
-  padding: 5px;
+  padding: 11px;
   background:
-    linear-gradient(165deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)),
-    linear-gradient(180deg, #2a3148, #161a28);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.02) 22%),
+    linear-gradient(180deg, #3a4362 0%, #262d44 45%, #171c2c 100%);
   box-shadow:
     var(--shadow),
-    0 0 32px rgba(var(--play-world-rgb, 246, 178, 62), 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -2px 0 rgba(0, 0, 0, 0.35);
-  border-radius: 18px;
-  border: 1px solid rgba(var(--play-world-rgb, 246, 178, 62), 0.28);
+    0 8px 22px rgba(0, 0, 0, 0.45),
+    0 0 34px rgba(var(--play-world-rgb, 246, 178, 62), 0.18),
+    inset 0 2px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(var(--play-world-rgb, 246, 178, 62), 0.3);
+  border-radius: 22px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
   margin: 0 auto;
   transition:
     box-shadow 0.35s,
     border-color 0.35s;
+}
+/* Recuo interno: o tabuleiro sentado dentro da moldura, com sombra de borda. */
+#board-w::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 14px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 0;
+}
+#board-w > canvas,
+#board-w > #board {
+  position: relative;
+  z-index: 1;
 }
 #board-w.board-danger {
   border-color: rgba(255, 90, 90, 0.5);

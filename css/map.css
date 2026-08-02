@@ -292,13 +292,17 @@
 }
 .map-coins-pill {
   font-size: 13.5px;
-  font-weight: 800;
-  color: #ffe9a8;
-  background: linear-gradient(180deg, rgba(246, 178, 62, 0.26), rgba(246, 178, 62, 0.12));
-  border: 1px solid rgba(246, 178, 62, 0.4);
+  font-weight: 900;
+  color: #4a2e05;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, #ffe98a 0%, #ffcf4d 42%, #f0a92e 72%, #d98a1e 100%);
+  border: 1px solid #b9781a;
   padding: 5px 12px;
   border-radius: 999px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 2px rgba(120, 70, 0, 0.35),
+    0 2px 7px rgba(180, 120, 0, 0.4);
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;

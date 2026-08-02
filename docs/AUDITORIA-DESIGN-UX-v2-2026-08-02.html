@@ -1,0 +1,179 @@
+<title>Tile Blast — Auditoria de Arte & UX · v2 (comparativo v1→v2)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#f6f7fb;--panel:#fff;--ink:#151821;--dim:#5b6472;--line:#e6e9f0;
+    --accent:#e8617a;--good:#1f9d55;--warn:#c98a00;--bad:#d64545;--gold:#e8a71e;--up:#1f9d55;
+    --shadow:0 1px 3px rgba(20,30,60,.08),0 10px 30px rgba(20,30,60,.07);--r:14px;}
+  @media (prefers-color-scheme:dark){:root{--bg:#0d0f16;--panel:#151a23;--ink:#eaeef6;--dim:#98a3b5;--line:#232b38;
+    --accent:#ff7d97;--good:#3fce7f;--warn:#e6b23c;--bad:#ff6b6b;--gold:#f6c945;--up:#3fce7f;--shadow:0 1px 3px rgba(0,0,0,.45),0 12px 34px rgba(0,0,0,.4);}}
+  :root[data-theme="dark"]{--bg:#0d0f16;--panel:#151a23;--ink:#eaeef6;--dim:#98a3b5;--line:#232b38;--accent:#ff7d97;--good:#3fce7f;--warn:#e6b23c;--bad:#ff6b6b;--gold:#f6c945;--up:#3fce7f;--shadow:0 1px 3px rgba(0,0,0,.45),0 12px 34px rgba(0,0,0,.4);}
+  :root[data-theme="light"]{--bg:#f6f7fb;--panel:#fff;--ink:#151821;--dim:#5b6472;--line:#e6e9f0;--accent:#e8617a;--good:#1f9d55;--warn:#c98a00;--bad:#d64545;--gold:#e8a71e;--up:#1f9d55;--shadow:0 1px 3px rgba(20,30,60,.08),0 10px 30px rgba(20,30,60,.07);}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;padding:0 0 90px}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 20px}
+  header{padding:46px 0 10px}
+  .kicker{color:var(--accent);font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+  h1{font-size:33px;line-height:1.13;margin:8px 0 6px;letter-spacing:-.02em}
+  .sub{color:var(--dim);max-width:66ch}
+  .verdict{display:flex;gap:24px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:24px;margin:22px 0}
+  .prog{flex:1;min-width:280px}
+  .prog h2{margin:0 0 12px;font-size:20px}
+  .gaugerow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .chip{display:inline-flex;flex-direction:column;align-items:center;gap:2px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 16px;min-width:78px}
+  .chip b{font-size:26px;font-weight:800;letter-spacing:-.02em}
+  .chip span{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+  .arrow{font-size:22px;color:var(--up);font-weight:800}
+  .deltapill{background:color-mix(in srgb,var(--up) 16%,transparent);color:var(--up);font-weight:800;font-size:13px;padding:5px 12px;border-radius:999px}
+  .tagline{margin:12px 0 0;color:var(--dim)}
+  .tagline b{color:var(--ink)}
+  h2.sec{font-size:12.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin:44px 0 14px;font-weight:800;border-top:1px solid var(--line);padding-top:22px}
+  .lead{font-size:16px;margin:0 0 16px}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);font-size:13.5px;display:block;overflow-x:auto}
+  th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:middle;min-width:70px}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--dim)}
+  tr:last-child td{border-bottom:0}
+  td.num{font-weight:800;font-variant-numeric:tabular-nums;text-align:center}
+  .d-up{color:var(--up);font-weight:800}.d-same{color:var(--dim)}
+  .minibar{height:7px;border-radius:5px;background:var(--line);overflow:hidden;min-width:90px}
+  .minibar i{display:block;height:100%;border-radius:5px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 20px;margin:12px 0}
+  .card h3{margin:0 0 8px;font-size:15.5px}
+  .card ul{margin:6px 0 0;padding-left:18px}.card li{margin:5px 0}
+  .evo{color:var(--up);font-weight:700}
+  .gap{color:var(--warn);font-weight:700}
+  .prio{border-left:4px solid var(--line);padding:13px 16px;margin:10px 0;background:var(--panel);border-radius:0 12px 12px 0;box-shadow:var(--shadow)}
+  .prio.vh{border-left-color:var(--bad)}.prio.h{border-left-color:var(--warn)}.prio.m{border-left-color:var(--accent)}
+  .prio b{font-size:15px}.prio .why{color:var(--dim);font-size:13.5px;margin-top:4px}
+  .plabel{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+  .vh .plabel{color:var(--bad)}.h .plabel{color:var(--warn)}.m .plabel{color:var(--accent)}
+  .done{background:color-mix(in srgb,var(--up) 9%,transparent);border:1px solid color-mix(in srgb,var(--up) 30%,transparent);border-radius:12px;padding:14px 16px;margin:16px 0}
+  code{background:color-mix(in srgb,var(--accent) 14%,transparent);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+  .st{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px}
+  .st-done{background:color-mix(in srgb,var(--up) 18%,transparent);color:var(--up)}
+  .st-part{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+  .st-wait{background:color-mix(in srgb,var(--dim) 18%,transparent);color:var(--dim)}
+  footer{color:var(--dim);font-size:12.5px;margin-top:44px;border-top:1px solid var(--line);padding-top:18px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="kicker">Auditoria de Direção de Arte · Rodada 2 · v1 → v2</div>
+  <h1>Tile Blast — o que mudou desde a v1</h1>
+  <p class="sub">Reauditoria no mesmo padrão AAA (Royal Match, Toy Blast, Toon Blast, Candy Crush), comparando a v1 (baseline de 2026-08-02) com a v2 atual — após implementar 9 dos 10 itens da checklist. Baseada nos screenshots reais do build.</p>
+</header>
+
+<section class="verdict">
+  <div class="prog">
+    <h2>Nota geral saltou</h2>
+    <div class="gaugerow">
+      <div class="chip"><b style="color:var(--warn)">5.8</b><span>v1</span></div>
+      <div class="arrow">→</div>
+      <div class="chip"><b style="color:var(--up)">7.0</b><span>v2</span></div>
+      <div class="deltapill">▲ +1.2</div>
+    </div>
+    <p class="tagline">Veredito mudou de <b>"Indie competente"</b> para <b>"Indie forte, à beira do profissional"</b>. Os dois maiores sinais de amadorismo da v1 — <b>peças-símbolo</b> e <b>ícones emoji</b> — <b>foram eliminados</b>. O que ainda segura abaixo do AAA agora é conteúdo de arte (cenas pintadas por mundo, arte de personagem refinada) e o <b>juice, ainda não avaliado (falta vídeo)</b>.</p>
+  </div>
+</section>
+
+<div class="done">
+  ✅ <b>Feito desde a v1 (9/10):</b> #1 rostos nas peças · #2 ícones de booster custom (SVG) · #3 atmosfera temática no fundo · #4 HUD com dimensão · #5 objetivo como token · #6 mascote com expressões reais · #7 paleta warm-purple premium · #9 badges "+" · #10 cards de mundo compactos. &nbsp; ⏳ <b>Pendente:</b> #8 juice — <b>precisa de vídeo</b>.
+</div>
+
+<h2 class="sec">Notas — v1 → v2 (Δ)</h2>
+<table id="scores">
+  <tr><th>Item</th><th>v1</th><th>v2</th><th>Δ</th><th style="min-width:110px">v2</th></tr>
+</table>
+
+<h2 class="sec">O que evoluiu, por seção</h2>
+<div class="card">
+  <h3>Peças & tabuleiro — o maior salto</h3>
+  <ul>
+    <li><span class="evo">Evoluiu:</span> as peças deixaram de ser <b>símbolos geométricos</b> e ganharam <b>rostos fofos</b> (olhos com brilho) — viraram personagens, estilo Toon Blast. Isto sozinho resolveu a crítica nº1 da v1 (identidade de peça). O material (gloss/bevel) já era bom e foi preservado.</li>
+    <li><span class="gap">Ainda falta:</span> variação de expressão (todas têm a mesma cara neutra) e reação ao blast; a <b>moldura</b> do tabuleiro continua um traço fino (não ornamentada).</li>
+  </ul>
+</div>
+<div class="card">
+  <h3>Ícones & HUD</h3>
+  <ul>
+    <li><span class="evo">Evoluiu:</span> boosters agora são <b>SVG custom</b> coeso (fim do emoji 💣🌈🔀, que variava por Android). O <b>objetivo</b> virou um <b>token</b> (ícone em badge dimensional + progresso). Pills de moeda/vida com <b>volume</b>. Power-up vazio mostra <b>"+" verde</b> (adquirir) no lugar do "0" de placeholder.</li>
+    <li><span class="gap">Ainda falta:</span> os ícones de obstáculo NO objetivo (🧊📦🍒) seguem emoji — inconsistentes com os obstáculos desenhados no tabuleiro. Contador de moedas poderia ser "ouro" de verdade (ainda neutro).</li>
+  </ul>
+</div>
+<div class="card">
+  <h3>Ambiente & paleta</h3>
+  <ul>
+    <li><span class="evo">Evoluiu:</span> o fundo ganhou <b>atmosfera</b> (glow da cor do mundo emoldurando o tabuleiro + vinheta) e a base virou <b>warm-purple</b> (roxo-navy + ouro = combo premium) no lugar do near-black frio. O dark agora é <b>intencional</b>, não "por omissão".</li>
+    <li><span class="gap">Ainda falta:</span> <b>cena pintada por mundo</b> — o "Jardim" ainda não tem jardim atrás, só atmosfera de cor. Este é o maior gap visual restante e pede um ilustrador.</li>
+  </ul>
+</div>
+<div class="card">
+  <h3>Mascote (Blasty)</h3>
+  <ul>
+    <li><span class="evo">Evoluiu:</span> antes a cara era <b>fixa</b> (o <code>&lt;img&gt;</code> só trocava a animação do wrapper). Agora há <b>4 expressões SVG</b> (feliz, animado, triste, pensando) e o humor <b>troca o rosto</b> — vitória deixa o Blasty animado, derrota triste, etc.</li>
+    <li><span class="gap">Ainda falta:</span> a arte do personagem é simples/vetorial; um pro daria animação reativa (piscar, pulinho no blast) e presença sutil dentro do jogo (hoje só no mapa/resultado).</li>
+  </ul>
+</div>
+<div class="card">
+  <h3>Feedback / juiciness (#8) — ainda não avaliável</h3>
+  <ul>
+    <li>Segue <b>pendente de vídeo</b>. O código tem a fundação (shockwave, hit-stop, flash, partículas, shake), mas a <b>sensação</b> não se mede em imagem estática. Um clipe de 3–5s (combo grande + especial) fecha esta nota — e os ajustes de juice que forem calibragem eu faço via código.</li>
+  </ul>
+</div>
+
+<h2 class="sec">Comparação com os grandes — atualizada</h2>
+<table>
+  <tr><th>Antes eles ganhavam em…</th><th>Situação na v2</th></tr>
+  <tr><td>Identidade de peça memorável</td><td><span class="st st-done">Fechado</span> Peças-personagem com rosto. No mesmo território de Toon/Toy Blast (falta só variação/reação).</td></tr>
+  <tr><td>Ícones/booster premium (não emoji)</td><td><span class="st st-done">Fechado</span> SVG custom coeso.</td></tr>
+  <tr><td>Personagem com carisma</td><td><span class="st st-part">Parcial</span> Blasty agora expressa humor; falta refino de arte e animação reativa.</td></tr>
+  <tr><td>Calor/riqueza de paleta</td><td><span class="st st-part">Parcial</span> Warm-purple premium + atmosfera; falta cena pintada.</td></tr>
+  <tr><td>Cenários temáticos ricos (Royal Match)</td><td><span class="st st-wait">Aberto</span> Ainda é atmosfera de cor, não cena. Pede ilustrador.</td></tr>
+  <tr><td>Juice exagerado e satisfação</td><td><span class="st st-wait">A verificar</span> Fundação existe; falta vídeo para diagnóstico.</td></tr>
+</table>
+
+<h2 class="sec">Próximas prioridades (o que rende mais agora)</h2>
+<div class="prio vh"><div class="plabel">Muito Alto</div><b>1. Cenas pintadas por mundo (arte de fundo)</b><div class="why">O maior gap restante para "premium". Atmosfera de cor já existe; agora precisa de arte real por trás do tabuleiro (Jardim com folhas/flores, etc.). <b>Requer ilustrador</b> — eu integro os assets quando existirem.</div></div>
+<div class="prio h"><div class="plabel">Alto</div><b>2. Fechar o juice (#8)</b><div class="why">Depende de <b>você mandar um vídeo</b>. Com ele, calibro escala do "pop", hit-stop, flash e bounce da cascata — tudo código.</div></div>
+<div class="prio h"><div class="plabel">Alto</div><b>3. Moldura de tabuleiro + contador de moedas dourado</b><div class="why">Moldura ornamentada (madeira/ouro) "emoldura o palco"; contador de moeda com material dourado "cheira a dinheiro". Ambos via CSS/canvas — eu faço.</div></div>
+<div class="prio m"><div class="plabel">Médio</div><b>4. Reação/variação das peças e do mascote</b><div class="why">Piscar ocasional, olhar para o grupo tocado, pulinho no blast. Aproxima do topo (Toon Blast). Parcialmente código; refino de arte ajuda.</div></div>
+<div class="prio m"><div class="plabel">Médio</div><b>5. Consistir ícones de obstáculo no objetivo</b><div class="why">Trocar 🧊📦🍒 do objetivo por mini-arte que combine com os obstáculos desenhados no tabuleiro.</div></div>
+
+<h2 class="sec">Nota final — v1 → v2</h2>
+<table id="final">
+  <tr><th>Eixo</th><th>v1</th><th>v2</th><th>Δ</th></tr>
+</table>
+<div class="card" style="margin-top:16px">
+  <h3>Iniciante, indie ou profissional? (reavaliação)</h3>
+  <p>Na v1: "indie competente, quase-pro na engenharia". Na v2: <b>indie forte, à beira do profissional também na arte</b>. O jogo <b>não denuncia mais amadorismo</b> à primeira vista — as peças têm carisma, os ícones são coesos, a HUD tem material e o mascote tem alma. O que ainda separa do AAA é <b>conteúdo de arte de cena</b> (ilustração por mundo) e a <b>confirmação do juice</b>. Ou seja: a distância que resta é majoritariamente de <b>ilustrador + 1 vídeo</b>, não de arquitetura nem de UI.</p>
+</div>
+
+<footer>
+  v2 · 2026-08-02 · comparativo com a v1 (mesma data, baseline). Baseado nos screenshots reais do build atual. <b>#8 (juice) segue pendente de vídeo.</b> Próxima rodada: reenvie após novas mudanças (idealmente com vídeo) para o comparativo v2 → v3.
+</footer>
+</div>
+
+<script>
+const rows=[
+ ["Paleta de cores",6,7],["Harmonia visual",6.5,7.5],["Iluminação",5.5,6.5],
+ ["Contraste",7,7.5],["Saturação",6,7],["Consistência artística",7,7.5],
+ ["Qualidade dos ícones",4,7],["Qualidade dos botões",6,7],["Hierarquia visual",6.5,7],
+];
+const finals=[
+ ["Interface",6,7],["Visual (arte)",5.5,7],["Polimento",6,7],
+ ["Gameplay percebida",6.5,6.5],["Atração p/ novos jogadores",5,6.8],["Potencial comercial",5.5,6.5],
+];
+const col=n=>n>=7.5?"var(--good)":n>=6?"var(--gold)":n>=4.5?"var(--warn)":"var(--bad)";
+function fill(id,data,bar){
+ const t=document.getElementById(id);
+ data.forEach(([l,a,b])=>{
+  const d=+(b-a).toFixed(1);
+  const dtxt=d>0?`<span class="d-up">▲ +${d}</span>`:`<span class="d-same">—</span>`;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${l}</td><td class="num" style="color:${col(a)}">${a.toFixed(1)}</td><td class="num" style="color:${col(b)}">${b.toFixed(1)}</td><td class="num">${dtxt}</td>`+
+    (bar?`<td><div class="minibar"><i style="width:${b/10*100}%;background:${col(b)}"></i></div></td>`:"");
+  t.appendChild(tr);
+ });
+}
+fill("scores",rows,true);
+fill("final",finals,false);
+</script>

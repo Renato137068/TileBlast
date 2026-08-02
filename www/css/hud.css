@@ -130,6 +130,22 @@
     inset 0 -2px 3px rgba(0, 0, 0, 0.24),
     0 2px 6px rgba(0, 0, 0, 0.3);
 }
+/* Contador de moedas: pill DOURADA (material de ouro) — "cheira a dinheiro". */
+.hud-pill--coins {
+  color: #4a2e05;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, #ffe98a 0%, #ffcf4d 42%, #f0a92e 72%, #d98a1e 100%);
+  border: 1px solid #b9781a;
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 2px rgba(120, 70, 0, 0.35),
+    0 2px 7px rgba(180, 120, 0, 0.4),
+    0 0 12px rgba(246, 178, 62, 0.28);
+}
+.hud-pill--coins #hud-coins {
+  color: #3a2400;
+  font-weight: 900;
+}
 #hud-obj {
   font-size: 12px;
   color: #a0aacc;
