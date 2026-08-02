@@ -687,6 +687,17 @@
     }
   }
 
+  /** Ícone SVG custom por power-up (substitui emoji — render consistente e
+   * coeso em qualquer Android). Fallback: o próprio label (ex.: "+5"). */
+  function _puIconHTML(id, label) {
+    const svg = {
+      bomb: `<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><circle cx="11" cy="15" r="7" fill="#2b3350"/><ellipse cx="8.6" cy="12.6" rx="2.2" ry="1.3" fill="#5b6690" opacity=".65"/><path d="M15 8.5 Q18.5 6.5 18.5 3.2" stroke="#8a6a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="18.5" cy="3.2" r="2.3" fill="#ffb14a"/><circle cx="18.5" cy="3.2" r="1" fill="#fff3c4"/></svg>`,
+      rainbow: `<svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 A8 8 0 0 1 20 18" stroke="#ef4b5f"/><path d="M6.4 18 A5.6 5.6 0 0 1 17.6 18" stroke="#f6c945"/><path d="M8.8 18 A3.2 3.2 0 0 1 15.2 18" stroke="#4ecb71"/></svg>`,
+      shuffle: `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" fill="none" stroke="#cdd6ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3.5l10 10H20"/><path d="M16.5 3.5 20 7l-3.5 3.5"/><path d="M3 17h3.5l2.6-2.6"/><path d="M14 9.6 16.5 7"/></svg>`,
+    };
+    return svg[id] || `<span class="pu-txt">${label}</span>`;
+  }
+
   function buildPUBar() {
     const bar = document.getElementById('pu-bar');
     bar.innerHTML = '';
@@ -697,7 +708,7 @@
       btn.id = `pub-${id}`;
       btn.className = 'pu-btn';
       btn.dataset.pu = id;
-      btn.textContent = label;
+      btn.innerHTML = _puIconHTML(id, label);
       btn.addEventListener('click', () => tapPU(id));
       // Longpress tooltip
       let lpTimer = null;

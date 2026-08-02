@@ -299,8 +299,10 @@
     margin-bottom: 4px;
   }
   /* Seleção de mundos: o grid (auto-fill minmax 160px) colapsava em 1 coluna
-     por não ter largura; no tablet passa a preencher e virar multi-coluna. */
+     por não ter largura; no tablet passa a preencher e virar multi-coluna.
+     align-items:start evita que os cards estiquem à altura da linha (vazio). */
   .worlds-grid {
     width: 100%;
+    align-items: start;
   }
 }

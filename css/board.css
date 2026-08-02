@@ -25,6 +25,8 @@
   height: 58px;
   min-width: 52px;
   min-height: 52px;
+  display: grid;
+  place-items: center;
   font-size: 24px;
   line-height: 1;
   cursor: pointer;
@@ -41,6 +43,19 @@
     transform 0.12s,
     box-shadow 0.15s;
   overflow: hidden;
+}
+.pu-btn .pu-txt {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(180deg, #eaf0ff, #9fb0d8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+.pu-btn svg {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
 }
 .pu-btn::before {
   content: '';

@@ -621,6 +621,38 @@
   }
 
   // Overlays de obstáculo (#1)
+  /** Rosto fofo (olhos expressivos) — dá personalidade às peças (estilo Toon
+   * Blast) sem custo de asset. Usado quando NÃO está em modo daltônico. */
+  function drawTileFace(cx, cy, sz, al) {
+    const g = C.ctx;
+    g.save();
+    g.globalAlpha = al;
+    const ex = sz * 0.16, // separação horizontal dos olhos
+      ey = cy - sz * 0.02, // altura dos olhos
+      erx = sz * 0.1, // raio X do branco do olho
+      ery = sz * 0.13, // raio Y (levemente oval)
+      prx = sz * 0.055; // raio da pupila
+    for (const s of [-1, 1]) {
+      const x = cx + s * ex;
+      // branco do olho
+      g.beginPath();
+      g.ellipse(x, ey, erx, ery, 0, 0, Math.PI * 2);
+      g.fillStyle = 'rgba(255,255,255,.96)';
+      g.fill();
+      // pupila (levemente para baixo/centro — olhar simpático)
+      g.beginPath();
+      g.ellipse(x - s * prx * 0.15, ey + ery * 0.28, prx, prx * 1.15, 0, 0, Math.PI * 2);
+      g.fillStyle = 'rgba(28,32,46,.92)';
+      g.fill();
+      // brilho
+      g.beginPath();
+      g.arc(x - s * prx * 0.35, ey + ery * 0.05, prx * 0.42, 0, Math.PI * 2);
+      g.fillStyle = 'rgba(255,255,255,.95)';
+      g.fill();
+    }
+    g.restore();
+  }
+
   function drawGlyph(glyph, cx, cy, sz, al) {
     C.ctx.save();
     C.ctx.globalAlpha = al;
@@ -904,7 +936,9 @@
       drawCollectIcon(cx, cy, sz, al);
     } else {
       const cb = TBFeatures && TBFeatures.isColorBlind && TBFeatures.isColorBlind();
-      drawIcon(b.type, cx, cy, sz * (cb ? 0.3 : 0.2), cb);
+      // Daltônico: mantém o símbolo (acessibilidade). Padrão: rosto fofo.
+      if (cb) drawIcon(b.type, cx, cy, sz * 0.3, cb);
+      else drawTileFace(cx, cy, sz, al);
     }
     if (b.chain > 0) drawChainOverlay(cx, cy, sz, al);
     if (b.ice > 0) drawIceOverlay(x, y, sz, al, b.ice);
