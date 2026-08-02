@@ -102,6 +102,17 @@
       excited: 'mascot-excited',
       think: 'mascot-think',
     };
+    // Expressão facial real por humor (troca o próprio SVG, não só a animação).
+    const MOOD_SVG = {
+      idle: 'mascot.svg',
+      happy: 'mascot-happy.svg',
+      sad: 'mascot-sad.svg',
+      excited: 'mascot-excited.svg',
+      think: 'mascot-think.svg',
+    };
+    function svgForMood(mood) {
+      return MOOD_SVG[mood] || MOOD_SVG.idle;
+    }
     function filterFor(skin) {
       return BLASTY_SKIN_FILTERS[skin || 'default'] || '';
     }
@@ -120,6 +131,9 @@
       if (!wrap) return;
       const sm = elId === 'map-mascot-wrap' ? ' mascot-wrap--sm' : '';
       wrap.className = `mascot-wrap${sm} ${MOODS[mood] || MOODS.idle}`;
+      // Troca a expressão facial (SVG) além da animação do wrapper.
+      const img = wrap.querySelector('.mascot-img');
+      if (img) img.setAttribute('src', svgForMood(mood));
     }
     function say(text, duration = 5000) {
       const b = wrapEl('map-mascot-bubble');
@@ -150,7 +164,7 @@
     function resultHtml(mood) {
       const cls = MOODS[mood] || MOODS.idle;
       const f = filterFor(_currentSkin);
-      return `<div class="mascot-wrap mascot-wrap--md ${cls} result-mascot"><img class="mascot-img" src="mascot.svg" alt="Blasty" style="filter:${f}"></div>`;
+      return `<div class="mascot-wrap mascot-wrap--md ${cls} result-mascot"><img class="mascot-img" src="${svgForMood(mood)}" alt="Blasty" style="filter:${f}"></div>`;
     }
     return {
       setMood,

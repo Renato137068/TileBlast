@@ -1,8 +1,11 @@
 /* Variáveis / tokens de design (:root) — extraído de tile_blast.html (fatia contígua, ordem preservada) */
 
 :root {
-  --bg: #11131c;
-  --panel: #1b1e2c;
+  /* Dark premium com undertone warm-purple (combina com o dourado do accent —
+     paleta roxo-navy + ouro, referência casual premium). Antes era near-black
+     frio (#11131c), que lia utilitário. */
+  --bg: #14111f;
+  --panel: #211d30;
   --accent: #f6b23e;
   --as: rgba(246, 178, 62, 0.16);
   --text: #f1f2f6;
