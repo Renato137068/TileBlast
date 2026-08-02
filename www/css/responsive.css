@@ -274,14 +274,28 @@
   }
   /* HUD e barra de power-ups acompanham o tabuleiro sem esticar demais. */
   #hud,
-  .pu-bar {
+  #pu-bar {
     max-width: 680px;
     margin-left: auto;
     margin-right: auto;
   }
-  /* Menos vazio embaixo: o jogo respira em volta do tabuleiro maior. */
+  /* Menos vazio embaixo: a tela ocupa a altura toda para o margin-top:auto da
+     pu-bar ancorá-la no rodapé (senão o painel teria só a altura do conteúdo). */
   #screen-game.active {
     justify-content: flex-start;
     padding-top: 28px;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+  /* Power-ups vão para o RODAPÉ no tablet, preenchendo o espaço abaixo do
+     tabuleiro. O layoutBoard (tb-fx.js) reserva a altura da pu-bar para o
+     board não crescer por cima dela. */
+  #board-w {
+    order: 1;
+  }
+  #pu-bar {
+    order: 2;
+    margin-top: auto;
+    margin-bottom: 4px;
   }
 }

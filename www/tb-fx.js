@@ -81,7 +81,14 @@
     } catch (e) {
       insetBottom = 0;
     }
-    const reserveBelow = Math.max(16, insetBottom) + 14; // padding do board-w + respiro
+    // Em tablets a pu-bar fica NO RODAPÉ (css/responsive.css) — reserva a
+    // altura dela abaixo do tabuleiro para o board não crescer por cima.
+    let puReserve = 0;
+    if (vw >= 600) {
+      const puBar = document.getElementById('pu-bar');
+      if (puBar) puReserve = puBar.getBoundingClientRect().height + 16;
+    }
+    const reserveBelow = Math.max(16, insetBottom) + 14 + puReserve; // padding + respiro + pu-bar
     const availH = Math.max(120, vpH - topUsed - reserveBelow);
     const cellByW = Math.floor(availW / C.GW);
     const cellByH = Math.floor(availH / C.GH);
