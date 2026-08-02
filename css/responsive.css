@@ -236,8 +236,8 @@
     font-size: 12px;
   }
 }
-/* Tablet: mais respiro no hub, CTAs ainda na dobra */
-@media (min-width: 768px) {
+/* Tablet: mais respiro no hub, CTAs ainda na dobra (7"+ inclui 600px). */
+@media (min-width: 600px) {
   .map-primary-row {
     max-width: 520px;
     margin: 0 auto;
@@ -267,7 +267,7 @@
    mantém o hub do mapa centralizado e legível. */
 @media (min-width: 600px) {
   #app {
-    max-width: 680px;
+    max-width: 740px;
   }
   .screen {
     padding: 24px 24px 28px;
@@ -275,8 +275,13 @@
   /* HUD e barra de power-ups acompanham o tabuleiro sem esticar demais. */
   #hud,
   .pu-bar {
-    max-width: 600px;
+    max-width: 680px;
     margin-left: auto;
     margin-right: auto;
+  }
+  /* Menos vazio embaixo: o jogo respira em volta do tabuleiro maior. */
+  #screen-game.active {
+    justify-content: flex-start;
+    padding-top: 28px;
   }
 }

@@ -60,9 +60,11 @@
   function layoutBoard() {
     if (!C || !C.canvas || !C.ctx) return;
     // Tabuleiro maior em tablets (largura CSS >= 600px) para preencher a tela;
-    // no celular mantém o cap de 416px. Casa com o #app responsivo (base.css).
+    // no celular mantém o cap de 416px. Casa com o #app responsivo
+    // (css/responsive.css). O min(cellByW,cellByH) abaixo garante que ele não
+    // transborde na vertical em tablets mais baixos.
     const vw = viewportWidth();
-    const maxBoardW = vw >= 600 ? 600 : 416;
+    const maxBoardW = vw >= 600 ? 680 : 416;
     const availW = Math.min(vw - 32, maxBoardW);
     // Altura disponível: viewport visível menos o espaço acima do tabuleiro
     // (HUD + barra de power-ups) e a área segura inferior. Sem isso o
