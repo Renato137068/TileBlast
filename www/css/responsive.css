@@ -298,4 +298,9 @@
     margin-top: auto;
     margin-bottom: 4px;
   }
+  /* Seleção de mundos: o grid (auto-fill minmax 160px) colapsava em 1 coluna
+     por não ter largura; no tablet passa a preencher e virar multi-coluna. */
+  .worlds-grid {
+    width: 100%;
+  }
 }

@@ -94,9 +94,16 @@ function buildShots(page, prefix) {
           if (typeof showScreen === 'function') showScreen('map');
         });
         await page.waitForSelector('#screen-map.active', { timeout: 8000 });
-        await page.evaluate(() => document.getElementById('map-daily-puzzle-btn')?.click());
-        await page.waitForSelector('#global-modal.show', { timeout: 8000 }).catch(() => {});
-        await new Promise((r) => setTimeout(r, 300));
+        // Fecha um modal (ex.: recompensa diária) se estiver aberto.
+        await page.evaluate(() =>
+          document.getElementById('global-modal')?.classList.remove('show')
+        );
+        // Seleção de mundos: tela cheia e colorida (mundos temáticos).
+        await page.evaluate(() => {
+          if (typeof openWorldSelect === 'function') openWorldSelect();
+        });
+        await page.waitForSelector('#screen-worlds.active', { timeout: 8000 }).catch(() => {});
+        await new Promise((r) => setTimeout(r, 500));
       },
     },
   ];
