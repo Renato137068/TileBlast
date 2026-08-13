@@ -7,7 +7,7 @@
       "order": 1,
       "index": 10,
       "name": "Primeiro Gelo",
-      "moves": 22,
+      "moves": 30,
       "objectives": [
         {
           "type": "ice",
@@ -47,7 +47,7 @@
       "order": 3,
       "index": 12,
       "name": "Violeta",
-      "moves": 20,
+      "moves": 22,
       "objectives": [
         {
           "type": "color",
@@ -88,7 +88,7 @@
       "order": 5,
       "index": 14,
       "name": "Floresta Congelada",
-      "moves": 22,
+      "moves": 25,
       "objectives": [
         {
           "type": "ice",
@@ -134,7 +134,7 @@
       "order": 7,
       "index": 16,
       "name": "Camada de Gelo",
-      "moves": 22,
+      "moves": 25,
       "objectives": [
         {
           "type": "ice",
@@ -157,7 +157,7 @@
       "order": 8,
       "index": 17,
       "name": "Pressão",
-      "moves": 15,
+      "moves": 20,
       "objectives": [
         {
           "type": "score",
@@ -177,7 +177,7 @@
       "order": 9,
       "index": 18,
       "name": "Gelo e Cor",
-      "moves": 22,
+      "moves": 25,
       "objectives": [
         {
           "type": "ice",
@@ -202,7 +202,7 @@
       "order": 10,
       "index": 19,
       "name": "Chefão de Gelo",
-      "moves": 24,
+      "moves": 27,
       "objectives": [
         {
           "type": "ice",

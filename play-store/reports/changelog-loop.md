@@ -28,3 +28,10 @@
 - **Regressão checada:** catálogo idx 15 = Primeiro Gelo estável no audit pós-fix.
 - **Status:** feito
 
+## Iteração 5 — 2026-08-12 — TB-007
+- **Problema/evidência:** Violeta WIN com left=1 (margem quase zero).
+- **Mudança:** `data/levels/forest.json` — Violeta moves 20→22.
+- **Validação:** `npm run content:validate:strict` → `✓ Conteúdo OK`; `TB_PLAYER_FROM=17 TB_PLAYER_TO=17 npm run player:audit` → `WIN Violeta moves=14 left=9` / `Achados: 0`; `npm run release:gate` → `✓ Gate de DEV OK (placeholders permitidos).`
+- **Regressão checada:** nome/índice estáveis pós-TB-006.
+- **Status:** feito
+

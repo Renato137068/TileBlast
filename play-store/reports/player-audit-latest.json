@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-08-13T00:39:40.784Z",
+  "total_levels": 85,
+  "range": {
+    "from": 15,
+    "to": 15
+  },
+  "played": 1,
+  "wins": 1,
+  "losses": 0,
+  "js_errors": 0,
+  "surfaces": {
+    "findings": [],
+    "mapCards": 10,
+    "iapPriceSamples": [
+      "R$ 1,99",
+      "R$ 3,99",
+      "R$ 7,99",
+      "R$ 1,99",
+      "R$ 9,90/mês",
+      "R$ 2,99"
+    ],
+    "coinItems": 5
+  },
+  "findings": [
+    {
+      "area": "balance",
+      "pri": "P1",
+      "level": 15,
+      "msg": "Fase 16: vitória no último movimento — margem zero"
+    },
+    {
+      "area": "ux",
+      "pri": "P2",
+      "level": 15,
+      "msg": "Fase 16: 32s de sessão bot — sensação lenta"
+    }
+  ],
+  "levels": [
+    {
+      "idx": 15,
+      "name": "Primeiro Gelo",
+      "worldId": "forest",
+      "moves": 31,
+      "score": 1205,
+      "movesLeft": 0,
+      "won": true,
+      "lost": false,
+      "resultVisible": true,
+      "durationMs": 32122,
+      "lvIdx": 15,
+      "jsError": null
+    }
+  ]
+}
