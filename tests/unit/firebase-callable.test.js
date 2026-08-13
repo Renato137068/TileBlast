@@ -52,4 +52,24 @@ describe('TBFirebase callables — fallback gracioso', () => {
   it('queueIapConfirm sem token retorna bad_args', () => {
     expect(TBFirebase.queueIapConfirm('coins500', '')).toEqual({ ok: false, reason: 'bad_args' });
   });
+
+  it('reportClientError enfileira callable client_error sem lançar', () => {
+    localStorage.clear();
+    const r = TBFirebase.reportClientError({
+      kind: 'error',
+      message: 'tb-101-unit',
+      level: 2,
+      v: '1.4.9',
+      lang: 'pt',
+      last_event: 'boot_ready',
+    });
+    expect(r.ok).toBe(true);
+    const q = JSON.parse(localStorage.getItem('tb_callable_queue'));
+    const item = q.find((x) => x.name === 'client_error');
+    expect(item).toBeTruthy();
+    expect(item.data.event).toBe('client_error');
+    expect(item.data.message).toBe('tb-101-unit');
+    expect(item.data.level).toBe(2);
+    expect(item.data.requestId).toBeTruthy();
+  });
 });

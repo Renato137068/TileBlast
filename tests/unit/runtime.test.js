@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import TBRuntime from '../../tb-runtime.js';
 
 describe('TBRuntime.escapeHtml (XSS)', () => {
@@ -36,6 +36,58 @@ describe('TBRuntime.warn (log leve)', () => {
     expect(() => TBRuntime.warn('Tag', new Error('x'))).not.toThrow();
     expect(spy).toHaveBeenCalled();
     spy.mockRestore();
+  });
+});
+
+describe('TBRuntime.captureError (TB-101)', () => {
+  beforeEach(() => {
+    globalThis.APP_VERSION = '1.4.9';
+    globalThis.TBState = { lvIdx: 7 };
+    globalThis.ld = () => ({ lang: 'es' });
+    globalThis.TBAnalytics = {
+      log: vi.fn(),
+      exportEvents: () => [{ name: 'boot_ready' }],
+    };
+    globalThis.TBFirebase = {
+      reportClientError: vi.fn(() => ({ ok: true })),
+    };
+  });
+
+  it('envia level, versão, lang e last_event sem lançar', () => {
+    const res = TBRuntime.captureError('error', new Error('boom-unit'));
+    expect(res.ok).toBe(true);
+    expect(res.payload.message).toBe('boom-unit');
+    expect(res.payload.level).toBe(7);
+    expect(res.payload.v).toBe('1.4.9');
+    expect(res.payload.lang).toBe('es');
+    expect(res.payload.last_event).toBe('boot_ready');
+    expect(globalThis.TBAnalytics.log).toHaveBeenCalledWith(
+      'client_error',
+      expect.objectContaining({ message: 'boom-unit', level: 7 })
+    );
+    expect(globalThis.TBFirebase.reportClientError).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'error', message: 'boom-unit', last_event: 'boot_ready' })
+    );
+  });
+
+  it('nunca lança se analytics/firebase quebrarem', () => {
+    globalThis.TBAnalytics.log = () => {
+      throw new Error('analytics down');
+    };
+    globalThis.TBFirebase.reportClientError = () => {
+      throw new Error('firebase down');
+    };
+    expect(() => TBRuntime.captureError('unhandledrejection', 'reject-unit')).not.toThrow();
+    const res = TBRuntime.captureError('error', new Error('still-ok'));
+    expect(res.ok === true || res.reason === 'dup').toBe(true);
+  });
+
+  it('dedupllica o mesmo fingerprint', () => {
+    const a = TBRuntime.captureError('error', new Error('same-fp'));
+    const b = TBRuntime.captureError('error', new Error('same-fp'));
+    expect(a.ok).toBe(true);
+    expect(b.ok).toBe(false);
+    expect(b.reason).toBe('dup');
   });
 });
 

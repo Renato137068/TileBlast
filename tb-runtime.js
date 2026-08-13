@@ -29,6 +29,8 @@
  *   setText: (el: Element|null|undefined, v: unknown) => void,
  *   t: (key: string, fallback: string) => string,
  *   warn: (tag: string, err: unknown) => void,
+ *   captureError: (kind: string, err: unknown, extra?: Record<string, unknown>) => { ok: boolean, reason?: string, payload?: Record<string, unknown> },
+ *   installErrorCapture: () => boolean,
  *   loadScript: (src: string) => Promise<string>,
  *   loadDeferredModules: () => Promise<string[]>,
  *   deferredLoaded: () => string[]
@@ -176,6 +178,172 @@
     }
   }
 
+  let errorCaptureInstalled = false;
+  let errorCaptureBusy = false;
+  let errorCaptureCount = 0;
+  const ERROR_CAPTURE_MAX = 20;
+  /** @type {Set<string>} */
+  const errorCaptureSeen = new Set();
+
+  function resolveErrorLang() {
+    try {
+      if (typeof global.ld === 'function') {
+        const s = global.ld();
+        if (s && s.lang) return String(s.lang);
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      if (global.TBI18n && typeof global.TBI18n.detectLanguage === 'function') {
+        const nav = global.navigator && global.navigator.language;
+        const d = global.TBI18n.detectLanguage(nav || '');
+        if (d) return String(d);
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      const html =
+        global.document && global.document.documentElement && global.document.documentElement.lang;
+      if (html) {
+        const h = String(html).toLowerCase();
+        if (h.indexOf('en') === 0) return 'en';
+        if (h.indexOf('es') === 0) return 'es';
+        if (h.indexOf('pt') === 0) return 'pt';
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return 'pt';
+  }
+
+  function lastAnalyticsEventName() {
+    try {
+      if (!global.TBAnalytics || typeof global.TBAnalytics.exportEvents !== 'function') return '';
+      const ev = global.TBAnalytics.exportEvents();
+      if (!Array.isArray(ev) || !ev.length) return '';
+      const last = ev[ev.length - 1];
+      return last && last.name ? String(last.name) : '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function currentLevelIdx() {
+    try {
+      if (global.TBState && typeof global.TBState.lvIdx === 'number') return global.TBState.lvIdx;
+    } catch (e) {
+      /* ignore */
+    }
+    return -1;
+  }
+
+  /**
+   * TB-101: captura global. Nunca lança.
+   * @param {string} kind
+   * @param {unknown} err
+   * @param {Record<string, unknown>} [extra]
+   * @returns {{ ok: boolean, reason?: string, payload?: Record<string, unknown> }}
+   */
+  function captureError(kind, err, extra) {
+    if (errorCaptureBusy) return { ok: false, reason: 'reentry' };
+    errorCaptureBusy = true;
+    try {
+      if (errorCaptureCount >= ERROR_CAPTURE_MAX) return { ok: false, reason: 'capped' };
+      let message = '';
+      if (err && typeof err === 'object' && /** @type {{ message?: unknown }} */ (err).message) {
+        message = String(/** @type {{ message: unknown }} */ (err).message);
+      } else if (typeof err === 'string') {
+        message = err;
+      } else {
+        message = String(err == null ? 'unknown' : err);
+      }
+      message = message.slice(0, 240);
+      const fp = String(kind || 'error') + ':' + message.slice(0, 160);
+      if (errorCaptureSeen.has(fp)) return { ok: false, reason: 'dup' };
+      errorCaptureSeen.add(fp);
+      errorCaptureCount++;
+
+      /** @type {Record<string, unknown>} */
+      const payload = {
+        kind: String(kind || 'error'),
+        message: message,
+        level: currentLevelIdx(),
+        v: String(global.APP_VERSION || '0'),
+        lang: resolveErrorLang(),
+        last_event: lastAnalyticsEventName(),
+      };
+      if (extra && typeof extra === 'object') {
+        if (extra.source) payload.source = String(extra.source).slice(0, 120);
+        if (extra.lineno != null) payload.lineno = Number(extra.lineno) || 0;
+      }
+
+      try {
+        if (global.TBAnalytics && typeof global.TBAnalytics.log === 'function') {
+          global.TBAnalytics.log('client_error', payload);
+        }
+      } catch (e) {
+        /* never throw */
+      }
+
+      try {
+        if (global.TBFirebase && typeof global.TBFirebase.reportClientError === 'function') {
+          global.TBFirebase.reportClientError(payload);
+        } else if (global.TBFirebase && typeof global.TBFirebase.enqueueCallable === 'function') {
+          global.TBFirebase.enqueueCallable('client_error', payload);
+          if (typeof global.TBFirebase.flushCallableQueue === 'function') {
+            Promise.resolve()
+              .then(function () {
+                return global.TBFirebase.flushCallableQueue();
+              })
+              .catch(function () {});
+          }
+        }
+      } catch (e) {
+        /* never throw */
+      }
+
+      return { ok: true, payload: payload };
+    } catch (e) {
+      return { ok: false, reason: 'error' };
+    } finally {
+      errorCaptureBusy = false;
+    }
+  }
+
+  function onWindowError(ev) {
+    try {
+      const err = ev && ev.error ? ev.error : ev && ev.message ? ev.message : 'window.error';
+      const extra = {};
+      if (ev && ev.filename) extra.source = ev.filename;
+      if (ev && ev.lineno != null) extra.lineno = ev.lineno;
+      captureError('error', err, extra);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function onUnhandledRejection(ev) {
+    try {
+      const reason = ev && ev.reason !== undefined ? ev.reason : 'unhandledrejection';
+      captureError('unhandledrejection', reason);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  /** @returns {boolean} */
+  function installErrorCapture() {
+    if (errorCaptureInstalled) return true;
+    const target = global.window && typeof global.window.addEventListener === 'function' ? global.window : global;
+    if (!target || typeof target.addEventListener !== 'function') return false;
+    errorCaptureInstalled = true;
+    on(target, 'error', onWindowError, true, 'error-capture');
+    on(target, 'unhandledrejection', onUnhandledRejection, true, 'error-capture');
+    return true;
+  }
+
   /**
    * @param {string} key
    * @param {string} fallback
@@ -255,6 +423,8 @@
     setText,
     t,
     warn,
+    captureError,
+    installErrorCapture,
     loadScript,
     loadDeferredModules,
     deferredLoaded: deferredLoadedList,
@@ -263,6 +433,12 @@
   /** @type {any} */
   const g = global;
   g.TBRuntime = api;
+
+  try {
+    installErrorCapture();
+  } catch (e) {
+    /* boot nunca deve quebrar por telemetria */
+  }
 
   // @ts-ignore — `module` só existe no host Node dos testes
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

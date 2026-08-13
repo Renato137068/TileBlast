@@ -28,6 +28,19 @@
 - **Regressão checada:** catálogo idx 15 = Primeiro Gelo estável no audit pós-fix.
 - **Status:** feito
 
+## Relabel — 2026-08-13 — TB-101–TB-111 → TB-201–TB-211
+- **Problema/evidência:** player-audit já ocupava TB-101–TB-111 (UX/balance fases 64–77). Audit sistêmico precisava desses IDs.
+- **Mudança:** relabel dos achados antigos para TB-201–TB-211 (nada apagado). Novos TB-101–TB-111 = observabilidade/conformidade/save/economia/perf/produto.
+- **Validação:** backlog.md contém TB-201 (ex-TB-101 UX fase 64) e TB-101 P0 captura JS.
+- **Status:** feito (nota de relabel)
+
+## Iteração 6 — 2026-08-13 — TB-101
+- **Problema/evidência:** grep crashlytics/sentry/window.onerror/unhandledrejection nos tb-*.js = 0 — falha em produção sem sinal.
+- **Mudança:** `tb-runtime.js` instala `error` + `unhandledrejection` (fail-closed); `tb-firebase.js` `reportClientError` → fila callable `client_error`; também `TBAnalytics.log('client_error')` (buffer + AndroidBridge/FA). Payload: level, v, lang, last_event.
+- **Validação:** `npx vitest run tests/unit/runtime.test.js tests/unit/firebase-callable.test.js` → `Tests 17 passed (17)`; `npm run lint` → `✓ no-undef limpo — nenhuma referência indefinida.`; `npm run sync:www` → `www/ synced from tile_blast.html (SW cache: tileblast-v149)`; `node tests/e2e/error-capture.mjs` → `E2E error-capture OK: client_error level=4 v=1.4.9 lang=en last=level_start`; `npm run release:gate` → `✓ Gate de DEV OK (placeholders permitidos).`
+- **Regressão checada:** handler nunca lança; sem novo endpoint Cloud Functions; www parity OK no gate.
+- **Status:** feito
+
 ## Iteração 5 — 2026-08-12 — TB-007
 - **Problema/evidência:** Violeta WIN com left=1 (margem quase zero).
 - **Mudança:** `data/levels/forest.json` — Violeta moves 20→22.

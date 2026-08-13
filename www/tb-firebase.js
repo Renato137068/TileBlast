@@ -389,6 +389,26 @@
     return res && res.ok ? res.result || { ok: true } : { ok: false };
   }
 
+  /**
+   * TB-101: telemetria de erro JS. Nunca lança.
+   * Reusa a fila genérica → callable `client_error` (mesmo path de IAP/ads).
+   * Sem config Firebase: permanece na fila local.
+   */
+  function reportClientError(payload) {
+    try {
+      const data = Object.assign({ event: 'client_error', clientAt: Date.now() }, payload || {});
+      enqueueCallable('client_error', data);
+      Promise.resolve()
+        .then(function () {
+          return flushCallableQueue();
+        })
+        .catch(function () {});
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, reason: 'error' };
+    }
+  }
+
   global.TBFirebase = {
     boot,
     isReady: () => ready,
@@ -411,5 +431,6 @@
     createChallenge,
     claimChallenge,
     deleteSocialData,
+    reportClientError,
   };
 })(typeof window !== 'undefined' ? window : globalThis);
