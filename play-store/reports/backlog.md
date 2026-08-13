@@ -8,6 +8,7 @@ Status: `todo` · `doing` · `done` · `bloqueado` · `precisa-decisão`
 
 > Nota da amostra: o audit rodou fases **6–20** (índices 5–19) porque `TB_PLAYER_FROM` estava setado no shell; 15 fases, 13 WIN / 2 LOSS, 0 erros JS.
 > Nota (fases 21–85): `TB_PLAYER_FROM=20` `npm run player:audit` → 65 fases, **23 WIN / 42 LOSS**, 0 erros JS, 102 achados (P0=0). Novos IDs TB-017–TB-118.
+> Nota TB-119: o afrouxamento TB-003/004/005/007 usou o bot **greedy** (`playLevelFast` / `classifyLevel` LOSS→P1). Antes de afrouxar TB-017+ confirmar se não é falso positivo / curva achatada.
 
 | ID | Pri | Área | Problema | Evidência | Ação | Validação | Esforço | Status | Dono |
 |----|-----|------|----------|-----------|------|-----------|---------|--------|------|
@@ -129,6 +130,7 @@ Status: `todo` · `doing` · `done` · `bloqueado` · `precisa-decisão`
 | TB-116 | P2 | ux | Fase 83: 43s de sessão bot — sensação lenta | `player-audit-latest.md` L108; #83 LOSS moves=31 left=0 score=2670 42738ms | Reduzir anim/busy/cascata (fase 83) | re-audit fase 83 + npm run test:a11y | M | todo | — |
 | TB-117 | P2 | ux | Fase 84: 25s de sessão bot — sensação lenta | `player-audit-latest.md` L109; #84 LOSS moves=16 left=0 score=990 25438ms | Reduzir anim/busy/cascata (fase 84) | re-audit fase 84 + npm run test:a11y | M | todo | — |
 | TB-118 | P2 | ux | Fase 85: 36s de sessão bot — sensação lenta | `player-audit-latest.md` L110; #85 LOSS moves=30 left=0 score=2005 35932ms | Reduzir anim/busy/cascata (fase 85) | re-audit fase 85 + npm run test:a11y | M | todo | — |
+| TB-119 | P1 | balance | Revisar se o afrouxamento das fases (TB-003, TB-004, TB-005, TB-007) achatou a curva de dificuldade — o bot guloso do player-auditor pode estar gerando falso positivo de balanceamento | Loop TB-003–TB-007 done (`changelog-loop.md`); `scripts/run-player-audit.mjs` heurística greedy (`playLevelFast` / `classifyLevel` LOSS→P1); `tests/e2e/helpers.mjs` playGreedy vs playSmallest | Comparar win rates e leftover nas fases afrouxadas vs vizinhas; re-audit com estratégia menos gulosa (objetivo/collect) ou critério humano | `TB_PLAYER_FROM=6 TB_PLAYER_TO=19 npm run player:audit` + `TB_PLAYER_STRATEGY=objective` no mesmo range | M | todo | — |
 
 ## Fechados
 
