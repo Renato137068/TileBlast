@@ -96,17 +96,19 @@ public class TileBlastBridge implements PurchasesUpdatedListener {
     }
 
     private void requestConsentThenInitAds() {
+        setAnalyticsCollectionEnabled(false);
         ConsentRequestParameters params = new ConsentRequestParameters.Builder().build();
         ConsentInformation consentInfo = UserMessagingPlatform.getConsentInformation(activity);
         consentInfo.requestConsentInfoUpdate(activity, params, () -> {
             UserMessagingPlatform.loadAndShowConsentFormIfRequired(activity, formError -> {
                 adsCanRequest = consentInfo.canRequestAds();
                 if (adsCanRequest) initMobileAds();
-                else eval("window.onTileBlastConsentUpdate && window.onTileBlastConsentUpdate(false)");
+                else applyConsentResult(false);
             });
         }, requestError -> {
             adsCanRequest = consentInfo.canRequestAds();
             if (adsCanRequest) initMobileAds();
+            else applyConsentResult(false);
         });
     }
 
@@ -114,8 +116,25 @@ public class TileBlastBridge implements PurchasesUpdatedListener {
         MobileAds.initialize(activity, initStatus -> {
             loadRewardedAd();
             loadInterstitialAd();
-            eval("window.onTileBlastConsentUpdate && window.onTileBlastConsentUpdate(true)");
+            applyConsentResult(true);
         });
+    }
+
+    private void applyConsentResult(boolean canRequest) {
+        adsCanRequest = canRequest;
+        setAnalyticsCollectionEnabled(canRequest);
+        eval("window.onTileBlastConsentUpdate && window.onTileBlastConsentUpdate(" + (canRequest ? "true" : "false") + ")");
+    }
+
+    private void setAnalyticsCollectionEnabled(boolean enabled) {
+        try {
+            Class<?> faClass = Class.forName("com.google.firebase.analytics.FirebaseAnalytics");
+            Object fa = faClass.getMethod("getInstance", android.content.Context.class)
+                .invoke(null, activity);
+            faClass.getMethod("setAnalyticsCollectionEnabled", boolean.class).invoke(fa, enabled);
+        } catch (Exception e) {
+            Log.d(TAG, "analytics collection flag: " + enabled);
+        }
     }
 
     private boolean canShowAds() {
@@ -509,6 +528,10 @@ public class TileBlastBridge implements PurchasesUpdatedListener {
     }
 
     private void logEventNative(String name, String paramsJson) {
+        if (!canShowAds()) {
+            Log.d(TAG, "analytics skipped (no UMP/GDPR consent): " + name);
+            return;
+        }
         try {
             Class<?> faClass = Class.forName("com.google.firebase.analytics.FirebaseAnalytics");
             Object fa = faClass.getMethod("getInstance", android.content.Context.class)

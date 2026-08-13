@@ -15,6 +15,7 @@
  *   bootReadyMs: () => number,
  *   ttfmMs: () => number,
  *   logFirstMove: (params?: Record<string, any>) => void,
+ *   canSendRemote: () => boolean,
  *   log: (event: string, params?: Record<string, any>) => void,
  *   exportEvents: () => TBAnalyticsEvent[],
  *   funnelReport: () => Record<string, any>,
@@ -40,6 +41,25 @@
   /** @returns {number} */
   function dayKey(ts) {
     return Math.floor((ts || Date.now()) / 86400000);
+  }
+
+  /** Firebase Analytics / AndroidBridge só após UMP/GDPR/LGPD consent. Buffer local sempre. */
+  function canSendRemoteAnalytics() {
+    try {
+      if (global.PlayBridge && typeof global.PlayBridge.hasAnalyticsConsent === 'function') {
+        return !!global.PlayBridge.hasAnalyticsConsent();
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      if (global.AndroidBridge && typeof global.AndroidBridge.canShowAdsBridge === 'function') {
+        return !!global.AndroidBridge.canShowAdsBridge();
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return false;
   }
 
   function detectPlatform() {
@@ -182,6 +202,10 @@
       this.log('first_move', Object.assign({ ttfm_ms: this.ttfmMs() }, params || {}));
     },
 
+    canSendRemote() {
+      return canSendRemoteAnalytics();
+    },
+
     log(event, params) {
       const rawName = String(event || 'unknown');
       const name = ALIASES[rawName] || rawName;
@@ -206,7 +230,11 @@
       saveBuf(buf);
 
       try {
-        if (global.AndroidBridge && typeof global.AndroidBridge.logEvent === 'function') {
+        if (
+          canSendRemoteAnalytics() &&
+          global.AndroidBridge &&
+          typeof global.AndroidBridge.logEvent === 'function'
+        ) {
           global.AndroidBridge.logEvent(name, JSON.stringify(envelope));
         }
       } catch (e) {

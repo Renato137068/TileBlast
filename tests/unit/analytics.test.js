@@ -4,6 +4,8 @@ import { mountModule } from '../helpers/load-module.js';
 describe('TBAnalytics schema + funil', () => {
   beforeEach(() => {
     delete globalThis.TBAnalytics;
+    delete globalThis.AndroidBridge;
+    delete globalThis.PlayBridge;
     localStorage.clear();
     globalThis.APP_VERSION = '1.4.8';
     mountModule('tb-analytics.js');
@@ -90,9 +92,20 @@ describe('TBAnalytics schema + funil', () => {
     expect(TBAnalytics.exportEvents()).toEqual([]);
   });
 
-  it('AndroidBridge recebe envelope JSON do evento canônico', () => {
+  it('AndroidBridge não recebe evento sem consentimento UMP/GDPR', () => {
     const logEvent = vi.fn();
     globalThis.AndroidBridge = { logEvent };
+    TBAnalytics.markOpen();
+    TBAnalytics.log('ad_watched', { type: 'x' });
+    expect(TBAnalytics.exportEvents().some((e) => e.name === 'ad_reward_granted')).toBe(true);
+    expect(logEvent).not.toHaveBeenCalled();
+    expect(TBAnalytics.canSendRemote()).toBe(false);
+    delete globalThis.AndroidBridge;
+  });
+
+  it('AndroidBridge recebe envelope JSON do evento canônico com consentimento', () => {
+    const logEvent = vi.fn();
+    globalThis.AndroidBridge = { logEvent, canShowAdsBridge: () => true };
     TBAnalytics.markOpen();
     TBAnalytics.log('ad_watched', { type: 'x' });
     expect(logEvent).toHaveBeenCalled();

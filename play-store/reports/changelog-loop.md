@@ -34,6 +34,13 @@
 - **Validação:** backlog.md contém TB-201 (ex-TB-101 UX fase 64) e TB-101 P0 captura JS.
 - **Status:** feito (nota de relabel)
 
+## Iteração 7 — 2026-08-13 — TB-102
+- **Problema/evidência:** grep consent|gdpr|lgpd|ump em tb-*.js + AndroidManifest = 0; UMP só no Java; JS ads/analytics sem gate.
+- **Mudança:** `tb-playbridge.js` lê `canShowAdsBridge` + `onTileBlastConsentUpdate`; `tb-ads.js` recusa rewarded sem consent (web: modal GDPR/LGPD); `tb-analytics.js` buffer local sempre, `AndroidBridge.logEvent` só com consent; Java `setAnalyticsCollectionEnabled` + gate `logEventNative`; manifest Consent Mode default deny + comentário UMP.
+- **Validação:** `npx vitest run tests/unit/playbridge.test.js tests/unit/ads-module.test.js tests/unit/analytics.test.js` → `Tests 38 passed (38)`; `npm run lint` → `✓ no-undef limpo`; `npm run sync:www` → `www/ synced … tileblast-v149`; `npm run release:gate` → `✓ Gate de DEV OK (placeholders permitidos).`
+- **Regressão checada:** ads nativos sem UMP falham fechado; funil local intacto; www parity OK.
+- **Status:** feito
+
 ## Iteração 6 — 2026-08-13 — TB-101
 - **Problema/evidência:** grep crashlytics/sentry/window.onerror/unhandledrejection nos tb-*.js = 0 — falha em produção sem sinal.
 - **Mudança:** `tb-runtime.js` instala `error` + `unhandledrejection` (fail-closed); `tb-firebase.js` `reportClientError` → fila callable `client_error`; também `TBAnalytics.log('client_error')` (buffer + AndroidBridge/FA). Payload: level, v, lang, last_event.

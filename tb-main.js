@@ -842,6 +842,9 @@ function _initCoreModules() {
       showToast,
       _t,
       checkAchievements,
+      ld,
+      sv,
+      IS_NATIVE,
     });
 
   if (window.TBMusic)

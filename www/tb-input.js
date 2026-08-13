@@ -371,15 +371,6 @@
       g.TBRoadmap.showChangelogIfNeeded();
     });
 
-    g.onTileBlastConsentUpdate = (granted) => {
-      if (!granted)
-        C.showToast(
-          '🔒',
-          C._t('ad_heading', 'Anúncios'),
-          C._t('ads_consent', 'Consentimento necessário para anúncios personalizados.')
-        );
-    };
-
     if (C.PlayBridge.hasBilling()) setTimeout(() => C.PlayBridge.restore(), 1200);
     document.getElementById('map-shop-btn').addEventListener('click', () => C.openShop());
     document.getElementById('map-garden-btn')?.addEventListener('click', () => {

@@ -16,6 +16,15 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3988214303168302~9163535534"/>
 
+        <!-- UMP / GDPR / LGPD: User Messaging Platform consent runs in TileBlastBridge
+             before MobileAds.initialize. JS gates ads + Firebase Analytics via canShowAdsBridge. -->
+        <meta-data
+            android:name="google_analytics_default_allow_analytics_storage"
+            android:value="false"/>
+        <meta-data
+            android:name="google_analytics_default_allow_ad_storage"
+            android:value="false"/>
+
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
             android:name=".MainActivity"

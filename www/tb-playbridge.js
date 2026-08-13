@@ -12,12 +12,61 @@
   const g = global;
   /** @type {Record<string, { id: string, title?: string, formattedPrice?: string, priceCurrencyCode?: string, priceAmountMicros?: number }>} */
   let _storeProducts = Object.create(null);
+  /** Cache JS do UMP/GDPR/LGPD (nativo: canShowAdsBridge; web: save.consentAds). */
+  let _adsCanRequest = false;
 
   /** @param {Record<string, any>|null|undefined} cfg */
   function init(cfg) {
     C = cfg || null;
     installNativeCallbacks();
     hydrateStoreProductsFromBridge();
+    syncConsentFromBridge();
+  }
+
+  function persistConsentFlags(granted) {
+    _adsCanRequest = !!granted;
+    try {
+      if (C && typeof C.ld === 'function' && typeof C.sv === 'function') {
+        const s = C.ld();
+        s.consentAds = _adsCanRequest;
+        s.consentAnalytics = _adsCanRequest;
+        C.sv(s);
+      }
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function syncConsentFromBridge() {
+    try {
+      if (g.AndroidBridge && typeof g.AndroidBridge.canShowAdsBridge === 'function') {
+        persistConsentFlags(!!g.AndroidBridge.canShowAdsBridge());
+        return;
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    try {
+      if (C && typeof C.ld === 'function') {
+        const s = C.ld();
+        if (s && typeof s.consentAds === 'boolean') {
+          _adsCanRequest = !!s.consentAds;
+        }
+      }
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function canRequestAds() {
+    try {
+      if (g.AndroidBridge && typeof g.AndroidBridge.canShowAdsBridge === 'function') {
+        return !!g.AndroidBridge.canShowAdsBridge();
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    return !!_adsCanRequest;
   }
 
   function hydrateStoreProductsFromBridge() {
@@ -66,6 +115,17 @@
     hasNativeAds() {
       return !!(g.AndroidBridge && typeof g.AndroidBridge.showRewardedAd === 'function');
     },
+    /** UMP / GDPR / LGPD: ads + analytics remoto só após consentimento. */
+    canRequestAds() {
+      return canRequestAds();
+    },
+    hasAnalyticsConsent() {
+      return canRequestAds();
+    },
+    /** @param {boolean} granted */
+    setWebConsent(granted) {
+      persistConsentFlags(!!granted);
+    },
     /** @param {string} itemId */
     getStoreProduct(itemId) {
       return _storeProducts[itemId] || null;
@@ -100,6 +160,10 @@
     },
     showRewardedAd(onReward, onCancel) {
       if (!this.hasNativeAds()) return false;
+      if (!this.canRequestAds()) {
+        if (typeof onCancel === 'function') onCancel();
+        return false;
+      }
       if (g._nativeAdTimer) {
         clearTimeout(g._nativeAdTimer);
         g._nativeAdTimer = null;
@@ -117,6 +181,10 @@
     },
     showInterstitial(onDone) {
       if (typeof g.hasNoAds === 'function' && g.hasNoAds()) {
+        onDone && onDone();
+        return false;
+      }
+      if (!this.canRequestAds()) {
         onDone && onDone();
         return false;
       }
@@ -147,6 +215,18 @@
   }
 
   function installNativeCallbacks() {
+    g.onTileBlastConsentUpdate = (granted) => {
+      persistConsentFlags(!!granted);
+      if (!granted && C && typeof C.showToast === 'function') {
+        C.showToast(
+          '🔒',
+          C._t ? C._t('ad_heading', 'Anúncios') : 'Anúncios',
+          C._t
+            ? C._t('ads_consent', 'Consentimento necessário para anúncios personalizados.')
+            : 'Consentimento necessário para anúncios personalizados.'
+        );
+      }
+    };
     g.onTileBlastAdRewarded = () => {
       if (g._nativeAdTimer) {
         clearTimeout(g._nativeAdTimer);
@@ -276,5 +356,6 @@
     PlayBridge,
     queueConfirm,
     applyProductDetailsJson,
+    syncConsentFromBridge,
   };
 })(typeof window !== 'undefined' ? window : globalThis);

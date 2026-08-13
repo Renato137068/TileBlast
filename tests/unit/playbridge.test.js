@@ -157,7 +157,7 @@ describe('tb-playbridge', () => {
 
   describe('rewarded ads', () => {
     it('callback de recompensa dispara onReward uma única vez', () => {
-      globalThis.AndroidBridge = { showRewardedAd: vi.fn() };
+      globalThis.AndroidBridge = { showRewardedAd: vi.fn(), canShowAdsBridge: () => true };
       const onReward = vi.fn();
       const onCancel = vi.fn();
       expect(globalThis.PlayBridge.showRewardedAd(onReward, onCancel)).toBe(true);
@@ -168,7 +168,7 @@ describe('tb-playbridge', () => {
     });
 
     it('dismiss sem recompensa chama onCancel', () => {
-      globalThis.AndroidBridge = { showRewardedAd: vi.fn() };
+      globalThis.AndroidBridge = { showRewardedAd: vi.fn(), canShowAdsBridge: () => true };
       const onCancel = vi.fn();
       globalThis.PlayBridge.showRewardedAd(vi.fn(), onCancel);
       globalThis.onTileBlastAdDismissed();
@@ -176,7 +176,7 @@ describe('tb-playbridge', () => {
     });
 
     it('falha de carregamento cai no ad simulado', () => {
-      globalThis.AndroidBridge = { showRewardedAd: vi.fn() };
+      globalThis.AndroidBridge = { showRewardedAd: vi.fn(), canShowAdsBridge: () => true };
       const simulated = vi.fn();
       globalThis.showRewardedAdSimulated = simulated;
       const onReward = vi.fn();
@@ -198,13 +198,42 @@ describe('tb-playbridge', () => {
 
     it('dismiss do interstitial resolve o callback uma vez', () => {
       globalThis.hasNoAds = () => false;
-      globalThis.AndroidBridge = { showInterstitialAd: vi.fn() };
+      globalThis.AndroidBridge = { showInterstitialAd: vi.fn(), canShowAdsBridge: () => true };
       const done = vi.fn();
       expect(globalThis.PlayBridge.showInterstitial(done)).toBe(true);
       globalThis.onTileBlastInterstitialDismissed();
       globalThis.onTileBlastInterstitialDismissed();
       expect(done).toHaveBeenCalledTimes(1);
       delete globalThis.hasNoAds;
+    });
+  });
+
+  describe('consentimento UMP/GDPR/LGPD', () => {
+    it('sem canShowAdsBridge ads nativos falham fechado', () => {
+      globalThis.AndroidBridge = { showRewardedAd: vi.fn() };
+      const onCancel = vi.fn();
+      expect(globalThis.PlayBridge.canRequestAds()).toBe(false);
+      expect(globalThis.PlayBridge.hasAnalyticsConsent()).toBe(false);
+      expect(globalThis.PlayBridge.showRewardedAd(vi.fn(), onCancel)).toBe(false);
+      expect(onCancel).toHaveBeenCalled();
+      expect(globalThis.AndroidBridge.showRewardedAd).not.toHaveBeenCalled();
+    });
+
+    it('canShowAdsBridge true libera rewarded e analytics', () => {
+      globalThis.AndroidBridge = {
+        showRewardedAd: vi.fn(),
+        canShowAdsBridge: () => true,
+      };
+      expect(globalThis.PlayBridge.canRequestAds()).toBe(true);
+      expect(globalThis.PlayBridge.hasAnalyticsConsent()).toBe(true);
+      expect(globalThis.PlayBridge.showRewardedAd(vi.fn(), vi.fn())).toBe(true);
+      expect(globalThis.AndroidBridge.showRewardedAd).toHaveBeenCalled();
+    });
+
+    it('onTileBlastConsentUpdate(false) tosta recusa', () => {
+      globalThis.onTileBlastConsentUpdate(false);
+      expect(globalThis.PlayBridge.canRequestAds()).toBe(false);
+      expect(cfg.toasts.length).toBeGreaterThan(0);
     });
   });
 });

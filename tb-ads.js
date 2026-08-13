@@ -39,6 +39,89 @@
   function canWatchAd() {
     return !hasNoAds() && getAdState().count < getAdDailyLimit();
   }
+
+  function isNativeAds() {
+    if (C && C.IS_NATIVE) return true;
+    const pb = C && C.PlayBridge;
+    return !!(pb && typeof pb.hasNativeAds === 'function' && pb.hasNativeAds());
+  }
+
+  function hasAdsConsent() {
+    const pb = C && C.PlayBridge;
+    if (isNativeAds() && pb && typeof pb.canRequestAds === 'function') {
+      return !!pb.canRequestAds();
+    }
+    try {
+      const s = C && C.ld ? C.ld() : null;
+      return !!(s && s.consentAds === true);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /** @param {boolean} granted */
+  function persistWebConsent(granted) {
+    try {
+      const s = C.ld();
+      s.consentAds = !!granted;
+      s.consentAnalytics = !!granted;
+      C.sv(s);
+    } catch (e) {
+      /* ignore */
+    }
+    const pb = C && C.PlayBridge;
+    if (pb && typeof pb.setWebConsent === 'function') pb.setWebConsent(!!granted);
+  }
+
+  /** @param {(ok: boolean) => void} onDone */
+  function showWebConsentModal(onDone) {
+    if (!C || typeof C.showGlobalModal !== 'function') {
+      onDone(false);
+      return;
+    }
+    const t = (k, f) => (C._t ? C._t(k, f) : f);
+    C.showGlobalModal(
+      `
+      <div style="font-size:18px;font-weight:800;">${t('consent_title', 'Privacidade e anúncios')}</div>
+      <div style="font-size:13px;color:var(--dim);margin:8px 0 14px;text-align:left;">${t(
+        'consent_body',
+        'Usamos anúncios e estatísticas anônimas (GDPR/LGPD) para melhorar o jogo. Você pode recusar.'
+      )}</div>
+      <button id="tb-consent-accept" class="btn btn-p btn-full" style="margin-bottom:8px">${t('consent_accept', 'Aceitar')}</button>
+      <button id="tb-consent-decline" class="btn btn-g btn-full">${t('consent_decline', 'Recusar')}</button>
+    `,
+      t('consent_title', 'Privacidade e anúncios')
+    );
+    const finish = (ok) => {
+      persistWebConsent(ok);
+      if (typeof C.closeGlobalModal === 'function') C.closeGlobalModal();
+      onDone(ok);
+    };
+    document.getElementById('tb-consent-accept')?.addEventListener('click', () => finish(true));
+    document.getElementById('tb-consent-decline')?.addEventListener('click', () => finish(false));
+  }
+
+  /** @param {(ok: boolean) => void} onDone */
+  function ensureAdsConsent(onDone) {
+    if (hasAdsConsent()) {
+      onDone(true);
+      return;
+    }
+    if (isNativeAds()) {
+      onDone(false);
+      return;
+    }
+    try {
+      const s = C && C.ld ? C.ld() : null;
+      if (s && s.consentAds === false) {
+        onDone(false);
+        return;
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    showWebConsentModal(onDone);
+  }
   function recordAdWatch() {
     const s = C.ld(),
       st = getAdState();
@@ -127,9 +210,23 @@
       onCancel && onCancel();
       return;
     }
-    TBAnalytics.log('ad_offer', { type: 'rewarded' });
-    if (C.PlayBridge.showRewardedAd(onReward, onCancel)) return;
-    showRewardedAdSimulated(onReward, onCancel);
+    ensureAdsConsent((ok) => {
+      if (!ok) {
+        C.showToast &&
+          C.showToast(
+            '🔒',
+            C._t('ad_heading', 'Anúncios'),
+            C._t('ads_consent', 'Consentimento necessário para anúncios personalizados.')
+          );
+        onCancel && onCancel();
+        return;
+      }
+      TBAnalytics.log('ad_offer', { type: 'rewarded' });
+      if (C.PlayBridge && typeof C.PlayBridge.showRewardedAd === 'function') {
+        if (C.PlayBridge.showRewardedAd(onReward, onCancel)) return;
+      }
+      showRewardedAdSimulated(onReward, onCancel);
+    });
   }
 
   /** @type {any} */
@@ -139,6 +236,8 @@
     getAdState,
     getAdDailyLimit,
     canWatchAd,
+    hasAdsConsent,
+    ensureAdsConsent,
     recordAdWatch,
     cancelRewardedAd,
     showRewardedAdSimulated,

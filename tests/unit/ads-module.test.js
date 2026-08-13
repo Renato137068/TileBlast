@@ -31,7 +31,7 @@ describe('tb-ads', () => {
         <div id="ad-skip-wrap"><span id="ad-timer"></span></div>
       </div>
     `;
-    save = {};
+    save = { consentAds: true, consentAnalytics: true };
     cfg = {
       ld: () => save,
       sv: (s) => {
@@ -40,6 +40,8 @@ describe('tb-ads', () => {
       _t: (_k, f) => f,
       _localToday: () => TODAY,
       showToast: vi.fn(),
+      showGlobalModal: vi.fn(),
+      closeGlobalModal: vi.fn(),
       PlayBridge: { showRewardedAd: vi.fn(() => false) },
     };
     A = mountAds();
@@ -120,6 +122,35 @@ describe('tb-ads', () => {
     });
     expect(globalThis.TBRoadmap.statBump).toHaveBeenCalledWith('adsWatched');
     expect(overlay.classList.contains('show')).toBe(false);
+  });
+
+  it('sem consentimento recusa rewarded e não abre overlay', () => {
+    save.consentAds = false;
+    const onReward = vi.fn();
+    const onCancel = vi.fn();
+    A.showRewardedAd(onReward, onCancel);
+    expect(cfg.showToast).toHaveBeenCalled();
+    expect(onCancel).toHaveBeenCalled();
+    expect(onReward).not.toHaveBeenCalled();
+    expect(document.getElementById('ad-overlay').classList.contains('show')).toBe(false);
+    expect(cfg.PlayBridge.showRewardedAd).not.toHaveBeenCalled();
+  });
+
+  it('web sem decisão abre modal GDPR/LGPD e aceitar segue o anúncio', () => {
+    delete save.consentAds;
+    delete save.consentAnalytics;
+    cfg.showGlobalModal = vi.fn((html) => {
+      document.body.insertAdjacentHTML('beforeend', `<div id="gm">${html}</div>`);
+    });
+    const onReward = vi.fn();
+    const onCancel = vi.fn();
+    A.showRewardedAd(onReward, onCancel);
+    expect(cfg.showGlobalModal).toHaveBeenCalled();
+    expect(document.getElementById('ad-overlay').classList.contains('show')).toBe(false);
+    document.getElementById('tb-consent-accept').click();
+    expect(save.consentAds).toBe(true);
+    expect(document.getElementById('ad-overlay').classList.contains('show')).toBe(true);
+    expect(onCancel).not.toHaveBeenCalled();
   });
 
   it('cancelRewardedAd fecha o overlay sem recompensa', () => {
