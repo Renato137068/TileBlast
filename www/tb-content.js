@@ -168,11 +168,14 @@
   }
 
   function loadAllPacks() {
-    return Promise.all(
-      _manifest.packs.map(function (p) {
+    // Serial ingest: parallel Promise.all + shared _levels races drop/reorder packs.
+    var chain = Promise.resolve();
+    (_manifest.packs || []).forEach(function (p) {
+      chain = chain.then(function () {
         return loadWorldPack(p.worldId);
-      })
-    );
+      });
+    });
+    return chain;
   }
 
   function getPreloadWorldIds(unlocked) {
@@ -196,7 +199,14 @@
         if (!preload && options.unlocked != null) preload = getPreloadWorldIds(options.unlocked);
         if (!preload) preload = ['garden'];
         if (options.loadAll) return loadAllPacks();
-        return Promise.all(preload.map(loadWorldPack));
+        // Serial preload: same shared-_levels race as loadAllPacks.
+        var chain = Promise.resolve();
+        preload.forEach(function (worldId) {
+          chain = chain.then(function () {
+            return loadWorldPack(worldId);
+          });
+        });
+        return chain;
       })
       .then(function () {
         return getLevels();

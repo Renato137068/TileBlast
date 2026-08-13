@@ -21,3 +21,10 @@
 - **Regressão checada:** conteúdo por `id` forest-01 OK; margem real depende de TB-006 (race em loadAllPacks).
 - **Status:** feito
 
+## Iteração 4 — 2026-08-12 — TB-006
+- **Problema/evidência:** Ritmo “WIN” ~1,2s com moves=0/score=0; índices de fase no player-audit instáveis (idx 15 → Primeira Caixa).
+- **Mudança:** `tb-content.js` — `loadAllPacks`/preload serializados (evita race em `_levels`); `scripts/run-player-audit.mjs` — WIN sem UI exige progresso (moves>0 ou score>0); `tests/unit/content.test.js` — assert idx 8/15.
+- **Validação:** `npx vitest run tests/unit/content.test.js` → `Tests 9 passed`; `npm run lint` → `✓ no-undef limpo`; `TB_PLAYER_FROM=8 TB_PLAYER_TO=8 npm run player:audit` → `WIN Ritmo moves=12 left=9` / `Achados: 0`; `npm run test:gameplay` → `E2E gameplay OK: 5 jogadas, 465 pts`; `npm run release:gate` → `✓ Gate de DEV OK (placeholders permitidos).`
+- **Regressão checada:** catálogo idx 15 = Primeiro Gelo estável no audit pós-fix.
+- **Status:** feito
+

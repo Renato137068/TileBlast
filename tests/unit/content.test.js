@@ -24,6 +24,17 @@ describe('TBContent', () => {
     expect(TBContent.indexOfLevelId('legendary-10')).toBe(84);
   });
 
+  it('catálogo global: índice 8=Ritmo, 15=Primeiro Gelo', () => {
+    createMinimalDom();
+    mountModule('tb-content.js');
+    TBContent.loadFromData(loadContentDataFromDisk());
+    const levels = TBContent.getLevels();
+    expect(levels[8].name).toBe('Ritmo');
+    expect(levels[8].id).toBe('garden-09');
+    expect(levels[15].name).toBe('Primeiro Gelo');
+    expect(levels[15].id).toBe('forest-01');
+  });
+
   it('WorldManager calcula progresso e desbloqueio (v2)', () => {
     createMinimalDom();
     mountModule('tb-content.js');
