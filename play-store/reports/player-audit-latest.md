@@ -4,10 +4,7 @@ Fases: **1** · Vitórias: **1** · Derrotas: **0** · Erros JS: **0**
 
 ## Achados priorizados
 
-| Pri | Área | Fase | Achado |
-|-----|------|------|--------|
-| P1 | balance | 16 | Fase 16: vitória no último movimento — margem zero |
-| P2 | ux | 16 | Fase 16: 32s de sessão bot — sensação lenta |
+_Nenhum achado automático._
 
 ## Próximos passos (agentes)
 
@@ -19,4 +16,4 @@ Fases: **1** · Vitórias: **1** · Derrotas: **0** · Erros JS: **0**
 
 | # | Nome | Resultado | Moves | Left | Score | ms |
 |---|------|-----------|-------|------|-------|----|
-| 16 | Primeiro Gelo | WIN | 31 | 0 | 1205 | 32122 |
+| 18 | Violeta | WIN | 14 | 9 | 475 | 15763 |

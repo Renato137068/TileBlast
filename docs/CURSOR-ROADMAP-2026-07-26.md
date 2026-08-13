@@ -240,6 +240,8 @@ Aceite: zero blocker P0/P1 de acessibilidade; cada locale passa em screenshot/fl
 
 ### P4.3 Operação por coortes
 
+**Status:** scaffold operacional (ritual + relatório + skills de agente). Soft launch real depende de dados Play Console.
+
 Entregas:
 
 - Soft launch em um mercado pequeno com grupos de controle.
@@ -247,6 +249,10 @@ Entregas:
 - Rollback de conteúdo/remote config e changelog voltado ao jogador.
 
 Aceite: nenhuma feature global é escalada sem uma métrica-alvo, grupo de controle e critério de rollback.
+
+- Ritual: `docs/SOFT-LAUNCH-RITUAL.md` + `npm run ops:weekly` → `play-store/reports/soft-launch-latest.md`.
+- Agentes: skills `tileblast-audit`, `tileblast-improve`, `tileblast-soft-launch` + regras em `.cursor/rules/`.
+- `AGENTS.md` na raiz.
 
 ## Ordem recomendada de execução
 

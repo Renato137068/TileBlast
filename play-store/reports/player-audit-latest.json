@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-13T00:39:40.784Z",
+  "generated_at": "2026-08-13T00:41:39.017Z",
   "total_levels": 85,
   "range": {
-    "from": 15,
-    "to": 15
+    "from": 17,
+    "to": 17
   },
   "played": 1,
   "wins": 1,
@@ -22,33 +22,20 @@
     ],
     "coinItems": 5
   },
-  "findings": [
-    {
-      "area": "balance",
-      "pri": "P1",
-      "level": 15,
-      "msg": "Fase 16: vitória no último movimento — margem zero"
-    },
-    {
-      "area": "ux",
-      "pri": "P2",
-      "level": 15,
-      "msg": "Fase 16: 32s de sessão bot — sensação lenta"
-    }
-  ],
+  "findings": [],
   "levels": [
     {
-      "idx": 15,
-      "name": "Primeiro Gelo",
+      "idx": 17,
+      "name": "Violeta",
       "worldId": "forest",
-      "moves": 31,
-      "score": 1205,
-      "movesLeft": 0,
+      "moves": 14,
+      "score": 475,
+      "movesLeft": 9,
       "won": true,
       "lost": false,
-      "resultVisible": true,
-      "durationMs": 32122,
-      "lvIdx": 15,
+      "resultVisible": false,
+      "durationMs": 15763,
+      "lvIdx": 17,
       "jsError": null
     }
   ]
