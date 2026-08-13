@@ -117,11 +117,11 @@
       "order": 6,
       "index": 5,
       "name": "Pontuação",
-      "moves": 18,
+      "moves": 22,
       "objectives": [
         {
           "type": "score",
-          "target": 1200
+          "target": 1000
         }
       ],
       "difficulty": "medium",
@@ -178,7 +178,7 @@
       "order": 9,
       "index": 8,
       "name": "Ritmo",
-      "moves": 18,
+      "moves": 20,
       "objectives": [
         {
           "type": "score",
@@ -243,12 +243,12 @@
       "worldId": "garden",
       "order": 12,
       "name": "Trilha Verde",
-      "moves": 20,
+      "moves": 25,
       "seed": 1012,
       "objectives": [
         {
           "type": "score",
-          "target": 1400
+          "target": 1100
         }
       ],
       "difficulty": "medium",
@@ -289,7 +289,7 @@
       "worldId": "garden",
       "order": 14,
       "name": "Combo Jardim",
-      "moves": 20,
+      "moves": 23,
       "seed": 1014,
       "objectives": [
         {
@@ -309,7 +309,7 @@
       "worldId": "garden",
       "order": 15,
       "name": "Portal do Jardim 👑",
-      "moves": 26,
+      "moves": 28,
       "seed": 1015,
       "objectives": [
         {
