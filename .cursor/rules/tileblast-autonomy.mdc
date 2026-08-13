@@ -52,8 +52,8 @@ Não inventar número. Nota ou placar só se derivado de sinal real — `release
 
 Exceção **estreita** ao `tileblast-play-safety`, válida apenas quando o usuário pediu um loop:
 
-- **Livre:** `git checkout -b auto/<data>` e `git commit` **nessa branch**, um commit por item de backlog.
-- **Continua exigindo confirmação:** commit em `main`, `push`, merge de PR, build/release AAB, preços/IAP, remote config ao vivo, deploy de Functions/Rules.
+- **Livre:** `git checkout -b auto/<data>`, `git commit` **nessa branch** e `git push -u origin HEAD` **da branch `auto/*`** — um commit por item de backlog, enviado logo em seguida.
+- **Continua exigindo confirmação:** qualquer coisa em `master`/`main` (commit, push, merge), abrir ou mergear PR, build/release AAB, preços/IAP, remote config ao vivo, deploy de Functions/Rules.
 - **Nunca:** `--no-verify`, force-push, apagar dados de jogador.
 
 Sem branch `auto/*` criada, vale a regra normal: não commitar.

@@ -88,7 +88,16 @@ Append em `changelog-loop.md`:
 
 ### 6. Fechar
 
-Marcar `done` no backlog. Se houver branch `auto/*`: `git commit -m "loop: <ID> <resumo>"`. Sem push.
+Marcar `done` no backlog. Em branch `auto/*`, commitar e enviar na sequência:
+
+```bash
+git commit -m "loop: <ID> <resumo>"
+git push -u origin HEAD
+```
+
+Push **apenas** da branch `auto/*`. Nunca `master`, nunca `--force`. Se o push falhar
+(sem credencial, sem rede, upstream divergente), **não** tentar contornar: registrar a
+falha no changelog e seguir — o commit local não se perde.
 
 ### 7. Próximo
 
