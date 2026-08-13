@@ -1,0 +1,12 @@
+---
+description: Guardrails de publicação Play Store / IAP / dados de jogadores
+alwaysApply: true
+---
+
+# Tile Blast — Play safety
+
+- **Não inventar** credenciais, AdMob/IAP IDs reais, preços ou dados de produção. Placeholders devem falhar fechado no release gate.
+- **Livre sem perguntar:** bugs, UX, testes, docs, CI, arte, balanceamento de conteúdo, a11y, perf, refactors seguros.
+- **Pedir confirmação antes:** `git commit` / `push`, merge de PR, AAB/release Play, mudança de preços/IAP, remote config **ao vivo**, deploy de Functions/Rules.
+- **Nunca:** force-push em main/master, apagar saves/dados de jogadores, expor secrets, desligar anti-cheat/rate-limit, `--no-verify`.
+- Economia/social: preservar idempotência IAP, rate limits e moderação de nomes.

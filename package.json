@@ -59,6 +59,8 @@
     "build:bundle": "npm run sync:www && node scripts/build-bundle.mjs",
     "perf:budgets": "node scripts/check-perf-budgets.mjs",
     "perf:lab": "npm run sync:www && node scripts/run-perf-lab.mjs",
+    "ops:weekly": "node scripts/soft-launch-report.mjs",
+    "player:audit": "npm run sync:www && node scripts/run-player-audit.mjs",
     "ui:shots": "npm run sync:www && node scripts/screenshot.mjs",
     "lint": "node scripts/lint-globals.mjs",
     "typecheck": "tsc --noEmit -p jsconfig.json",

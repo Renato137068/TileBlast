@@ -1,0 +1,13 @@
+---
+description: Convenções centrais do Tile Blast (fonte de verdade, sync, arquitetura)
+alwaysApply: true
+---
+
+# Tile Blast — core
+
+- **Fonte de verdade:** editar `tb-*.js`, `tile_blast.html`, `css/`, `functions/`, `data/` na **raiz**. Depois `npm run sync:www`. Nunca tratar `www/` como fonte.
+- **Módulos:** ordem canônica em `scripts/modules.mjs` (`MODULES` / `BOOT_MODULES` / `DEFERRED_MODULES`). Manter HTML alinhado a `BOOT_MODULES`.
+- **Arquitetura:** scripts clássicos IIFE (`window.TB*`). Não migrar de framework sem pedido explícito.
+- **Fatias pequenas:** ler arquivos + testes existentes antes de editar; não remover features para “simplificar”.
+- **Verificação típica:** `npm run sync:www`, testes unitários do módulo tocado, e quando tocar boot/UI: `npm run test:a11y` / e2e relevante.
+- **Roadmap:** `docs/CURSOR-ROADMAP-2026-07-26.md`. App em **testes na Play Store** — priorizar estabilidade, funil e ops.

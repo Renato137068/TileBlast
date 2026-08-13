@@ -31,3 +31,6 @@ play-store/reports/release-gate-*.json
 
 # Backup do .git corrompido (2026-08-01) — investigar/remover
 .git-broken-backup-*/
+
+# Config local do Claude Code (nao versionar)
+.claude/

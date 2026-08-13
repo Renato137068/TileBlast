@@ -1,0 +1,70 @@
+---
+description: Regras de autonomia para trabalho em loop (prioridade, evidência, orçamento, git, parada)
+alwaysApply: true
+---
+
+# Tile Blast — autonomia
+
+Complementa `tileblast-core` (arquitetura) e `tileblast-play-safety` (publicação). Aqui: **como decidir e quando parar**.
+
+## Prioridade
+
+- **P0** — quebra release/testes, crash, perda de progresso, corrupção de save, billing.
+- **P1** — funil, retenção, ads/economia, UX bloqueante, perf fora do budget.
+- **P2** — polish, dívida técnica, refactor seguro.
+- **P3** — cosmético.
+
+Não abrir P2/P3 com P0/P1 conhecido em aberto — exceto se o item menor for pré-requisito técnico do maior (registrar o motivo no backlog).
+
+## Toda edição precisa de 3 respostas
+
+Antes de tocar em código, escrever uma linha para cada:
+
+1. **Problema + evidência** — saída de comando, log, achado de relatório, ou `arquivo:linha`. Sem evidência não vira edição: vira item de backlog.
+2. **Como validar** — o comando exato que prova que funcionou.
+3. **Risco de regressão** — o que mais depende disso.
+
+"Parece melhor assim" não é justificativa.
+
+## Orçamento por fatia
+
+- **1 item de backlog por vez**, no máximo ~5 arquivos tocados.
+- Dentro de loop autônomo, **não** fazer: troca de framework, reescrita de arquitetura, dependência nova, mudança grande de gameplay/balanceamento. Isso vira item no backlog marcado `precisa-decisão` e espera o dono.
+- Não remover feature existente para "simplificar".
+- Prefira 1 mudança → validar → seguir, em vez de 20 mudanças → descobrir o que quebrou.
+
+## Concluído = evidência
+
+Uma tarefa **não** está concluída porque o código foi escrito. Está concluída quando:
+
+- [ ] o comando de validação rodou e **saiu 0** (colar a linha final da saída no changelog);
+- [ ] existe teste novo ou atualizado cobrindo o achado (ou justificativa, se for só config/doc);
+- [ ] `npm run sync:www` rodou, se tocou JS/HTML/CSS/assets na raiz;
+- [ ] nada que passava antes passou a falhar.
+
+Proibido escrever "testes passaram" sem ter rodado. Se não deu para rodar, escrever **"não verificado"** e o porquê.
+
+## Métricas
+
+Não inventar número. Nota ou placar só se derivado de sinal real — `release:gate`, `test:coverage`, `perf:budgets`, contagem de achados do `player:audit` — sempre citando a fonte. Sem fonte: "sem dado".
+
+## Git dentro de loop autônomo
+
+Exceção **estreita** ao `tileblast-play-safety`, válida apenas quando o usuário pediu um loop:
+
+- **Livre:** `git checkout -b auto/<data>` e `git commit` **nessa branch**, um commit por item de backlog.
+- **Continua exigindo confirmação:** commit em `main`, `push`, merge de PR, build/release AAB, preços/IAP, remote config ao vivo, deploy de Functions/Rules.
+- **Nunca:** `--no-verify`, force-push, apagar dados de jogador.
+
+Sem branch `auto/*` criada, vale a regra normal: não commitar.
+
+## Parada
+
+Parar e reportar quando qualquer uma for verdade:
+
+- não há P0 nem P1 aberto no backlog;
+- o teto de iterações combinado foi atingido;
+- o próximo item exige decisão de produto (preço, escopo, design, arquitetura);
+- a mesma validação falhou 2 vezes seguidas → `git restore` da fatia, marcar `bloqueado` e reportar, não insistir.
+
+Enquanto houver P0/P1 com evidência no backlog, não perguntar "o que faço agora?" — pegar o próximo.
