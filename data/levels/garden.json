@@ -289,12 +289,12 @@
       "worldId": "garden",
       "order": 14,
       "name": "Combo Jardim",
-      "moves": 23,
+      "moves": 26,
       "seed": 1014,
       "objectives": [
         {
           "type": "score",
-          "target": 1800
+          "target": 1400
         }
       ],
       "difficulty": "hard",
